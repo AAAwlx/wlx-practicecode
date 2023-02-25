@@ -11,16 +11,44 @@
 #include<glob.h>
 #include<stdlib.h>
 #include<stdbool.h>
-#define BULE 34
-#define GREEN 32//控制字符颜色
+int command_a=0, command_l=0, command_r=0, command_i=0, command_s=0, command_T=0, command_R=0;
 struct file
 {
     char filename[256];
     struct stat STA;
 };//存储文件的名字与其属性
-void COLOR(int color)
+int getcolor( char *filename )
 {
-    printf("\033[%dm",color);
+    struct stat info;    //通过设置可以获取文件属性
+    int foreground=0;
+   lstat( filename,&info );//将文件输入获得赋值给info
+    switch ( (info.st_mode & S_IFMT) ){
+        case S_IFREG:               /*regular 普通文件 , 色*/
+            {
+                foreground = 37;
+                    if((info.st_mode&S_IXOTH)||(info.st_mode&S_IXGRP)||(info.st_mode&S_IXUSR))
+      {
+            foreground = 32;
+        }
+            break;
+            }
+        case S_IFLNK:               /*symbolic link 链接文件 , 青蓝色*/
+            foreground = 36;
+            break;
+        case S_IFSOCK:              /*紫红色*/
+            foreground = 35;
+            break;
+        case S_IFDIR:               /*directory 目录文件 , 蓝色*/
+        foreground = 34;
+            break;
+        case S_IFBLK:               /*block special 块设备文件 , 黄色*/
+            foreground = 33;
+            break;
+        case S_IFCHR:               /*character special 字符设备文件 , 黄色*/
+            foreground = 33;
+            break;
+    }
+    return foreground;
 }
 void LS_I(struct stat *STA)
 {
@@ -157,12 +185,10 @@ void LS_T(struct file *FILE,int len)
         }
     }
 }
-void list(int *command,int size)
+void list(char *pathname)
 {
 	DIR *dir=NULL;
 	struct dirent *ptr;
-	char pathname[256];
-	getcwd(pathname,sizeof(pathname));  //获取当前路径
     dir=opendir(pathname);  //返回目录流
 	if(dir == NULL) //如果路径为空，返回错误
     {
@@ -170,68 +196,55 @@ void list(int *command,int size)
         exit(-1);
     }
 	struct stat statbuf;
-	int s_buf;
 	int i=0,j=0;
 	struct file* f = malloc(sizeof(struct file)*100);
 	struct file* temp = f;//记录初始位置
 	while((ptr=readdir(dir))!=NULL){
-		if(command[0]==0){
+		if(command_a==0){
 			if(ptr->d_name[0]=='.'){
 				continue;
 			}
 		}
-		s_buf=stat(ptr->d_name, &(f->STA));
+		stat(ptr->d_name, &(f->STA));
 		strcpy(f->filename,ptr->d_name);
 		f++;
 		j++;
 	}
 	f = temp;  //指向开始
-    if(command[5] == 1)
+    if(command_T== 1)
     {
         LS_T(f, j);
     }
 	for(i=0;i<j;i++){
-		if(command[4]==1){
-			LS_S(&(f+i)->STA);
-		}
-		if(command[3]==1){
+        if(command_i==1){
 			LS_I(&(f+i)->STA);
 		}
-		if(command[1]==1){
+		if(command_s==1){
+			LS_S(&(f+i)->STA);
+		}
+		if(command_l==1){
 			printf("\n");
             show_file(&(f+i)->STA);
 		}
-		//打印名称
-	 //输出
-        if(S_ISDIR(f->STA.st_mode))
-        {
-            //目录
-            COLOR(BULE);
-            printf("%5s",(f+i)->filename);
-        }else if(f->STA.st_mode & S_IXGRP)
-        {
-            //可执行文件（位运算？）
-            COLOR(GREEN);
-            printf("%5s",(f+i)->filename);
-        }else if(S_ISREG(f->STA.st_mode))
-        {
-            //普通文件
-            printf("   %5s",(f+i)->filename);
-        }
-        //printf("  %5s",(buff+i)->filename);  //输出文件名
- 
-        if(i % 5 ==0 && command[1] != true)
-        {
+        int foreground=getcolor((f+i)->filename);
+        printf("\033[%dm%5s\033[0m\n",foreground,(f+i)->filename);
+        /*if(i%5==0&&command_l==0){
             printf("\n");
-        }
+        }*/
 	}
-    if(command[2] == true)  //-R递归
+    if(command_R == 1)  //-R递归
     {
-        printf("\n");
         for(int i=0;i<j;i++)
         {
-            printf("%s:\n",(f+i)->filename);
-            list(&(command[1]),3);
+            char name[256];
+            strcpy(name,pathname);
+            if(S_ISDIR((f+i)->STA.st_mode)){
+                strcat(name,"/");
+                strcat(name,(f+i)->filename);
+                printf("%s:\n",name);
+                chdir(name);
+                list(name);
+            }
         }
     }
 	closedir(dir);
@@ -242,36 +255,32 @@ int main(int argc,char** argv)
 	int i;
 	int len=strlen(argv[1]);//得到命令的长度
 	int command[10]={0};
-	//从0～5分别为a l r i s t
-	for(i=0;i<len;i++){
+    for(i=0;i<len;i++){
 		if(argv[1][i]=='a')
         {
-            command[0]++;
+            command_a=1;
         }else if(argv[1][i]=='l')
         {
-             command[1]++;
+            command_l=1;
         }else if(argv[1][i]=='R')
         {
-            command[2]++;
+            command_R=1;
         }else if(argv[1][i]=='i')
         {
-            command[3]++;
+            command_i=1;
         }else if(argv[1][i]=='s')
         {
-            command[4]++;
+            command_s=1;
         }else if(argv[1][i]=='t')
         {
-            command[5]++;
+            command_T=1;
         }else{
             printf("错误！\n");
             return -1;
         }
 	}
-	for(i=0;i<6;i++){
-		if(command[i]!=0){
-			command[i]=1;
-		}
-	}
-	list(command,6);
+    char pathname[256];
+    getcwd(pathname,sizeof(pathname));
+	list(pathname);
 	return 0;
 }
