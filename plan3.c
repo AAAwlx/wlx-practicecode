@@ -235,15 +235,14 @@ void list(char *pathname)
 			LS_S(&(f+i)->STA);
 		}
 		if(command_l==1){
-			printf("\n");
             show_file(&(f+i)->STA);
-            //printf("\n");
+            printf("\n");
 		}
         int foreground=getcolor((f+i)->filename);
-        printf("\033[%dm%-10s\033[0m",foreground,(f+i)->filename);
-        /*if(i%5==0&&command_l==0){
+        printf("\033[%dm%-15s\033[0m",foreground,(f+i)->filename);
+        if(i%5==0&&command_l==0){
             printf("\n");
-        }*/
+        }
 	}
     printf("\n");
     if(command_R == 1)  //-R递归
@@ -271,10 +270,10 @@ void list(char *pathname)
 
 int main(int argc,char** argv)
 {
+    int count=0;
     char pathname[256];
-    int j=1;
     if(argc>1){
-        int count=0;
+        int j=0;
         while(count<argc){
             if(argv[count][0]=='-'){
                 int len=strlen(argv[count]);
@@ -309,25 +308,34 @@ int main(int argc,char** argv)
                         return -1;
                     }
                 }
-                j++;
+                count++;
             }else{
-                if(argv[count][0]=='.'&&(strlen(argv[count])==1||strlen(argv[count])==2)){
-                    realpath(argv[count], pathname);
+                count++;
+                continue ;
+            }     
+        }
+        while(j<argc){
+            if(argv[j][0]=='-'){
+                j++;
+                continue ;
+            }else{
+                if(argv[j][0]=='.'){
+                    realpath(argv[j], pathname);
                 }else{
-                    strcpy(pathname,argv[count]);
+                    strcpy(pathname,argv[j]);
                 }
                 if(chdir(pathname)==0){
                     printf("%s:\n",pathname);
                     list(pathname);
                 }else{
-                    count++;
+                    j++;
                     continue;
                 }
+                j++;
             }
-            count++;
-        } 
+        }
     }
-    if(argc==1||argc==j){
+    if(argc==count){
         getcwd(pathname,sizeof(pathname));
         chdir(pathname);
         list(pathname);
