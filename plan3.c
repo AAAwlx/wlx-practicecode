@@ -192,6 +192,7 @@ void LS_r(struct file *FILE,int len)
 		FILE[j] = n;
     }
 }
+
 void list(char *pathname)
 {
 	DIR *dir=NULL;
@@ -264,6 +265,7 @@ void list(char *pathname)
                 list(name); 
             }
         }
+        free(f);
     }
 	closedir(dir);
 }
@@ -334,11 +336,17 @@ int main(int argc,char** argv)
                 j++;
             }
         }
-    }
-    if(argc==count){
-        getcwd(pathname,sizeof(pathname));
-        chdir(pathname);
-        list(pathname);
+        if(count==0){
+            getcwd(pathname,sizeof(pathname));
+            chdir(pathname);
+            list(pathname);
+        }
+    }else{
+       
+            getcwd(pathname,sizeof(pathname));
+            chdir(pathname);
+            list(pathname);
+        
     }
     return 0;    
 }
