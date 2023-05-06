@@ -248,7 +248,7 @@ int threadPoolAliveNum( Pthreadpool * pool)
     pthread_mutex_lock(&pool->mutexpool);
     int aliveNum = pool->liveNum;
     pthread_mutex_unlock(&pool->mutexpool);
-    return liveNum;
+    return aliveNum;
 }
 int main()
 {
