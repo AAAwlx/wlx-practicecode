@@ -128,7 +128,7 @@ void strbuf_insert(struct strbuf *sb, size_t pos, const void *data, size_t len)
     for(i=sb->len;i>=pos;i--){
         sb->buf[i+len]=sb->buf[i];
     }
-    for(i=pos,j=0;i<pos+len;i++,j++){
+    for(i=pos,j=0;i<pos+len;i++,j++){                                                                                                                                                                                                           
         sb->buf[i]=((char *)data)[j];
     }
     sb->len+=len;

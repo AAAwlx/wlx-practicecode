@@ -87,14 +87,14 @@ void fanzhuan1()//循环反转链表
 }
 void fanzhuan2(struct node *p)//递归反转一个链表
 {
-    if(p->==NULL){//当最后一个节点的时候使头指针指向该节点
+    if(p->next==NULL){//当最后一个节点的时候使头指针指向该节点
         head=p;
         return;
     }
     fanzhuan2(p->next);//通过递归进入到最后一个节点
     struct node *q=p->next;//将下一个节点的位置交给q暂时储存
     q->next=p;//让下一个节点的next指向当前节点
-    p-next=NULL;//该节点后的位置指向空,当此次调用结束后，p被释放，不会对链表中的指向产生影响
+    p->next=NULL;//该节点后的位置指向空,当此次调用结束后，p被释放，不会对链表中的指向产生影响
 }
 void Printf()
 {//打印链表
