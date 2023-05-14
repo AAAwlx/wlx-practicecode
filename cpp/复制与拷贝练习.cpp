@@ -32,6 +32,7 @@ std::ostream& operator<<(std::ostream &stream,const Example&string)
     stream<< string.buffer;
     return stream;
 }
+//void Printf(Example string) 若不使用应用的方式传递参数，会以为要另外创造一个实例
 void Printf(Example &string)
 {
     std::cout<< string <<std::endl;

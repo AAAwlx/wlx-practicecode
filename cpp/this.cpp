@@ -1,4 +1,5 @@
 #include <iostream>
+#include<memory>
 using namespace std;
 
 void sayGoodbye() {
@@ -8,7 +9,8 @@ void sayGoodbye() {
 class ExampleClass {
 public:
     ExampleClass() {
-        name = "Example";
+        name = "hhh";
+        cout<< "creat Example"<<endl;
     }
 
     void greet() {
@@ -20,14 +22,17 @@ public:
         this->greet();
         sayGoodbye();
     }
-
+    ~ExampleClass() {
+        cout<< "destory Example"<<endl;
+    }
 private:
     string name;
 };
 
 int main() {
-    ExampleClass example;
-    example.sayHelloAndGoodbye();
-
+    {
+        std::unique_ptr<ExampleClass> example=std::make_unique<ExampleClass>();
+        example->sayHelloAndGoodbye();
+    }
     return 0;
 }

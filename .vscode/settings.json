@@ -1,0 +1,28 @@
+{
+    "git.ignoreLimitWarning": true,
+    "python.testing.pytestArgs": [
+        "python"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "editor.fontSize": 12,
+    "editor.tabSize": 4,
+    "editor.mouseWheelZoom": true,
+    "files.associations": {
+        "string_view": "cpp",
+        "streambuf": "cpp",
+        "array": "cpp",
+        "*.tcc": "cpp",
+        "string": "cpp",
+        "unordered_map": "cpp",
+        "memory": "cpp",
+        "istream": "cpp",
+        "ostream": "cpp",
+        "sstream": "cpp",
+        "functional": "cpp",
+        "tuple": "cpp",
+        "deque": "cpp",
+        "vector": "cpp",
+        "initializer_list": "cpp"
+    }
+}
