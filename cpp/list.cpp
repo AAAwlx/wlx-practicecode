@@ -193,16 +193,25 @@ namespace YOUR_NAME
             erase(begin());
         }
         //默认新数据添加到pos迭代器的后面,根据back的方向决定插入在pos的前面还是后面
-        void  insert(Iterator pos, const T &data, bool back = true)
+        Iterator  insert(Iterator pos, const T &data, bool back = true)
         {
             node *newnode=new node(data);//创建新节点
             node *cur=pos.node_;
             node *prev=cur->prev_;
-            prev->next=newnode;
-            newnode->prev_=prev;
-            cur->prev_=newnode;
-            newnode->next_=cur;
-            //return iterator(newnode);
+            node *next=cur->next_;
+            if(back){
+                next->prev_=newnode;
+                newnode->next=next;
+                newnode->prev_=cur;
+                cur->next_=newnode; 
+            }else{
+                prev->next=newnode;
+                newnode->prev_=prev;
+                cur->prev_=newnode;
+                newnode->next_=cur;
+            }
+            
+            return iterator(newnode);
         }
         //删除pos位置的元素
         void erase(Iterator pos)
@@ -247,8 +256,6 @@ namespace YOUR_NAME
         {
             return head_->prev_
         }
-
-   
         //可以添加你需要的成员函数
     };
 };
