@@ -1,6 +1,6 @@
 #include <iostream>
 //使用你的名字替换YOUR_NAME
-//#include<gtest/gtest.h>
+#include<gtest/gtest.h>
 namespace YOUR_NAME
 {
     template <class T>
@@ -32,13 +32,15 @@ namespace YOUR_NAME
         //++it
         iterator_ &operator++()
         {
-            return data_=data_->next_;
+            data_=data_->next_;
+            return *this;
         }
         //迭代到前一个节点
         //--it
         iterator_ &operator--()
-        {
-            return data_=data_->prev_;
+        { 
+            data_=data_->prev_;
+            return *this;
         }
         // it++
         iterator operator++(int)
@@ -89,7 +91,7 @@ namespace YOUR_NAME
     private:
         //可以添加你需要的成员变量
         node_ *head_; //头节点,哨兵（不存储有效数据）
-        mutable size_t size;
+        size_t size;
     public:
         //构造函数
         list()//空构造
@@ -98,7 +100,7 @@ namespace YOUR_NAME
             head_->next_=head_;
             head_->prev_=head_;
         }
-        list(int n;const T& value=T())
+        list(int n,const T& value=T())
         {
             head_=new node();
             head_->next_=head_;

@@ -15,11 +15,6 @@ public:
     XXX(const std::string &name,int i)
         :m_name(name), a(i){}//初始化链表
     std::string Getname(){return m_name;}
-    int li(/*int i*/) const
-    {
-        a++;
-        return a;
-    }
 };
 int main()
 {
@@ -29,5 +24,4 @@ int main()
     std::cout<< x->Getname()<<std::endl;
     HHH *t=x;
     std::cout<< t->Getname()<<std::endl;
-    printf("%d",x->li());
 }
