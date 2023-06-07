@@ -93,20 +93,24 @@ void player(struct node *head,int n)
 {
     struct node *p,*r;
     p=head->next;
-    while (head->next==head)
+    printf("1");
+    while (head->data>1)
     {
-        int count=0;
-        while (count<n)
-        {
-            r=p;
+        for(int i=1;i<n;i++){
+            r=p; 
             p=p->next;
-            count++;
+            if(p==head){
+                i--;
+                continue;
+            }
         }
         r->next=p->next;
-        printf("出局数字为%d",p->data);
+        printf("出局数字为%d\n",p->data);
+        free(p);
+        head->data--;
         p=r->next;
     }
-    
+    printf("胜出数字为%d",head->next->data);
 }
 int main()
 {
@@ -117,8 +121,9 @@ int main()
         scanf("%d",&a);
         Tailinsert(head,a);
     }
-    Inster(head,99,1);
+    /*Inster(head,99,1);
     delete(head,4);
     clear(head);
-    Printf(head);
+    Printf(head);*/
+    player(head,3);
 }
