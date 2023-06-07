@@ -23,9 +23,9 @@ int main(char argc,char **argv)
     }
     bzero(&serveraddr,sizeof(serveraddr));//初始化结构体
     serveraddr.sin_family=AF_INET;//指定协议族
-    serveraddr.sin_port=htons(SERVEPORT);
-    inet_pton(AF_INET,SERVERIP,&serveraddr.sin_addr);
-    int ret=bind(serverfd,(struct sockaddr *)&serveraddr,sizeof(serveraddr));
+    serveraddr.sin_port=htons(SERVEPORT);//指定端口号
+    inet_pton(AF_INET,SERVERIP,&serveraddr.sin_addr);//转换字节序
+    int ret=bind(serverfd,(struct sockaddr *)&serveraddr,sizeof(serveraddr));//绑定到指定地址与端口号
     if(ret!=0){
         close(serverfd);
         perror("bind()");

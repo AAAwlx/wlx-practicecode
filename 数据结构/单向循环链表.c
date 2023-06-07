@@ -89,6 +89,25 @@ void Printf(struct node *head)
     }
     printf("NULL\n");
 }
+void player(struct node *head,int n)
+{
+    struct node *p,*r;
+    p=head->next;
+    while (head->next==head)
+    {
+        int count=0;
+        while (count<n)
+        {
+            r=p;
+            p=p->next;
+            count++;
+        }
+        r->next=p->next;
+        printf("出局数字为%d",p->data);
+        p=r->next;
+    }
+    
+}
 int main()
 {
     struct node *head=Initlist();
