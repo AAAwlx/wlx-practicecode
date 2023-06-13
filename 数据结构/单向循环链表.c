@@ -121,9 +121,5 @@ int main()
         scanf("%d",&a);
         Tailinsert(head,a);
     }
-    /*Inster(head,99,1);
-    delete(head,4);
-    clear(head);
-    Printf(head);*/
     player(head,3);
 }
