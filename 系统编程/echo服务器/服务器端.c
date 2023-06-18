@@ -7,7 +7,7 @@
 #include <arpa/inet.h>
 #include<unistd.h>
 #define SERVERIP "127.0.0.1"
-#define SERVEPORT 12345
+#define SERVEPORT 12346
 #define MAXBUFFER 256
 int main(char argc,char **argv)
 {

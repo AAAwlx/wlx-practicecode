@@ -9,7 +9,6 @@
 #include <errno.h>
 #include <signal.h>
 #define SERVERIP "127.0.0.1"
-#define SERVEPORT 12345
 #define MAXBUFFER 256
 int main()
 {
@@ -26,7 +25,7 @@ int main()
     }
     bzero(&severaddr,sizeof(severaddr));
     severaddr.sin_family=PF_INET;
-    severaddr.sin_port=htons(SERVEPORT);
+    severaddr.sin_port=htons(8000);
     inet_pton(AF_INET,SERVERIP,&severaddr.sin_addr);
     int ret=bind(severfd,(struct sockaddr*)&severaddr,sizeof(severaddr));
     if (ret!=0)
