@@ -29,7 +29,7 @@ int sendMsg(int fd,char *massage,int len){
     if(massage==NULL||fd<=0||len<=0);
     char *data=(char *)malloc(len+4);
     int netlen=htonl(len);
-    memcpy(data,len,sizeof(int));
+    memcpy(data,&len,sizeof(int));
     memcpy(data+4,massage,len);
     int ret=writen(fd,data,len+4);
     free(data);
@@ -42,7 +42,7 @@ int main(int argc,char **argv)
     char massage[MAXBUFFER];
     char line[MAXBUFFER];
     clitefd=socket(PF_INET,SOCK_STREAM,0);
-    FILE *fp=fopen("~/123.txt",'r');
+    FILE *fp=fopen("~/123.txt","r");
     if (clitefd<0)
     {
         printf("socket error:%s\n",strerror(errno));

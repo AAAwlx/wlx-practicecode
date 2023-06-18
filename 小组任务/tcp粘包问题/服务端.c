@@ -5,6 +5,7 @@
 #include<unistd.h>
 #include<netinet/in.h>
 #include<arpa/inet.h>
+#include<string.h>
 #define SERVERIP "127.0.0.1"
 #define SERVEPORT 12345
 #define MAXBUFFER 256
@@ -53,11 +54,11 @@ int main()
     char massage[MAXBUFFER]={0};
     char ip[40]={0};
     servefd=socket(PF_INET,SOCK_STREAM,0);
-    if(servefd=0){
+    if(servefd==0){
         sys_err("socket()");
     }
-    bzore(&serveaddr,sizeof(serveaddr));
-    serveaddr.sin_family=SERVERIP;
+    bzero(&serveaddr,sizeof(serveaddr));
+    serveaddr.sin_family=AF_INET;
     serveaddr.sin_port=SERVEPORT;
     inet_pton(AF_INET,SERVERIP,&serveaddr.sin_addr);
     int ret=bind(servefd,(struct sockaddr *)&serveaddr,sizeof(serveaddr));
@@ -68,15 +69,15 @@ int main()
     if(ret!=0){
         sys_err("listen()");
     }
-    int cliensize=sizeof(clienaddr);
+    socklen_t cliensize=sizeof(clienaddr);
     while (1)
     {
-        ret=accept(servefd,&clienaddr,&cliensize);
+        ret=accept(servefd,(struct sockaddr *)&clienaddr,&cliensize);
         printf("%s 连接到服务器 \n",inet_ntop(AF_INET,&clienaddr.sin_addr,ip,sizeof(ip)));
         if(ret<0){
             sys_err("accept()");
         }
-        while (readMsg(servefd,&massage)==1)
+        while (readMsg(servefd,(char **)&massage)==1)
         {
             printf("收到了消息：%s",massage);
         }
