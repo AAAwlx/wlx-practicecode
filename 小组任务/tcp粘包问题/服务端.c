@@ -14,30 +14,37 @@ void sys_err(char *p)
     perror(p);
     exit(1);
 }
-int writen(int fd,char *msg,int size){
-    const char *buf=msg;
+int readn(int fd,char *buf,int size)
+{
     int count=size;
+    char *pt=buf;
     while (count>0)
     {
-        int len=send(fd,buf,count,0);
-        if(len==0){
-            continue;
-        }else if(len==-1){
-            close(fd);
+        int len=recv(fd, pt, count, 0);
+        if(len==-1){
             return -1;
+        }else if(len==0){
+            continue;
         }
         count-=len;
-        buf+=len;
+        pt+=len;
     }
+    return size;
 }
-int sendMsg(int fd,char *massage,int len){
-    if(massage==NULL||fd<=0||len<=0);
-    char *data=(char *)malloc(len+4);
-    int netlen=htonl(len);
-    memcpy(data,&len,sizeof(int));
-    memcpy(data+4,massage,len);
-    int ret=writen(fd,data,len+4);
-    free(data);
+int readMsg(int serverfd,char **massage)
+{
+    int len=0;
+    readn(serverfd,(char*)&len,4);
+    len=ntohl(len);
+    char *buffer=(char *)malloc(len+1);
+    int ret=readn(serverfd,buffer,len);
+    if(ret!=len){
+        close(serverfd);
+        free(buffer);
+        return -1;
+    }
+    buffer[len]='\0';
+    *massage=buffer;
     return ret;
 }
 
