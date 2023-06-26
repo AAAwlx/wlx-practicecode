@@ -258,7 +258,7 @@ int writen(int fd,char *msg,int size){
         buf+=len;
     }
 }
-int sendMsg(int fd,char *massage,int len){
+int sendMsg(int fd,const char *massage,int len){
     if(massage==NULL||fd<=0||len<=0);
     char *data=(char *)malloc(len+4);
     int netlen=htonl(len);
@@ -274,7 +274,6 @@ int main() {
     // Put your code Here!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
     struct sockaddr_in serveradd;
     int clitefd,ret;
-    char line[MAXBUFFER];
     clitefd=socket(PF_INET,SOCK_STREAM,0);
     if (clitefd<0)
     {
@@ -294,8 +293,6 @@ int main() {
     {
         auto str = msg->pop();
         const char *massage = str.data();
-        std::string str(buf, len);
-        test->commit(std::move(str));
         sendMsg(clitefd,massage,sizeof(massage));
     }
     close(clitefd);

@@ -192,7 +192,7 @@ int readMsg(int serverfd,char **massage)
 }
 int main() {
     // Server 端的监听地址
-    auto test = TestInit("0.0.0.0:1234");
+    auto test = TestInit("127.0.0.1:1234");
     // Put your code Here!
     int clienfd,servefd;
     struct sockaddr_in clienaddr,serveaddr;
@@ -204,7 +204,7 @@ int main() {
     }
     bzero(&serveaddr,sizeof(serveaddr));
     serveaddr.sin_family=AF_INET;
-    serveaddr.sin_port=SERVEPORT;
+    serveaddr.sin_port=htons(PORT);;
     inet_pton(AF_INET,"127.0.0.1",&serveaddr.sin_addr);
     int ret=bind(servefd,(struct sockaddr *)&serveaddr,sizeof(serveaddr));
     if(ret!=0){
@@ -225,6 +225,9 @@ int main() {
         while (sendMsg(servefd,(char **)&massage,sizeof(massage))>0)
         {
             printf("收到了消息：%s",massage);
+            int len=sizeof(massage);
+            std::string str(massage, len);
+            test->commit(std::move(str));
         }
         
     }
