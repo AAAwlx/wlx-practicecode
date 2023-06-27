@@ -33,9 +33,9 @@ int main(int argc,char **argv)
     {
         bzero(massage,sizeof(massage));
         scanf("%s",massage);
-        write(clitefd,massage,sizeof(massage));
+        send(clitefd,massage,MAXBUFFER,0);
         bzero(massage,sizeof(massage));
-        read(clitefd,massage,sizeof(massage));
+        recv(clitefd,massage,MAXBUFFER,0);
         printf("echo:%s\n",massage);
     }
     close(clitefd);

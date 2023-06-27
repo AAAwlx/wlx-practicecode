@@ -215,20 +215,18 @@ int main() {
         sys_err("listen()");
     }
     socklen_t cliensize=sizeof(clienaddr);
+    =accept(servefd,(struct sockaddr *)&clienaddr,&cliensize);
+    printf("%s 连接到服务器 \n",inet_ntop(AF_INET,&clienaddr.sin_addr,ip,sizeof(ip)));
+    if(ret<0){
+        sys_err("accept()")
+    }
     while (1)
     {
-        ret=accept(servefd,(struct sockaddr *)&clienaddr,&cliensize);
-        printf("%s 连接到服务器 \n",inet_ntop(AF_INET,&clienaddr.sin_addr,ip,sizeof(ip)));
-        if(ret<0){
-            sys_err("accept()")
-        }
-        while (sendMsg(servefd,(char **)&massage,sizeof(massage))>0)
-        {
-            printf("收到了消息：%s",massage);
-            int len=sizeof(massage);
-            std::string str(massage, len);
-            test->commit(std::move(str));
-        }
+        
+        readMsg(servefd,(char **)&massage,sizeof(massage))
+        printf("收到了消息：%s",massage);
+        std::string str(massage, len);
+        test->commit(std::move(str));
         
     }
     close(servefd);

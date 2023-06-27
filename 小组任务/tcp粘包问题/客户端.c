@@ -15,7 +15,7 @@ int writen(int fd,char *msg,int size){
     int count=size;
     while (count>0)
     {
-        int len=send(fd,buf,count,0);
+        int len = send(fd, buf, count, 0);
         if(len==0){
             continue;
         }else if(len==-1){

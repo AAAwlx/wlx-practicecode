@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
+
 typedef struct  TreeNode//存放每个树节点的信息
 {
     int weight;
@@ -12,6 +13,7 @@ typedef struct HFtree
     int length;
     TreeNode *data;
 }HFtree;
+
 HFtree* init(int *weight,int length)
 {
     HFtree *T=(HFtree*)malloc(sizeof(HFtree));
@@ -77,6 +79,7 @@ HFtree * creatTree(HFtree* T)
         T->length++;
     }
 }
+
 int main()
 {
     int n;
