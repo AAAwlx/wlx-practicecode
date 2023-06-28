@@ -7,7 +7,7 @@ typedef struct user// 账号和密码
     char password[30]; // 密码
     float money;       // 余额
     int vip;           // 会员状态
-    struct person *next;
+    struct user *next;
 }user;
 
 typedef struct things // 商品信息
@@ -52,8 +52,8 @@ void show(node *init); // 展示商品
 
 int main()
 {
-    //nodemake();
-    //usermake();
+    nodemake();
+    usermake();
     menu1();
     opt1();
     freeall();
