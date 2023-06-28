@@ -6,7 +6,6 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include<unistd.h>
-#define SERVERIP "127.0.0.1"
 #define SERVEPORT 12345
 #define MAXBUFFER 256
 int main(int argc,char **argv)
@@ -22,8 +21,8 @@ int main(int argc,char **argv)
     }
     bzero(&serveradd,sizeof(serveradd));
     serveradd.sin_family=AF_INET;
-    serveradd.sin_port=htons(SERVEPORT);
-    inet_pton(AF_INET,SERVERIP,&serveradd.sin_addr);
+    serveradd.sin_port=htons(12345);
+    serveradd.sin_addr.s_addr=htonl(INADDR_ANY);
     ret=connect(clitefd,( struct sockaddr *)&serveradd,sizeof(serveradd));
     if(ret!=0){
         perror("connect");
