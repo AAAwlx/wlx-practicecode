@@ -25,7 +25,6 @@ int Exit()
 {
     int i = a[l];
     l++;
-    // printf("%d",l);
     return i;
 }
 int top()

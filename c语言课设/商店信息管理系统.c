@@ -41,7 +41,7 @@ void opt3(user *crt);  // 商品选项(老板)
 void menu4();          // 商品界面(用户)
 void opt4(user *crt);  // 商品选项(用户)
 void buy(user *crt);   // 购买商品
-node *add(node *init); // 添加商品
+node *add(node *init); // 修改商品信息
 void changenode();     // 修改商品信息
 void del();            // 删除商品
 void find();           // 查询商品
@@ -424,7 +424,7 @@ void changeps()
 void save()
 {
     FILE *fp;
-    fp = fopen("/home/wlx/node.txt", "w");
+    fp = fopen("node.txt", "w");
     if (fp == NULL)
     {
         printf("打开文件失败\n");

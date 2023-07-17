@@ -242,6 +242,7 @@ class mess {
     int partid;
     int len;
 };
+
 int writen(int fd,char *msg,int size){
     const char *buf=msg;
     int count=size;
@@ -257,14 +258,15 @@ int writen(int fd,char *msg,int size){
         count-=len;
         buf+=len;
     }
+    return size - count;
 }
-int sendMsg(int fd,const char *massage,int len){
-    if(massage==NULL||fd<=0||len<=0);
-    char *data=(char *)malloc(len+4);
-    int netlen=htonl(len);
-    memcpy(data,&len,sizeof(int));
-    memcpy(data+4,massage,len);
-    int ret=writen(fd,data,len+4);
+int sendMsg(int fd,std::string massage){
+
+    char *data = (char *) malloc(massage.size() + 4);
+    int netlen=htonl(massage.size());
+    memcpy(data,&netlen,4);
+    memcpy(data+4,massage.data(),massage.size());
+    int ret=writen(fd,data,massage.size()+4);
     free(data);
     return ret;
 }
@@ -292,8 +294,8 @@ int main() {
     while (1)
     {
         auto str = msg->pop();
-        const char *massage = str.data();
-        sendMsg(clitefd,massage,sizeof(massage));
+        std::cout << str << std::endl;
+        sendMsg(clitefd, str);
     }
     close(clitefd);
     return(EXIT_SUCCESS);

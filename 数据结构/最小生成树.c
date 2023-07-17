@@ -38,8 +38,13 @@ void prim(Graph *G,int index){
     Edge *e=initedge(G,index);
     for(int i=0;i<G->vexnum-1;i++){
         min=getminEdge(e,G);
-        printf();
-        
+        printf("v%c->v%c,weight=%d\n",e[min].vex,G->vexs[min],e[min].weight);
+        e[min].weight=0;
+        for(int j=0;j<G->vexnum;j++){
+            if(G->arcs[min][j]<e[j].weight)
+            e[j].weight=G->arcs[min][j];
+            e[j].vex=G->vexs[min];
+        }
     }
 }
 Graph *init(int vexnum)
@@ -71,48 +76,19 @@ void creat(Graph *G, char *vexs, int *arcs)
     }
     G->arcnum /= 2;
 }
-void DFS(Graph *G, int *visit, int index)
-{
-    printf("%c", G->vexs[index]);
-    visit[index] = 1;
-    for (int i = 0; i < G->vexnum; i++)
-    {
-        if (G->arcs[index][i] == 1 && visit[i] == 0&&G->arcs[index][i]!=MAX)
-        {
-            DFS(G, visit, i);
-        }
-    }
-}
-void BFS(Graph *G, int *visit, int index)
-{
-    printf("%c", G->vexs[index]);
-    visit[index] = 1;
-    Enter(index);
-    while (Empty())
-    {
-        int i = Exit();
-        for (int j = 0; j < G->vexnum; j++)
-        {
-            if (G->arcs[i][j] == 1 && !visit[j])
-            {
-                printf("%c", G->vexs[j]);
-                visit[j] = 1;
-                Enter(j);
-            }
-        }
-    }
-}
 int main()
 {
-    Graph *G = init(5);
-    int visit[5] = {0};
-    int arcs[5][5] = {
-        0, 1, 1, 1, 0,
-        1, 0, 1, 1, 1,
-        1, 1, 0, 0, 0,
-        1, 1, 0, 0, 1,
-        0, 1, 0, 1, 0};
-    int c[5] = {0};
-    creat(G, "ABCDE", (int *)arcs);
-    DFS(G,visit,0);
+    Graph *G = init(6);
+    int visit[6] = {0};
+    int arcs[6][6] = {
+        0,6,1,5,MAX,MAX,
+        6,0,5,MAX,3,MAX,
+        1,5,0,5,6,4,
+        5,MAX,5,0,MAX,2,
+        MAX,3,6,MAX,0,6,
+        MAX,MAX,4,2,6,0
+        };
+    int c[6] = {0};
+    creat(G, "123456", (int *)arcs);
+    prim(G,0);
 }

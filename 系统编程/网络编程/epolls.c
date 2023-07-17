@@ -86,7 +86,7 @@ int main()
                     close(curfd);
                 }else if (len>0)
                 {
-                    printf("%s",buffer);
+                    printf("客户端说%s\n",buffer);
                     send(curfd,buffer,len,0);
                 }else
                 {
