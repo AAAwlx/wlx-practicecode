@@ -15,5 +15,10 @@ int main(){
       string s;
       FastWriter w;
       s=w.write(obj);
-      cout<<s.c_str()<<endl;
+      cout<<s.c_str()<< endl;
+      Value b;
+      b["buffer"]=obj;
+      b["test"]="hhh";
+      s=w.write(b);
+      cout<<s<<endl;
 }

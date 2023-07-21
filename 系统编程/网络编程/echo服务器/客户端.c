@@ -10,7 +10,7 @@
 #define MAXBUFFER 256
 int main(int argc,char **argv)
 {
-    struct sockaddr_in serveradd;
+    struct sockaddr_in serveradd; 
     int clitefd,ret;
     char massage[MAXBUFFER];
     clitefd=socket(PF_INET,SOCK_STREAM,0);

@@ -58,6 +58,7 @@ int main()
     }
     struct epoll_event evs[1024];
     int size = sizeof(evs) / sizeof(struct epoll_event);
+    int count=0;
     while (1)
     {
         int count = epoll_wait(efd, evs, size, -1);
