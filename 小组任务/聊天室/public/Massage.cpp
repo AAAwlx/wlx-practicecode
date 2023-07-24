@@ -23,10 +23,16 @@ string Massage::Serialization()
     string s=w.write(info);
     return s;
 }
-string Massage::Deserialization(string s)
+string Massage::Deserialization(string s)//消息输出内容中的值
 {
     Reader r;
     r.parse(Package,info);
-    Value c=info["content"].asString();
+    Value c=info["content"];
     return c[s].asString();
+}
+string Massage::takeMassage (string s)//输出选项内容收件人发件人中任意一个
+{
+    Reader r;
+    r.parse(Package,info);
+    return info[s].asString();
 }

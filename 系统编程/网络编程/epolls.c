@@ -51,11 +51,6 @@ int main()
     {
         sys_error("epoll_clt");
     }
-    if (ret == -1)
-    {
-        perror("epoll_ctl");
-        exit(0);
-    }
     struct epoll_event evs[1024];
     int size = sizeof(evs) / sizeof(struct epoll_event);
     int count=0;

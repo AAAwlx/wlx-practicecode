@@ -190,7 +190,7 @@ Pthreadpool * create_pool(int num,int max,int min)
     pool->queueCapacity=num;
     pool->queueFornt=0;
     pool->queueRear=0;
-    pool->queuesize=0;
+    pool->taskQ=0;
     pthread_create(&pool->tidmanager,NULL,manarge,pool);
     if (pthread_mutex_init(&pool->mutexpool, NULL) != 0 ||
             pthread_mutex_init(&pool->mutexbusy, NULL) != 0 ||

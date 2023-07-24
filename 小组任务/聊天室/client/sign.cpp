@@ -1,4 +1,4 @@
-#include "public.hpp"
+#include "../public/public.hpp"
 #include "clit.hpp"
 int Clenit::login(int cfd)
 {
@@ -88,7 +88,7 @@ int Clenit::login(int cfd)
                                     break;
                                 }else{
                                     cout<<"验证未通过,即将强制退出"<<endl;
-                                    Err::Colse(cfd);
+                                    Err::Close(cfd);
                                     exit(0);
                                 }
                             }
@@ -98,7 +98,7 @@ int Clenit::login(int cfd)
                     else if (in == EXIT)
                     {
                         cout << "再见,欢迎下次光临(๑•́ ₃ •̀๑)ｴｰ" << endl;
-                        Err::Colse(cfd);
+                        Err::Close(cfd);
                         exit(0);
                     }else{
                         cout << "您输入的选项不存在,请重新输入" << endl;
@@ -172,7 +172,7 @@ int Clenit::sign_up(int cfd)
         if ((read(cfd, r, sizeof(r))))
         {
             Massage m2(r);
-            ID=m2.Deserialization("id");
+            ID=m2.Deserialization("ID");
             cout<<"您的用户id是："<<ID<<endl;
             break;
         }
@@ -214,7 +214,7 @@ void Clenit::sign_menu(int cfd)
         else if (in == EXIT)
         {
             cout << "再见,欢迎下次光临(๑•́ ₃ •̀๑)ｴｰ" << endl;
-            Err::Colse(cfd);
+            Err::Close(cfd);
             exit(0);
         }
         else

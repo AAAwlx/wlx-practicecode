@@ -95,7 +95,7 @@ int Err::Epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)
         exit(0);
     }
 }
-void Err:: Colse(int fd)
+void Err:: Close(int fd)
 {
     if(close(fd)){
         perror("close()");

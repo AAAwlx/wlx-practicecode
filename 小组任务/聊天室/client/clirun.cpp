@@ -1,4 +1,4 @@
-#include"public.hpp"
+#include"../public/public.hpp"
 #include"clit.hpp"
 void Clenit::clirun()
 {

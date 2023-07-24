@@ -1,7 +1,7 @@
 /*要用到的头文件以及要用到的系统调用函数*/
-#ifndef _NET_WRAP_H_
-#define _NET_WRAP_H_
-#include<iostream>
+#ifndef _PUBLIC_H_
+#define _PUBLIC_H_
+#include <iostream>
 #include <fstream>
 #include <jsoncpp/json/json.h>
 #include <sys/socket.h>
@@ -19,13 +19,23 @@
 #include <sys/sendfile.h>
 #include <sys/stat.h>
 #include <vector>
-#include<gtest/gtest.h>
+#include <queue>
+#include <gtest/gtest.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+#include <mutex>
+#include <functional>
+#include <future>
+#include <utility>
+#include<list>
+#include<hiredis/hiredis.h>
 #define Epoll_size 500
 #define SERVERPORT 8888
 #define BUFFERSIZE 500//单个消息不能超过五百字
 #define Blank_option 100//当消息为普通消息而非请求
 using namespace std;
 using namespace Json;
+//系统调用与错误处理函数
 class Err
 {  
 public:
@@ -40,8 +50,9 @@ public:
     static int Epoll_create(int size);
     static int Epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);
     static int Epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
-    static void Colse(int fd);
+    static void Close(int fd);
 };
+//消息类
 class Massage
 {
 private:
@@ -60,5 +71,22 @@ public:
     //反序列化
     string Deserialization(string s);
     
+    string takeMassage (string s);
 };
+//用户类
+class User
+{
+private:
+    static int User_count;
+    string ID,Name,Pass,Question,Answer;
+    vector<string> Friend;
+    vector<string> Group;
+public:
+    User(string name,string pass,string question,string answer)
+    :Name(name),Pass(pass),Question(question),Answer(answer){};
+    string distribute_id();//分配用户id
+    bool save_user(redisContext* Userm);//保存用户信息
+    ~User();
+};
+
 #endif
