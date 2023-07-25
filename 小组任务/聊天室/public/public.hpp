@@ -28,11 +28,12 @@
 #include <future>
 #include <utility>
 #include<list>
+#include <map>
 #include<hiredis/hiredis.h>
 #define Epoll_size 500
 #define SERVERPORT 8888
 #define BUFFERSIZE 500//单个消息不能超过五百字
-#define Blank_option 100//当消息为普通消息而非请求
+#define Blank_option "100"//当消息为普通消息而非请求
 using namespace std;
 using namespace Json;
 //系统调用与错误处理函数
@@ -56,13 +57,18 @@ public:
 class Massage
 {
 private:
-    string Option,To,From;//消息选项
+    string Option,To,From,Time;//消息选项
     Value Content;//消息被发送时打包好的内容
     string Package;//消息被接受时收到的字符串
     Value info;
 public:
     Massage(string option,Value content,string to,string from)//客户端包的初始化
-    :Option(option),Content(content),To(to),From(from){};
+    :Option(option),Content(content),To(to),From(from)
+    {
+        auto now = std::chrono::system_clock::now();  // 将时间点转换为时间戳（以秒为单位）
+        time_t timestamp = std::chrono::system_clock::to_time_t(now);
+        Time = std::ctime(&timestamp);
+    };
     Massage(string package)
     :Package(package){};//服务器端包的初始化
     ~Massage();
@@ -79,13 +85,18 @@ class User
 private:
     static int User_count;
     string ID,Name,Pass,Question,Answer;
-    vector<string> Friend;
+    vector<std::pair<const std::string, int>> Friend;
     vector<string> Group;
+    std::mutex user_mtx;//对数据库进行写入或删除操作时的 
 public:
     User(string name,string pass,string question,string answer)
     :Name(name),Pass(pass),Question(question),Answer(answer){};
+    User(string ID);
     string distribute_id();//分配用户id
     bool save_user(redisContext* Userm);//保存用户信息
+    string Inquire(redisContext* Userm,string s);//查询用户信息
+    void add_friend();
+    void Revise();
     ~User();
 };
 

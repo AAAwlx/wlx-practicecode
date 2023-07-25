@@ -1,4 +1,4 @@
-#include<iostream>
+/*#include<iostream>
 #include<list>
 class A
 {
@@ -40,4 +40,30 @@ int main()
     hhh();
 }
 
-int A::count = 0;
+int A::count = 0;*/
+#include <iostream>
+#include <list>
+#include <string>
+
+int main() {
+    std::list<std::pair<std::string, int>> myList;
+
+    // 插入键值对并将值初始化为0
+    myList.emplace_back("apple", 0);
+    myList.emplace_back("banana", 0);
+    myList.emplace_back("orange", 0);
+
+    // 查找键对应的值并更新值
+    for (auto& kvp : myList) {
+        if (kvp.first == "apple") {
+            kvp.second = 10; // 更新值为10
+        }
+    }
+
+    // 输出所有键值对
+    for (const auto& kvp : myList) {
+        std::cout << kvp.first << ": " << kvp.second << std::endl;
+    }
+
+    return 0;
+}

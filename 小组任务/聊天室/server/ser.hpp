@@ -37,5 +37,7 @@ public:
     bool sign_menu(int cfd);
     void sign_up(int cfd,Massage m);
     void login(int cfd,Massage m);
+    void resetpassword(int cfd,Massage m);//找回密码
+    void main_menu(int cfd);
 };
 #endif

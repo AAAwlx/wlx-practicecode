@@ -13,12 +13,14 @@ public:
     void M_send(int cfd);
     Value M_rcev(int cfd);
 };*/
+
 string Massage::Serialization()
 {
     info["option"]=Option;//申请选项，当为普通聊天消息时选项为Blackoption
     info["content"]=Content;//消息内容
     info["to"]=To;//发件人
     info["form"]=From;//收件人
+    info["Time"]=Time;
     FastWriter w;
     string s=w.write(info);
     return s;

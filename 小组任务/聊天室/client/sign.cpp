@@ -35,7 +35,7 @@ int Clenit::login(int cfd)
         }
     }
     info["ID"] = Id;
-    info["Pass1"] = Pass1;
+    info["Pass"] = Pass1;
     Massage m1(LOGIN, info, "0", "0");
     string s = m1.Serialization();
     Err::Write(cfd, s.c_str(), s.length());
