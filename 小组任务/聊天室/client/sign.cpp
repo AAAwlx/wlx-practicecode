@@ -46,7 +46,7 @@ int Clenit::login(int cfd)
             if (strcmp(r, "succeed"))//登陆成功
             {
                 cout << "欢迎使用╰(✿´⌣`✿)╯♡" << endl;
-                main_mnue();
+                main_mnue(cfd,Id);
                 break;
             }
             else if (strcmp(r, "fail"))//密码错误

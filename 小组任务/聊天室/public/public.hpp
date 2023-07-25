@@ -85,18 +85,22 @@ class User
 private:
     static int User_count;
     string ID,Name,Pass,Question,Answer;
-    vector<std::pair<const std::string, int>> Friend;
-    vector<string> Group;
+    Value friend_List;
+    Value group_List;
     std::mutex user_mtx;//对数据库进行写入或删除操作时的 
+    redisContext* Userm;
 public:
-    User(string name,string pass,string question,string answer)
-    :Name(name),Pass(pass),Question(question),Answer(answer){};
-    User(string ID);
+    User(string name,string pass,string question,string answer,redisContext* userm)
+    :Name(name),Pass(pass),Question(question),Answer(answer),Userm(userm){};
+    User(string id,redisContext* userm)
+    :ID(id),Userm(userm){};
     string distribute_id();//分配用户id
-    bool save_user(redisContext* Userm);//保存用户信息
-    string Inquire(redisContext* Userm,string s);//查询用户信息
-    void add_friend();
-    void Revise();
+    bool save_user();//保存用户信息
+    string Inquire(string s);//查询用户信
+    void add_friend(string friend_id);//添加好友
+    void delete_friend(string friend_id);//删除好友
+    void shield_friend(string friend_id);//屏蔽好友
+    void Revise();//修改用户信息
     ~User();
 };
 
