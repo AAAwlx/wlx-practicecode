@@ -60,7 +60,7 @@ private:
     string Option,To,From,Time;//消息选项
     Value Content;//消息被发送时打包好的内容
     string Package;//消息被接受时收到的字符串
-    Value info;
+    int Massage_size;
 public:
     Massage(string option,Value content,string to,string from)//客户端包的初始化
     :Option(option),Content(content),To(to),From(from)
@@ -80,6 +80,7 @@ public:
     string takeMassage (string s);
 };
 //用户类
+/*"User用来存储用户信息"*/
 class User
 {
 private:
@@ -88,12 +89,12 @@ private:
     Value friend_List;
     Value group_List;
     std::mutex user_mtx;//对数据库进行写入或删除操作时的 
-    redisContext* Userm;
+    redisContext* Library;
 public:
     User(string name,string pass,string question,string answer,redisContext* userm)
-    :Name(name),Pass(pass),Question(question),Answer(answer),Userm(userm){};
+    :Name(name),Pass(pass),Question(question),Answer(answer),Library(userm){};
     User(string id,redisContext* userm)
-    :ID(id),Userm(userm){};
+    :ID(id),Library(userm){};
     string distribute_id();//分配用户id
     bool save_user();//保存用户信息
     string Inquire(string s);//查询用户信

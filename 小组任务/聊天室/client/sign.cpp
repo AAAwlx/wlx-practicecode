@@ -67,7 +67,7 @@ int Clenit::login(int cfd)
                     memset(&r,0,sizeof(r));
                     cout << "+------------------+" << endl;
                     cout << "|    1:找回密码    |" << endl;
-                    cout << "|      2:退出      |" << endl;
+                    cout << "|      0:退出      |" << endl;
                     cout << "+------------------+" << endl;
                     cin >> in;
                     if (in == Reset_Password)
@@ -109,6 +109,7 @@ int Clenit::login(int cfd)
             }     
         }   
     }
+    return;
 }
 int Clenit::sign_up(int cfd)
 {
@@ -190,9 +191,9 @@ void Clenit::sign_menu(int cfd)
         cout << "|      聊天室      |" << endl;
         cout << "+------------------+" << endl;
         cout << "|                  |" << endl;
-        cout << "|      0:登录      |" << endl;
+        cout << "|      0:退出      |" << endl;
         cout << "|      1:注册      |" << endl;
-        cout << "|      2:退出      |" << endl;
+        cout << "|      2:登录      |" << endl;
         cout << "|                  |" << endl;
         cout << "+------------------+" << endl;
         cin >> in;
@@ -201,14 +202,14 @@ void Clenit::sign_menu(int cfd)
         {
             if (Clenit::login(cfd) == 0)
             {
-                break;
+                continue;
             }
         }
         else if (in == SIGN_UP)
         {
             if (Clenit::sign_up(cfd) == 0)
             {
-                break;
+                continue;
             }
         }
         else if (in == EXIT)

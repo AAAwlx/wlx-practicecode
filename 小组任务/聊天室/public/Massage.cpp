@@ -16,6 +16,7 @@ public:
 
 string Massage::Serialization()
 {
+    Value info;
     info["option"]=Option;//申请选项，当为普通聊天消息时选项为Blackoption
     info["content"]=Content;//消息内容
     info["to"]=To;//发件人
@@ -23,11 +24,13 @@ string Massage::Serialization()
     info["Time"]=Time;
     FastWriter w;
     string s=w.write(info);
+    Massage_size=s.length();
     return s;
 }
 string Massage::Deserialization(string s)//消息输出内容中的值
 {
     Reader r;
+    Value info;
     r.parse(Package,info);
     Value c=info["content"];
     return c[s].asString();
@@ -35,6 +38,7 @@ string Massage::Deserialization(string s)//消息输出内容中的值
 string Massage::takeMassage (string s)//输出选项内容收件人发件人中任意一个
 {
     Reader r;
+    Value info;
     r.parse(Package,info);
     return info[s].asString();
 }

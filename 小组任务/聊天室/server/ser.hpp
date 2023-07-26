@@ -14,12 +14,7 @@ class Server
 private:
     int server_port;
     string server_ip;
-
-    redisContext* Userm;//用户信息
-    redisContext* Groupm;//群信息
-    redisContext* P_massage;//私聊记录
-    redisContext* G_massage;//群聊记录
-
+    redisContext* Library;//启用一个redis库
     int lfd;//套接字 
 
     static vector<bool> fd_pthread; //套接字描述符的线程

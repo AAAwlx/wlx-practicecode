@@ -7,7 +7,7 @@ void Server::sign_up(int cfd,Massage m)//注册
     string p=m.Deserialization("Pass");
     string q=m.Deserialization("Question");
     string a=m.Deserialization("Answer");
-    User u(n,p,q,a,Userm);//初始化用户类
+    User u(n,p,q,a,Library);//初始化用户类
     string ID=u.distribute_id();//分配ID
     Err::Write(cfd,ID.c_str(),ID.length());//向客户端返回ID
     u.save_user();//保存用户信息
@@ -15,7 +15,7 @@ void Server::sign_up(int cfd,Massage m)//注册
 void Server::login(int cfd,Massage m)//登陆
 {
     string id=m.Deserialization("ID");//用户输入的id
-    User u(id,Userm);
+    User u(id,Library);
     string Pass2=u.Inquire("Pass");
     if(Pass2=="0")//未在用户信息库中查找到该id
     {
@@ -36,7 +36,7 @@ void Server::login(int cfd,Massage m)//登陆
 void Server::resetpassword(int cfd,Massage m)
 {
     string id=m.Deserialization("ID");
-    User u(id,Userm);
+    User u(id,Library);
     Value v;
     string Q=u.Inquire("Question");
     string A=u.Inquire("Answer");

@@ -44,10 +44,7 @@ vector<bool> Server::fd_arr(1000, false);//初始化数组
 
 void Server::serun()
 {
-    Userm=(redisContext*)redisConnect(server_ip.c_str(), server_port);
-    Groupm=(redisContext*)redisConnect(server_ip.c_str(), server_port);
-    P_massage=(redisContext*)redisConnect(server_ip.c_str(), server_port);
-    G_massage=(redisContext*)redisConnect(server_ip.c_str(), server_port);
+    Library =(redisContext*)redisConnect(server_ip.c_str(), server_port);
     int lfd,cfd;
     struct sockaddr_in serv_addr, clie_addr;
     lfd=Err::Socket(AF_INET,SOCK_STREAM,0);

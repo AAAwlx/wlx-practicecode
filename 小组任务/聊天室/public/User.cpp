@@ -20,7 +20,8 @@ User::User(string id,redisContext* userm)
 string User::distribute_id()
 {
     User_count++;
-    ID=to_string(User_count);
+    string s=to_string(User_count);
+    ID="1"+s;
     return ID;
 }
 bool User::save_user()//将用户信息存入数据库
@@ -35,24 +36,27 @@ bool User::save_user()//将用户信息存入数据库
     FastWriter w;
     string f=w.write(friend_List);
     string g=w.write(group_List);
-    inof["FriendList"]=f;//统一变成字符串方便管理
+    inof["FriendList"]=f;//统一变成字符串方便管
     inof["GroupList"]=g;
     string s=w.write(inof);//将各项用户信息打包成字符串存入redis
-    const char *key = ID.c_str();//键值为唯一标识用户id
-    const char *value = s.c_str();
+    const char *hash_user = "User";
+    const char *field=ID.c_str();//键值为唯一标识用户id
+    const char *value=s.c_str();
     user_mtx.lock();
-    redisReply *reply = (redisReply *)redisCommand(Userm, "SET %s %s", key, value);
+    redisReply *reply = (redisReply *)redisCommand(Library, "HSET %s %s %s", hash_user, field, value);
     user_mtx.unlock();
     if (reply == NULL) {
-        printf("Failed to execute Redis command: %s\n", Userm->errstr);
-        redisFree(Userm);
+        printf("Failed to execute Redis command: %s\n", Library->errstr);
+        redisFree(Library);
         return 1;
     }
     freeReplyObject(reply);
 }
 string User::Inquire(string s)
 {
-    redisReply *reply = (redisReply *)redisCommand(Userm, "GET %s", ID);//通过id作为索引找到用户信息
+    const char *hash_user = "User";
+    const char *field=ID.c_str();
+    redisReply *reply=(redisReply *)redisCommand(Library, "HGET %s %s",hash_user, field);//通过id作为索引找到用户信息
     if(reply->type == REDIS_REPLY_NIL){
         return "0";
     }
