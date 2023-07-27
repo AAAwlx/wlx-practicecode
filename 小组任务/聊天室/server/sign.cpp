@@ -1,5 +1,5 @@
 #include"ser.hpp"
-#include"../public/public.hpp"
+#include"public.hpp"
 void Server::sign_up(int cfd,Massage m)//注册
 {
     Value info;
@@ -27,7 +27,7 @@ void Server::login(int cfd,Massage m)//登陆
     {
         fd_in[cfd]=true;
         Err::Write(cfd,"succeed",sizeof("succeed"));
-        main_menu(cfd);
+        //main_menu(cfd);
     }else
     {
         Err::Write(cfd,"fial",sizeof("fial"));
@@ -77,5 +77,5 @@ bool Server::sign_menu(int cfd)
             }
         }
     }
-    
+    return true;
 }

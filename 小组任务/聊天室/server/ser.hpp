@@ -7,16 +7,17 @@
 //
 #define EP0LL_SIZE 1024 
 #include<iostream>
-
+#include<hiredis/hiredis.h>
+#include <vector>
+#include"public.hpp"
 using namespace std;
+static redisContext* Library;//启用一个redis库
 class Server
 {
 private:
     int server_port;
     string server_ip;
-    redisContext* Library;//启用一个redis库
     int lfd;//套接字 
-
     static vector<bool> fd_pthread; //套接字描述符的线程
     static vector<string> fd_ID;    //保存套接字对应的ID
     static vector<bool> fd_in;      //保存套接字描述符登录状态
@@ -28,11 +29,12 @@ public:
     :server_port(port),server_ip(ip){};
     ~Server();
     void serun();
-    void thread_work(int cfd);
-    bool sign_menu(int cfd);
-    void sign_up(int cfd,Massage m);
-    void login(int cfd,Massage m);
-    void resetpassword(int cfd,Massage m);//找回密码
-    void main_menu(int cfd);
+    static void thread_work(int cfd);
+    static bool sign_menu(int cfd);
+    static void sign_up(int cfd,Massage m);
+    static void login(int cfd,Massage m);
+    static void resetpassword(int cfd,Massage m);//找回密码
+    //void main_menu(int cfd);
 };
+
 #endif

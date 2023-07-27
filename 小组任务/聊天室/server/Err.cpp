@@ -1,5 +1,4 @@
 #include "public.hpp"
-#include "clit.hpp"
 /*系统调用函数以及相应的错误处理函数*/
 int Err::Socket(int domain, int type, int protocol)
 {
@@ -52,6 +51,7 @@ ssize_t Err::Read(int fd, void *buf, size_t count)
         perror("read()");
         exit(0);
     }
+    return ret;
 }
 ssize_t Err::Write(int fd, const void *buf, size_t count)
 {
@@ -61,6 +61,7 @@ ssize_t Err::Write(int fd, const void *buf, size_t count)
         perror("write()");
         exit(0);
     }
+    return ret;
 }
 ssize_t Err::Sendfile(int out_fd, int in_fd, off_t* offset, size_t count)
 {
@@ -69,6 +70,7 @@ ssize_t Err::Sendfile(int out_fd, int in_fd, off_t* offset, size_t count)
         perror("sendfile()");
         exit(0);
     }
+    return ret;
 }
 int Err::Epoll_create(int size)
 {
@@ -78,6 +80,7 @@ int Err::Epoll_create(int size)
         perror("epoll_creat()");
         exit(0);
     }
+    return efd;
 }
 int Err::Epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout)
 {
@@ -86,6 +89,7 @@ int Err::Epoll_wait(int epfd, struct epoll_event *events, int maxevents, int tim
         perror("epoll_wait()");
         exit(0);
     }
+    return count;
 }
 int Err::Epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)
 {
@@ -94,6 +98,7 @@ int Err::Epoll_ctl(int epfd, int op, int fd, struct epoll_event *event)
         perror("epoll_ctl()");
         exit(0);
     }
+    return ret;
 }
 void Err:: Close(int fd)
 {

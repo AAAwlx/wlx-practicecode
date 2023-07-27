@@ -1,5 +1,5 @@
 #include"ser.hpp"
-#include"../public/public.hpp"
+#include"public.hpp"
 Server::~Server()
 {
     for (auto cfd : fd_arr)//迭代关闭套接字
@@ -13,18 +13,18 @@ Server::~Server()
     Err::Close(lfd);
 }
 
-void Server::thread_work(int cfd)
+void Server::thread_work(int clie_fd)
 {
     bool exit = false;
     // bool main_menu_in = false;
     //菜单
     while (true)
     {
-        exit = sign_menu(cfd);
+        exit = sign_menu(clie_fd);
 
         if (exit)
         {
-            fd_pthread[cfd] = false;
+            fd_pthread[clie_fd] = false;
 
             pthread_exit((void *)"客户端关闭");
         }
@@ -40,7 +40,6 @@ vector<bool> Server::fd_in(1000, false);
 vector<bool> Server::fd_new(1000, false);
 vector<string> Server::fd_ID(1000, "0");
 vector<int> Server::fd_bor(1000, 0);
-vector<bool> Server::fd_arr(1000, false);//初始化数组
 
 void Server::serun()
 {
@@ -113,7 +112,7 @@ void Server::serun()
                     int sfd=ep[i].data.fd;
                     thread chile_t(Server::thread_work, sfd);//当客户端有读写请求时，为他单独开启一个线程
                     cout << "为" << sfd << "创建线程" << endl;
-                    fd_pthread[sfd] = true;;
+                    fd_pthread[sfd] = true;
                     chile_t.detach();
                 }
             }

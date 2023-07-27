@@ -1,6 +1,6 @@
-#include "../public/public.hpp"
+#include "public.hpp"
 #include "clit.hpp"
-void Clenit::main_mnue(int cfd,string ID)
+void Clenit::main_mnue(string ID)
 {
     string in;
     char r[BUFSIZ];
@@ -23,21 +23,21 @@ void Clenit::main_mnue(int cfd,string ID)
         system("clear");
         if (in == PRIVATE)
         {
-            privateChat(cfd, ID);
+            privateChat(ID);
             continue;
         }
         else if (in == GROUP)
         {
-            group_menu(cfd, ID);
+            group_menu(ID);
             continue;
         }
         else if (in == FRIENDS_MENU)
         {
-            friends_menu(cfd, ID);
+            friends_menu(ID);
             continue;
         }else if(in==FILE_MANAGE)
         {
-            file_menu(cfd,ID);
+            file_menu(ID);
         }else if (in==EXIT)
         {
             break;

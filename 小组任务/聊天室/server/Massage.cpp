@@ -1,19 +1,16 @@
 #include"public.hpp"
-#include"clit.hpp"
-/*class Massage
-{
-private:
-    string Option,Buffer,To,From;
-    
-public:
-    Massage(string option,string buffer,string to,string from)
-    :Option(option),Buffer(buffer),To(to),From(from){};
-    ~Massage();
-    //序列化
-    void M_send(int cfd);
-    Value M_rcev(int cfd);
-};*/
 
+Massage::Massage(string option,Value content,string to,string from)
+ :Option(option),Content(content),To(to),From(from)  
+{
+    auto now = std::chrono::system_clock::now();  // 将时间点转换为时间戳（以秒为单位）
+    time_t timestamp = std::chrono::system_clock::to_time_t(now);
+    Time = std::ctime(&timestamp);
+}
+Massage::~Massage()
+{
+
+}
 string Massage::Serialization()
 {
     Value info;

@@ -1,6 +1,6 @@
-#include "../public/public.hpp"
+#include "public.hpp"
 #include "clit.hpp"
-int Clenit::login(int cfd)
+int Clenit::login()
 {
     string Id, Pass1, in; // 用户的id，密码
     Value info;
@@ -46,18 +46,18 @@ int Clenit::login(int cfd)
             if (strcmp(r, "succeed"))//登陆成功
             {
                 cout << "欢迎使用╰(✿´⌣`✿)╯♡" << endl;
-                main_mnue(cfd,Id);
+                //main_mnue(Id);
                 break;
             }
             else if (strcmp(r, "fail"))//密码错误
             {
                 cout << "您的id或密码错误，请重新输入(限三次）" << endl;
-                Clenit::login(cfd);
+                Clenit::login();
                 break;
             }else if(strcmp(r,"NULL"))//用户不存在
             {
                 cout<<"用户不存在,请您先注册账号"<<endl;
-                sign_up(cfd);
+                sign_up();
                 break;
             }
             else//三次以上密码错误进入验证状态
@@ -84,7 +84,7 @@ int Clenit::login(int cfd)
                                 cin>>in;
                                 if(in==A){
                                     cout<<"您的密码是："<<P<<endl;
-                                    login(cfd);
+                                    login();
                                     break;
                                 }else{
                                     cout<<"验证未通过,即将强制退出"<<endl;
@@ -109,13 +109,14 @@ int Clenit::login(int cfd)
             }     
         }   
     }
-    return;
+    return 0;
 }
-int Clenit::sign_up(int cfd)
+int Clenit::sign_up()
 {
     string name,Pass1,Pass2,Question,Answer1,Answer2,ID;
     Value info;
     cout<<"请设置您的昵称"<<endl;
+    cin >> name;
     while (1)
     {
         if (name.length() > 20 || name.length() < 3)
@@ -129,6 +130,7 @@ int Clenit::sign_up(int cfd)
         }
     }
     cout<<"请设置您的密码"<<endl;
+    cin >> Pass1;
     while (1)
     {
         if (Pass1.length() > 20 || Pass1.length() < 3)
@@ -149,7 +151,8 @@ int Clenit::sign_up(int cfd)
     }
     cout<<"请设置您的验证问题"<<endl;
     cin>>Question;
-    cout<<"请设置您的问题答案"<<endl;cin>>Answer1;
+    cout<<"请设置您的问题答案"<<endl;
+    cin>>Answer1;
     while(1){
 
         cout<<"请再次输入您设置的问题"<<endl;
@@ -179,9 +182,10 @@ int Clenit::sign_up(int cfd)
         }
     }
     cout<<"已跳转到登陆"<<endl;
-    login(cfd);
+    login();
+    return 0;
 }
-void Clenit::sign_menu(int cfd)
+void Clenit::sign_menu()
 {
     string in; // 输入选项
 
@@ -200,14 +204,14 @@ void Clenit::sign_menu(int cfd)
         system("clear");
         if (in == LOGIN)
         {
-            if (Clenit::login(cfd) == 0)
+            if (Clenit::login() == 0)
             {
                 continue;
             }
         }
         else if (in == SIGN_UP)
         {
-            if (Clenit::sign_up(cfd) == 0)
+            if (Clenit::sign_up() == 0)
             {
                 continue;
             }
