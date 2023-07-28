@@ -13,7 +13,6 @@ Clenit::~Clenit()
 void Clenit::clirun()
 {
     struct sockaddr_in serveradd;
-    int cfd;
     cfd=Err::Socket(AF_INET,SOCK_STREAM,0);
     memset(&serveradd,0,sizeof(serveradd));
     serveradd.sin_family=AF_INET;

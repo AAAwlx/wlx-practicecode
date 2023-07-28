@@ -65,8 +65,7 @@ private:
     int Massage_size;
 public:
     Massage(string option,Value content,string to,string from);
-    Massage(string package)
-    :Package(package){};//服务器端包的初始化
+    Massage(string package);//服务器端包的初始化
     ~Massage();
     //序列化
     string Serialization();

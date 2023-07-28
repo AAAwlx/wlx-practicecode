@@ -49,8 +49,11 @@ ssize_t Err::Read(int fd, void *buf, size_t count)
     ssize_t ret=read(fd,buf,count);
     if (ret<0)
     {
-        perror("read()");
-        exit(0);
+        if (!(errno == EAGAIN || errno == EWOULDBLOCK))
+        {
+            perror("write()");
+            exit(0);
+        }
     }
     return ret;
 }
@@ -59,8 +62,11 @@ ssize_t Err::Write(int fd, const void *buf, size_t count)
     ssize_t ret=write(fd,buf,count);
     if (ret<0)
     {
-        perror("write()");
-        exit(0);
+        if (!(errno == EAGAIN || errno == EWOULDBLOCK))
+        {
+            perror("write()");
+            exit(0);
+        }
     }
     return ret;
 }

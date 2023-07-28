@@ -43,9 +43,13 @@ vector<int> Server::fd_bor(1000, 0);
 
 void Server::serun()
 {
-    Library =(redisContext*)redisConnect(server_ip.c_str(), server_port);
-    int lfd,cfd;
+   
+    int cfd;
     struct sockaddr_in serv_addr, clie_addr;
+    Library=redisConnect(server_ip.c_str(),6379);
+    if (Library == nullptr){
+        std::cout << "Library is null!!!!!!" << std::endl;
+    } 
     lfd=Err::Socket(AF_INET,SOCK_STREAM,0);
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(server_port);

@@ -9,29 +9,17 @@ void Server::sign_up(int cfd,Massage m)//注册
     string a=m.Deserialization("Answer");
     User u(n,p,q,a,Library);//初始化用户类
     string ID=u.distribute_id();//分配ID
-    Err::Write(cfd,ID.c_str(),ID.length());//向客户端返回ID
+    Err::Write(cfd,ID.c_str(),ID.length());//向客户端返回ID 
     u.save_user();//保存用户信息
+    return;
 }
-void Server::login(int cfd,Massage m)//登陆
+void Server::login(int cfd,Massage m,int count)//登陆
 {
     string id=m.Deserialization("ID");//用户输入的id
     User u(id,Library);
     string Pass2=u.Inquire("Pass");
-    if(Pass2=="0")//未在用户信息库中查找到该id
-    {
-        Err::Write(cfd,"NULL",sizeof("Null"));
-        return;
-    }
-    string Pass1=m.Deserialization("Pass");//用户发来的密码
-    if(Pass1==Pass2)
-    {
-        fd_in[cfd]=true;
-        Err::Write(cfd,"succeed",sizeof("succeed"));
-        //main_menu(cfd);
-    }else
-    {
-        Err::Write(cfd,"fial",sizeof("fial"));
-    }
+    cout<<Pass2<<"+"<<endl;
+    Err::Write(cfd,Pass2.c_str(),Pass2.length());
 }
 void Server::resetpassword(int cfd,Massage m)
 {
@@ -44,23 +32,28 @@ void Server::resetpassword(int cfd,Massage m)
     v["Question"]=Q;
     v["Answer"]=A;
     v["Pass"]=Pass2;
-    FastWriter w;
-    string s=w.write(v);
-    Massage m2(Blank_option,s,"0","0");
+    Massage m2(Reset_Password,v,"0","0");
+    string s1=m2.Serialization();
+    cout<<s1<<endl;
+    Err::Write(cfd,s1.c_str(),s1.length());
 }
 bool Server::sign_menu(int cfd)
 {
     cout << "进入sign" << endl;
     char r[BUFSIZ];
     int count=0;
+    
     while (fd_in[cfd]==false)
     {
         if(Err::Read(cfd,r,sizeof(r))>0)
         {
-            Massage m(r);
+            cout << r << endl;
+            string s=r;
+            Massage m(s);
             string o=m.takeMassage("option");
+            cout << o << endl;
             cout << "sign循环" << endl;
-            if(o==EXIT||count>3){
+            if(o==EXIT){
                 Err::Close(cfd);
                 return false;
             }else if(o==SIGN_UP)//注册
@@ -69,9 +62,9 @@ bool Server::sign_menu(int cfd)
             }else if(o==LOGIN)//登陆
             {
                 count++;
-                Server::login(cfd,m);
+                Server::login(cfd,m,count);
             }
-            if (r==Reset_Password)
+            if (o==Reset_Password)
             {
                 Server::resetpassword(cfd,m);
             }

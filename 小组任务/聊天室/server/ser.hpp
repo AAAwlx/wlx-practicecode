@@ -1,9 +1,9 @@
 #ifndef _SERVER_CLASS_H_
 #define _SERVER_CLASS_H_
-#define LOGIN "0"//登陆
+#define LOGIN "2"//登陆
 #define SIGN_UP "1"//注册
-#define EXIT "2"//退出
-#define Reset_Password "1"//找回密码
+#define EXIT "0"//退出
+#define Reset_Password "3"//找回密码
 //
 #define EP0LL_SIZE 1024 
 #include<iostream>
@@ -11,7 +11,7 @@
 #include <vector>
 #include"public.hpp"
 using namespace std;
-static redisContext* Library;//启用一个redis库
+extern redisContext* Library;//启用一个redis库
 class Server
 {
 private:
@@ -32,7 +32,7 @@ public:
     static void thread_work(int cfd);
     static bool sign_menu(int cfd);
     static void sign_up(int cfd,Massage m);
-    static void login(int cfd,Massage m);
+    static void login(int cfd,Massage m,int count);
     static void resetpassword(int cfd,Massage m);//找回密码
     //void main_menu(int cfd);
 };

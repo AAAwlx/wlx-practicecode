@@ -4,7 +4,7 @@
 #define EXIT "0"//退出
 #define SIGN_UP "1"//注册
 #define  LOGIN "2"//登陆
-#define Reset_Password "1"//找回密码
+#define Reset_Password "3"//找回密码
 //主界面
 #define PRIVATE "1"       //私聊
 #define GROUP "2"         //群菜单
@@ -34,10 +34,12 @@ public:
     void sign_menu();
     int sign_up();
     int login();
-    
+    void resetpassword(string ID);
+    void Exit();
     void main_mnue(string ID);//主界面函数
     void privateChat(string ID);
     void group_menu(string ID);
+    
     //好友管理函数组
     /*void friends_menu(string ID);//
     void friendadd(string ID);

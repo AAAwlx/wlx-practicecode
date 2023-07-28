@@ -7,20 +7,26 @@ Massage::Massage(string option,Value content,string to,string from)
     time_t timestamp = std::chrono::system_clock::to_time_t(now);
     Time = std::ctime(&timestamp);
 }
+Massage::Massage(string package)
+:Package(package)
+{
+
+}
 Massage::~Massage()
 {
 
 }
 string Massage::Serialization()
 {
-    Value info;
+    Value info(Json::objectValue);
     info["option"]=Option;//申请选项，当为普通聊天消息时选项为Blackoption
     info["content"]=Content;//消息内容
     info["to"]=To;//发件人
-    info["form"]=From;//收件人
+    info["from"]=From;//收件人
     info["Time"]=Time;
     FastWriter w;
     string s=w.write(info);
+    cout<<s<<endl;
     Massage_size=s.length();
     return s;
 }

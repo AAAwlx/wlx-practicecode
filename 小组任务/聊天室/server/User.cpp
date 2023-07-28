@@ -1,4 +1,5 @@
 #include "public.hpp"
+#include"ser.hpp"
 // id是标识用户的唯一信息
 int User::User_count = 0;
 User::User(string name, string pass, string question, string answer, redisContext *userm)
@@ -26,7 +27,7 @@ string User::distribute_id()
 {
     User_count++;
     string s = to_string(User_count);
-    ID = "1" + s;
+    ID = "11" + s;
     return ID;
 }
 bool User::save_user() // 将用户信息存入数据库
@@ -47,6 +48,7 @@ bool User::save_user() // 将用户信息存入数据库
     const char *hash_user = "User";
     const char *field = ID.c_str(); // 键值为唯一标识用户id
     const char *value = s.c_str();
+    cout<<s<<endl;
     user_mtx.lock();
     redisReply *reply = (redisReply *)redisCommand(Library, "HSET %s %s %s", hash_user, field, value);
     user_mtx.unlock();
@@ -70,6 +72,7 @@ string User::Inquire(string s)
     }
     Reader r;
     Value info;
+    cout<<reply->str<<endl;
     r.parse(reply->str, info);
     return info[s].asString();
 }
