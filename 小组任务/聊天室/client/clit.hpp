@@ -41,11 +41,11 @@ public:
     void group_menu(string ID);
     
     //好友管理函数组
-    /*void friends_menu(string ID);//
+    void friends_menu(string ID);
     void friendadd(string ID);
     void ignorefriend(string ID);
     void delfriend(string ID);
     void viewfriend(string ID);
-    void file_menu(string ID);*/
+    void file_menu(string ID);
 };
 #endif

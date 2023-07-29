@@ -25,6 +25,11 @@ int main(){
       Reader r;
       Value in;
       r.parse(s,in);
+      if (in.isMember("test")) {
+        std::cout << "键存在" << std::endl;
+    } else {
+        std::cout << "键不存在" << std::endl;
+    }
       Value n=in["buffer"];
       cout<<n<<endl;
 }

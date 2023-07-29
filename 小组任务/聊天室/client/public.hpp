@@ -73,7 +73,7 @@ public:
     //反序列化
     string Deserialization(string s);
     
-    string takeMassage (string s);
+    auto takeMassage (string s);
 };
 //用户类
 /*"User用来存储用户信息"*/

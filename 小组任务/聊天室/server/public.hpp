@@ -72,7 +72,7 @@ public:
     //反序列化
     string Deserialization(string s);
     
-    string takeMassage (string s);
+    auto takeMassage (string s);
 };
 //用户类
 /*"User用来存储用户信息"*/
@@ -81,13 +81,15 @@ class User
 private:
     static int User_count;
     string ID,Name,Pass,Question,Answer;
-    Value friend_List;
-    Value group_List;
+   
     std::mutex user_mtx;//对数据库进行写入或删除操作时的 
     redisContext* Library;
 public:
+    Value friend_List;
+    Value group_List;
     User(string name,string pass,string question,string answer,redisContext* userm);
     User(string id,redisContext* userm);
+    User(const User &other);
     string distribute_id();//分配用户id
     bool save_user();//保存用户信息
     string Inquire(string s);//查询用户信

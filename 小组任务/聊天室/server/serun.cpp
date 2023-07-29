@@ -40,7 +40,7 @@ vector<bool> Server::fd_in(1000, false);
 vector<bool> Server::fd_new(1000, false);
 vector<string> Server::fd_ID(1000, "0");
 vector<int> Server::fd_bor(1000, 0);
-
+std::unordered_map<std::string, int> user_cfd;
 void Server::serun()
 {
    

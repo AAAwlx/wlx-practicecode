@@ -55,7 +55,8 @@ bool Server::sign_menu(int cfd)
             cout << "sign循环" << endl;
             if(o==EXIT){
                 Err::Close(cfd);
-                return false;
+                cout<<cfd<<"已离开"<<endl;
+                return true;
             }else if(o==SIGN_UP)//注册
             {
                 Server::sign_up(cfd,m);
@@ -68,7 +69,16 @@ bool Server::sign_menu(int cfd)
             {
                 Server::resetpassword(cfd,m);
             }
+            if (o=="succeed")
+            {
+                cout<<cfd<<"已登陆"<<endl;
+                string ID=m.Deserialization("ID");
+                user_cfd[ID]=cfd;
+                //Server::()
+                user_cfd.erase(ID);
+            }
+            
         }
     }
-    return true;
+    return false;
 }

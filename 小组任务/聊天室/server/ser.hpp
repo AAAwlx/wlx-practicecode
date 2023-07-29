@@ -4,7 +4,19 @@
 #define SIGN_UP "1"//注册
 #define EXIT "0"//退出
 #define Reset_Password "3"//找回密码
-//
+#define FRIENDS_MENU "3"//好友菜单
+#define PRIVATE "1"       //私聊
+#define GROUP "2"         //群菜单
+#define FRIENDS_MENU "3"  //好友管理
+#define FILE_MANAGE "4"   //文件管理 
+#define SEND_FILE "_sf"   //发文件
+#define RECV_FILE "_rf"   //收文件
+#define ADD_FRIEND "1"   //加好友
+#define DEL_FRIEND "2"   //删好友
+#define VIEW_FRIENDS "3" //查看好友
+#define MAS_FRIEND "4"   //好友请求
+#define IGN_FRIEND "5"   //屏蔽好友
+#define BE_FRIENDS "0"   //成为好友
 #define EP0LL_SIZE 1024 
 #include<iostream>
 #include<hiredis/hiredis.h>
@@ -12,6 +24,7 @@
 #include"public.hpp"
 using namespace std;
 extern redisContext* Library;//启用一个redis库
+extern std::unordered_map<std::string, int> user_cfd;
 class Server
 {
 private:
@@ -24,7 +37,9 @@ private:
     static vector<bool> fd_new;     //保存套接字是否为新连接上的
     static vector<bool> fd_arr;     //保存所有套接字描述符的连接状态，初始均为不连接的状态
     static vector<int> fd_bor;
+    //已经登陆的用户以及分配的套接字
 public:
+
     Server(int port, string ip)
     :server_port(port),server_ip(ip){};
     ~Server();
@@ -34,7 +49,13 @@ public:
     static void sign_up(int cfd,Massage m);
     static void login(int cfd,Massage m,int count);
     static void resetpassword(int cfd,Massage m);//找回密码
-    //void main_menu(int cfd);
+    static void main_menu(int cfd,string ID);
+    static void friends_menu(int cfd);
+    static void friendadd(int cfd,Massage m);
+    static void ignorefriend(int cfd,Massage m);
+    static void delfriend(int cfd,Massage m);
+    static void viewfriend(int cfd,Massage m);
+    static void file_menu(int cfd);
 };
 
 #endif

@@ -50,6 +50,11 @@ int Clenit::login()
             }else{
                 if (r == Pass1) {
                     std::cout << "欢迎使用╰(✿´⌣`✿)╯♡" << endl;
+                    Value j;
+                    j["ID"]=Id;
+                    Massage m2("succeed",j,"0","0");
+                    string s=m2.Serialization();
+                    Err::Write(cfd,s.c_str(),s.length());
                     //main_mnue(Id);
                     break;
                 }else{
@@ -60,6 +65,11 @@ int Clenit::login()
                         cout << count << endl;
                         if (in == r){
                             std::cout << "欢迎使用╰(✿´⌣`✿)╯♡" << endl;
+                            Value j;
+                            j["ID"]=Id;
+                            Massage m2("succeed",j,"0","0");
+                            string s=m2.Serialization();
+                            Err::Write(cfd,s.c_str(),s.length());
                             //main_mnue(Id);
                         }else{
                             count++;
