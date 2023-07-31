@@ -45,12 +45,13 @@ bool Server::sign_menu(int cfd)
     
     while (fd_in[cfd]==false)
     {
-        if(Err::Read(cfd,r,sizeof(r))>0)
+        if((read(cfd, r, sizeof(r)))>0)
         {
             cout << r << endl;
             string s=r;
             Massage m(s);
-            string o=m.takeMassage("option");
+            std::variant<Json::Value, std::string> result=m.takeMassage("option");
+            std::string o = std::get<std::string>(result);
             cout << o << endl;
             cout << "sign循环" << endl;
             if(o==EXIT){

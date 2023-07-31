@@ -1,7 +1,7 @@
 #include "public.hpp"
 #include"ser.hpp"
 // id是标识用户的唯一信息
-int User::User_count = 0;
+int User::User_count = Server::user_ID;
 User::User(string name, string pass, string question, string answer, redisContext *userm)
 :Name(name),Pass(pass),Question(question),Answer(answer),Library(userm)
 {
@@ -26,6 +26,7 @@ User::~User()
 string User::distribute_id()
 {
     User_count++;
+    Server::user_ID++;
     string s = to_string(User_count);
     ID = "11" + s;
     return ID;
@@ -68,7 +69,7 @@ string User::Inquire(string s)
     redisReply *reply = (redisReply *)redisCommand(Library, "HGET %s %s", hash_user, field); // 通过id作为索引找到用户信息
     if (reply->type == REDIS_REPLY_NIL)
     {
-        return "0";
+        return "-1234567";
     }
     Reader r;
     Value info;

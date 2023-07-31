@@ -9,7 +9,8 @@ void Server::main_menu(int cfd,string ID)
         if(Err::Read(cfd,r,sizeof(r))>0){
             cout<<r<<endl;
             Massage m(r);
-            string s=m.takeMassage("option");
+            std::variant<Json::Value, std::string> result=m.takeMassage("option");
+            std::string s = std::get<std::string>(result);
             if (s==PRIVATE){
                 
             }else if(s==GROUP){

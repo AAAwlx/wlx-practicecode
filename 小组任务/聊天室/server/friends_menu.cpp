@@ -20,7 +20,7 @@ void Server::friendadd(int cfd,Massage m)
         j["ID"]=s2;
         Massage m2(MAS_FRIEND,j,"0","0");
         string s3=m2.Serialization();
-        Err::Write(cfd2,s3.c_str(),s3.length());//该请求应该被保存到被加人的好友申请的记录中
+        Err::Write(cfd,s3.c_str(),s3.length());//该请求应该被保存到被加人的好友申请的记录中
         Err::Write(cfd,"succeed",sizeof("succeed"));//向请求人发送请求成功转发
     }    
 }
@@ -35,7 +35,7 @@ void Server::delfriend(int cfd,Massage m)
         Err::Write(cfd,"NULL",sizeof("NULL"));
     }else{
         u.delete_friend(s1);
-        Err::Write(cfd,"Succeed",sizeof("Succeed"));
+        Err::Write(cfd,"Succeed",sizeof("succeed"));
     }
 }
 void Server::ignorefriend(int cfd,Massage m)
@@ -49,7 +49,7 @@ void Server::ignorefriend(int cfd,Massage m)
         Err::Write(cfd,"NULL",sizeof("NULL"));
     }else{
         u.shield_friend (s1);
-        Err::Write(cfd,"Succeed",sizeof("Succeed"));
+        Err::Write(cfd,"Succeed",sizeof("succeed"));
     }
 }
 void Server::viewfriend(int cfd,Massage m)
@@ -83,17 +83,19 @@ void Server::friends_menu(int cfd)
         if(Err::Read(cfd,r,sizeof(r))>0){
             cout<<r<<endl;
             Massage m(r);
-            string s=m.takeMassage("option");
-            if (s==ADD_FRIEND){
-                friendadd(cfd,m);
+            std::variant<Json::Value, std::string> result=m.takeMassage("option");
+            std::string s = std::get<std::string>(result);
+    
+            if(s==ADD_FRIEND){
+                Server::friendadd(cfd,m);
             }else if(s==DEL_FRIEND){
-                delfriend(cfd,m);
+                Server::delfriend(cfd,m);
             }else if(s==VIEW_FRIENDS){
-                viewfriend(cfd,m);
+                Server::viewfriend(cfd,m);
             }else if(s==MAS_FRIEND){
 
             }else if(s==IGN_FRIEND){
-                ignorefriend( cfd,m);
+                Server::ignorefriend( cfd,m);
             }
         }    
     }

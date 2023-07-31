@@ -32,6 +32,7 @@
 #include <map>
 #include<hiredis/hiredis.h>
 #include <condition_variable>
+#include <variant>
 #define Epoll_size 500
 #define SERVERPORT 8888
 #define BUFFERSIZE 500//单个消息不能超过五百字
@@ -73,7 +74,7 @@ public:
     //反序列化
     string Deserialization(string s);
     
-    auto takeMassage (string s);
+    std::variant<Json::Value, std::string> takeMassage (string s);
 };
 //用户类
 /*"User用来存储用户信息"*/

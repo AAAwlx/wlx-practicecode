@@ -65,7 +65,7 @@ string User::Inquire(string s)
     redisReply *reply = (redisReply *)redisCommand(Library, "HGET %s %s", hash_user, field); // 通过id作为索引找到用户信息
     if (reply->type == REDIS_REPLY_NIL)
     {
-        return "0";
+        return "-1234567";
     }
     Reader r;
     Value info;

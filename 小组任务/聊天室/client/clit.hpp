@@ -46,6 +46,8 @@ public:
     void ignorefriend(string ID);
     void delfriend(string ID);
     void viewfriend(string ID);
+    void friendrequests(string ID);
     void file_menu(string ID);
+    
 };
 #endif

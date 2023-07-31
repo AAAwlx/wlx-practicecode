@@ -25,9 +25,11 @@
 using namespace std;
 extern redisContext* Library;//启用一个redis库
 extern std::unordered_map<std::string, int> user_cfd;
+ 
 class Server
 {
 private:
+    
     int server_port;
     string server_ip;
     int lfd;//套接字 
@@ -39,7 +41,7 @@ private:
     static vector<int> fd_bor;
     //已经登陆的用户以及分配的套接字
 public:
-
+    static  int user_ID;
     Server(int port, string ip)
     :server_port(port),server_ip(ip){};
     ~Server();

@@ -26,7 +26,7 @@ void Clenit::friendadd(string ID)
             {
                 cout<<"好友请求已发送"<<endl;
             }else if(strcmp(r, "befriends") == 0){
-                 cout << "你们已经是好友了" << endl;
+                cout << "你们已经是好友了" << endl;
             }
             break;    
         }
@@ -41,6 +41,7 @@ void Clenit::delfriend(string ID)
     cin >> in;
     Value j;
     j["Del_friend"]=in;
+    j["ID"]=ID;
     Massage m(DEL_FRIEND,j,"0","0");
     string s=m.Serialization();
     Err::Write(cfd,s.c_str(),s.length());
@@ -69,6 +70,8 @@ void Clenit::ignorefriend(string ID)
     cin >> in;
     Value j;
     j["Ign_friend"]=in;
+    j["ID"]=ID;
+
     Massage m(DEL_FRIEND,j,"0","0");
     string s=m.Serialization();
     Err::Write(cfd,s.c_str(),s.length());
@@ -91,7 +94,7 @@ void Clenit::ignorefriend(string ID)
 void Clenit::viewfriend(string ID)
 {
     Value j;
-    j["0"]="0";
+    j["ID"]=ID;
     Massage m(VIEW_FRIENDS,j,"0","0");
     string s=m.Serialization();
     Err::Write(cfd,s.c_str(),s.length());
@@ -101,7 +104,8 @@ void Clenit::viewfriend(string ID)
         char r[BUFFERSIZE];
         if(Err::Read(cfd,r,sizeof(r))>0){
             Massage m(r);
-            Value flist=m.takeMassage("content"); 
+            std::variant<Json::Value, std::string> result=m.takeMassage("option");
+            Value flist=std::get<Json::Value>(result);
             for (const auto& key : flist.getMemberNames()) {
                 std::cout << "好友: " << key << ", 状态 " << flist[key].asString() << std::endl;
             }
@@ -109,6 +113,14 @@ void Clenit::viewfriend(string ID)
         }
     }
    
+}
+void Clenit::friendrequests(string ID)
+{
+    Value j;
+    j["ID"]=ID;
+    Massage m(MAS_FRIEND,j,"0","0");
+    string s=m.Serialization();
+    Err::Write(cfd,s.c_str(),s.length());
 }
 void Clenit::friends_menu(string ID)
 {
@@ -134,20 +146,20 @@ void Clenit::friends_menu(string ID)
         cout << "+------------------+" << endl;
         cin>>in;
         if(in==ADD_FRIEND){
-            friendadd(ID);
-            continue;
+            Clenit::friendadd(ID);
         }else if(in==DEL_FRIEND){
-            delfriend(ID);
-            continue;
+            Clenit::delfriend(ID);
         }else if(in==VIEW_FRIENDS){
-
+            Clenit::viewfriend(ID);
         }else if(in==MAS_FRIEND){
-              
+            Clenit::friendrequests(ID);
         }else if(in==IGN_FRIEND){
-            ignorefriend(ID);
+            Clenit::ignorefriend(ID);
         }else if (in==EXIT)
         {
             break;
+        }else{
+            cout<<"您输入的选项不符合规范,请重试"<<endl;
         }
     }
     return; 

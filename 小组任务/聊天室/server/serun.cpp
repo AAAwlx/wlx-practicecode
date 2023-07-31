@@ -47,9 +47,11 @@ void Server::serun()
     int cfd;
     struct sockaddr_in serv_addr, clie_addr;
     Library=redisConnect(server_ip.c_str(),6379);
+    redisReply *reply = (redisReply *)redisCommand(Library, "GET %s", "User_ID");
     if (Library == nullptr){
         std::cout << "Library is null!!!!!!" << std::endl;
     } 
+    int user_ID=reply->integer;
     lfd=Err::Socket(AF_INET,SOCK_STREAM,0);
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(server_port);
@@ -121,6 +123,10 @@ void Server::serun()
                 }
             }
         }
+    } 
+    redisReply *reply2 = (redisReply *)redisCommand(Library, "SET %s %d", "User_ID", user_ID);
+    if (reply2 == NULL) {
+        printf("Command error or server error\n");
     } 
     Err::Close(lfd);
     Err::Close(efd);

@@ -38,10 +38,14 @@ string Massage::Deserialization(string s)//消息输出内容中的值
     Value c=info["content"];
     return c[s].asString();
 }
-auto Massage::takeMassage (string s)//输出选项内容收件人发件人中任意一个
+std::variant<Json::Value, std::string> Massage::takeMassage (string s)//输出选项内容收件人发件人中任意一个
 {
     Reader r;
     Value info;
     r.parse(Package,info);
-    return info[s].asString();
+    if(s=="content"){
+        return info[s];
+    }else{
+        return info[s].asString();
+    }
 }

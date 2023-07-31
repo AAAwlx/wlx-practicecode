@@ -32,6 +32,7 @@
 #include <map>
 #include<hiredis/hiredis.h>
 #include <condition_variable>
+#include <variant>
 #define Epoll_size 500
 #define SERVERPORT 8888
 #define BUFFERSIZE 500//单个消息不能超过五百字
@@ -54,6 +55,7 @@ public:
     static int Epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);
     static int Epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
     static void Close(int fd);
+    
 };
 //消息类
 class Massage
@@ -63,6 +65,7 @@ private:
     Value Content;//消息被发送时打包好的内容
     string Package;//消息被接受时收到的字符串
     int Massage_size;
+    Value info;
 public:
     Massage(string option,Value content,string to,string from);
     Massage(string package);//服务器端包的初始化
@@ -72,7 +75,7 @@ public:
     //反序列化
     string Deserialization(string s);
     
-    auto takeMassage (string s);
+   std::variant<Json::Value, std::string> takeMassage(std::string s) ;
 };
 //用户类
 /*"User用来存储用户信息"*/
