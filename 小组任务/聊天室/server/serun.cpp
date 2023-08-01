@@ -41,6 +41,7 @@ vector<bool> Server::fd_new(1000, false);
 vector<string> Server::fd_ID(1000, "0");
 vector<int> Server::fd_bor(1000, 0);
 std::unordered_map<std::string, int> user_cfd;
+int user_ID;
 void Server::serun()
 {
    
@@ -51,7 +52,7 @@ void Server::serun()
     if (Library == nullptr){
         std::cout << "Library is null!!!!!!" << std::endl;
     } 
-    int user_ID=reply->integer;
+    user_ID=reply->integer;
     lfd=Err::Socket(AF_INET,SOCK_STREAM,0);
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(server_port);

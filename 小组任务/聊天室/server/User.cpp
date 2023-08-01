@@ -1,7 +1,7 @@
 #include "public.hpp"
 #include"ser.hpp"
 // id是标识用户的唯一信息
-int User::User_count = Server::user_ID;
+int User::User_count = user_ID;
 User::User(string name, string pass, string question, string answer, redisContext *userm)
 :Name(name),Pass(pass),Question(question),Answer(answer),Library(userm)
 {
@@ -26,7 +26,7 @@ User::~User()
 string User::distribute_id()
 {
     User_count++;
-    Server::user_ID++;
+    user_ID++;
     string s = to_string(User_count);
     ID = "11" + s;
     return ID;

@@ -98,15 +98,16 @@ void Clenit::viewfriend(string ID)
     Massage m(VIEW_FRIENDS,j,"0","0");
     string s=m.Serialization();
     Err::Write(cfd,s.c_str(),s.length());
-    cout<<"已发送查看请求"<<endl;
+    cout<<"已发送查看好友状态请求"<<endl;
     while (1)
     {
         char r[BUFFERSIZE];
         if(Err::Read(cfd,r,sizeof(r))>0){
             Massage m(r);
-            std::variant<Json::Value, std::string> result=m.takeMassage("option");
+            std::variant<Json::Value, std::string> result=m.takeMassage("content");
             Value flist=std::get<Json::Value>(result);
-            for (const auto& key : flist.getMemberNames()) {
+            for (ValueIterator it = flist.begin(); it != flist.end(); ++it) {
+                const std::string key = it.key().asString();
                 std::cout << "好友: " << key << ", 状态 " << flist[key].asString() << std::endl;
             }
             break;
@@ -121,6 +122,35 @@ void Clenit::friendrequests(string ID)
     Massage m(MAS_FRIEND,j,"0","0");
     string s=m.Serialization();
     Err::Write(cfd,s.c_str(),s.length());
+    cout<<"已发送查看好友申请请求"<<endl;
+    while (1)
+    {
+        char r[BUFFERSIZE];
+        if(Err::Read(cfd,r,sizeof(r))>0){
+            std::variant<Json::Value, std::string> result=m.takeMassage("content");
+            Value rlist=std::get<Json::Value>(result);
+            for (const auto& key : rlist.getMemberNames()) {
+                std::cout << "好友: " << key << "申请状态" << rlist[key].asString() << std::endl;
+            }
+            break;
+        }
+    }
+    Value info;
+    while (1)
+    {
+        cout<<"请你输入你要处理的好友(输入-1结束)"<<endl;
+        string in,o;
+        cin>>in;
+        cout<<"请你输入你要处理的选项"<<endl;
+        cin>>o;
+        info[in]=o;
+        if(in=="-1"){
+            break;
+        }
+    }
+    Massage m1(MAS_FRIEND,info,"0","0");
+    string s1=m1.Serialization();
+    Err::Write(cfd,s1.c_str(),s.length());
 }
 void Clenit::friends_menu(string ID)
 {

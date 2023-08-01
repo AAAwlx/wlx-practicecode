@@ -25,7 +25,7 @@
 using namespace std;
 extern redisContext* Library;//启用一个redis库
 extern std::unordered_map<std::string, int> user_cfd;
- 
+extern int user_ID;
 class Server
 {
 private:
@@ -41,7 +41,8 @@ private:
     static vector<int> fd_bor;
     //已经登陆的用户以及分配的套接字
 public:
-    static  int user_ID;
+    
+     
     Server(int port, string ip)
     :server_port(port),server_ip(ip){};
     ~Server();
@@ -58,6 +59,7 @@ public:
     static void delfriend(int cfd,Massage m);
     static void viewfriend(int cfd,Massage m);
     static void file_menu(int cfd);
+    static void friendrequests(int cfd,Massage m);
 };
 
 #endif
