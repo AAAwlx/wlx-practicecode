@@ -13,7 +13,7 @@ void Server::sign_up(int cfd,Massage m)//注册
     u.save_user();//保存用户信息
     return;
 }
-void Server::login(int cfd,Massage m,int count)//登陆
+void Server::login(int cfd,Massage m)//登陆
 {
     string id=m.Deserialization("ID");//用户输入的id
     User u(id,Library);
@@ -41,8 +41,6 @@ bool Server::sign_menu(int cfd)
 {
     cout << "进入sign" << endl;
     char r[BUFSIZ];
-    int count=0;
-    
     while (fd_in[cfd]==false)
     {
         if((read(cfd, r, sizeof(r)))>0)
@@ -63,8 +61,7 @@ bool Server::sign_menu(int cfd)
                 Server::sign_up(cfd,m);
             }else if(o==LOGIN)//登陆
             {
-                count++;
-                Server::login(cfd,m,count);
+                Server::login(cfd,m);
             }
             if (o==Reset_Password)
             {

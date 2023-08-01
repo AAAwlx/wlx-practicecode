@@ -105,7 +105,7 @@ void Server::friendrequests(int cfd, Massage m)
         {
             redisReply *value = reply->element[i + 1];
             std::string strValue(value->str, value->len);
-            info[""]=strValue;
+            info[strValue]="0";
         }
     }
     freeReplyObject(reply);
@@ -168,6 +168,8 @@ void Server::friends_menu(int cfd)
             else if (s == IGN_FRIEND)
             {
                 Server::ignorefriend(cfd, m);
+            }else if(s==EXIT){
+                break;
             }
         }
     }

@@ -106,9 +106,9 @@ void Clenit::viewfriend(string ID)
             Massage m(r);
             std::variant<Json::Value, std::string> result=m.takeMassage("content");
             Value flist=std::get<Json::Value>(result);
-            for (ValueIterator it = flist.begin(); it != flist.end(); ++it) {
-                const std::string key = it.key().asString();
-                std::cout << "好友: " << key << ", 状态 " << flist[key].asString() << std::endl;
+            Json::Value::Members members = flist.getMemberNames();
+            for (const auto& key : members) {
+                std::cout << "好友: " << key << "在线状态" << flist[key].asString() << std::endl;
             }
             break;
         }
@@ -130,7 +130,7 @@ void Clenit::friendrequests(string ID)
             std::variant<Json::Value, std::string> result=m.takeMassage("content");
             Value rlist=std::get<Json::Value>(result);
             for (const auto& key : rlist.getMemberNames()) {
-                std::cout << "好友: " << key << "申请状态" << rlist[key].asString() << std::endl;
+                std::cout << "id为: " << key <<"请求添加你为好友" << std::endl;
             }
             break;
         }
@@ -187,6 +187,7 @@ void Clenit::friends_menu(string ID)
             Clenit::ignorefriend(ID);
         }else if (in==EXIT)
         {
+            Clenit::Exit();
             break;
         }else{
             cout<<"您输入的选项不符合规范,请重试"<<endl;

@@ -50,7 +50,7 @@ public:
     static void thread_work(int cfd);
     static bool sign_menu(int cfd);
     static void sign_up(int cfd,Massage m);
-    static void login(int cfd,Massage m,int count);
+    static void login(int cfd,Massage m);
     static void resetpassword(int cfd,Massage m);//找回密码
     static void main_menu(int cfd,string ID);
     static void friends_menu(int cfd);

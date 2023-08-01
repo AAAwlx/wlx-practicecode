@@ -21,9 +21,13 @@ void Server::main_menu(int cfd,string ID)
 
             }else if (s==EXIT)
             {
-                /* code */
+                size_t numDeleted = user_cfd.erase(ID);//删除标记在线的键值对
+                if (numDeleted > 0) {
+                    std::cout << "已删除键为 " << ID << " 的键值对" << std::endl;
+                }
+                break;
             }
-            
         }    
     }
+    return ;
 }

@@ -129,6 +129,8 @@ void Clenit::resetpassword(string ID)
                     {
                         cout << "验证未通过,即将强制退出" << endl;
                         Clenit::Exit();
+                        Err::Close(cfd);
+                        exit(0);
                     }
                     break;
                 }
@@ -136,7 +138,10 @@ void Clenit::resetpassword(string ID)
         }
         else if (in == EXIT)
         {
+            std::cout << "再见,欢迎下次光临(๑•́ ₃ •̀๑)ｴｰ" << endl;
             Clenit::Exit();
+            Err::Close(cfd);
+            exit(0);
         }
         else
         {
@@ -232,10 +237,7 @@ void Clenit::Exit()
     Massage m(EXIT, j, "0", "0");
     string s = m.Serialization();
     Err::Write(cfd, s.c_str(),s.length());
-    std::cout << "再见,欢迎下次光临(๑•́ ₃ •̀๑)ｴｰ" << endl;
     std::cout << s << endl;
-    Err::Close(cfd);
-    exit(0);
 }
 void Clenit::sign_menu()
 {
@@ -270,7 +272,10 @@ void Clenit::sign_menu()
         }
         else if (in == EXIT)
         {
-           Clenit::Exit();
+            std::cout << "再见,欢迎下次光临(๑•́ ₃ •̀๑)ｴｰ" << endl;
+            Clenit::Exit();
+            Err::Close(cfd);
+            exit(0);
         }
         else
         {
