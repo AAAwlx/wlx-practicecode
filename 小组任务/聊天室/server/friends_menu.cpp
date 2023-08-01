@@ -19,14 +19,18 @@ void Server::friendadd(int cfd, Massage m)
     }
     else
     {
-        int cfd2 = user_cfd.at(NEW_friendid);
-        Value j;
-        j["ID"] = s2;
-        Massage m2(MAS_FRIEND, j, "0", "0");
-        string s3 = m2.Serialization();
-        Err::Write(cfd2, s3.c_str(), s3.length());     // 该请求应该被保存到被加人的好友申请的记录中
-        Err::Write(cfd, "succeed", sizeof("succeed")); // 向请求人发送请求成功转发
-        NEW_friendid += "r";
+        try {
+            int cfd2 = user_cfd.at(NEW_friendid);//当被添加人在线，立即向被添加人发送好友申请通知
+            Value j;
+            j["ID"] = s2;
+            Massage m2("add_friend", j, "0", "0");
+            string s3 = m2.Serialization();
+            Err::Write(cfd2, s3.c_str(), s3.length());     // 该请求应该被保存到被加人的好友申请的记录中
+            Err::Write(cfd, "succeed", sizeof("succeed")); // 向请求人发送请求成功转发
+        } catch (const std::out_of_range& e) {
+            Err::Write(cfd, "NotOnline", sizeof("NotOnline"));
+        }
+        NEW_friendid += "r";//将该好友请求存入redis中
         std::string command1 = "RPUSH " + NEW_friendid + " " + s2;
         redisReply *reply = (redisReply *)redisCommand(Library, command1.c_str());
         freeReplyObject(reply);
@@ -121,19 +125,27 @@ void Server::friendrequests(int cfd, Massage m)
         }
     }
     Massage m2(r);
-    std::variant<Json::Value, std::string> result = m.takeMassage("content");
+    std::variant<Json::Value, std::string> result = m2.takeMassage("content");
     Value rlist = std::get<Json::Value>(result);
     for (Json::ValueIterator it = rlist.begin(); it != rlist.end(); ++it)
     {
         std::string key = it.name(); // key为申请人id
         std::string value = (*it).asString();
-        redisReply *reply = (redisReply *)redisCommand(Library, "LREM %s 0 %s", s.c_str(), key.c_str());
+        redisReply *reply = (redisReply *)redisCommand(Library, "LREM %s 0 %s", s.c_str(), key.c_str());//将已经处理过的好友请求删除
+        Value j;
         if (value == "accapt")
         {
             u.add_friend(key);
+
         }
-        int cfd2 = user_cfd.at(key);//获取申请人的cfd
-        Err::Write(cfd2, value.c_str(), value.length());//将好友申请的结果返回给他
+        try {   
+                int cfd2 = user_cfd.at(key);
+                j["friend"]=key;
+                Massage m3("f_accapt",j,"0","0");
+                Err::Write(cfd2, value.c_str(), value.length());
+            } catch (const std::out_of_range& e) {
+                std::cout << "Key not found." << std::endl;
+            }
     }
 }
 void Server::friends_menu(int cfd)

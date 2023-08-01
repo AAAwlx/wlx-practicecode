@@ -69,9 +69,11 @@ bool Server::sign_menu(int cfd)
             }
             if (o=="succeed")
             {
-                cout<<cfd<<"已登陆"<<endl;
+                
                 string ID=m.Deserialization("ID");
                 user_cfd[ID]=cfd;
+                Server::historicalnews(cfd,ID);//客户端上线后将其未处理的消息发给他
+                cout<<cfd<<"已登陆"<<endl;
                 //Server::()
                 user_cfd.erase(ID);
             }

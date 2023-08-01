@@ -19,9 +19,9 @@ void Clenit::friendadd(string ID)
             {
                 cout<<"没有此用户，请再试一次"<<endl;
                 friendadd(ID);
-            }else if (r=="Refuse")
+            }else if (r=="NotOnline")
             {
-                cout<<"对方拒绝了你的申请"<<endl;
+                cout<<"对方暂时不在线，稍后为您发送请求"<<endl;
             }else if(r=="Succeed")
             {
                 cout<<"好友请求已发送"<<endl;
@@ -141,8 +141,15 @@ void Clenit::friendrequests(string ID)
         cout<<"请你输入你要处理的好友(输入-1结束)"<<endl;
         string in,o;
         cin>>in;
-        cout<<"请你输入你要处理的选项"<<endl;
-        cin>>o;
+        cout<<"请你输入你要处理的选项(accapt或refuse)"<<endl;
+        while(1){
+            cin>>o;
+            if(o!="accapt"&&o!="refuse"){
+                cout<<"您输入的选项不符合规范，请再试一次"<<endl;
+            }else{
+                break;
+            }
+        }
         info[in]=o;
         if(in=="-1"){
             break;

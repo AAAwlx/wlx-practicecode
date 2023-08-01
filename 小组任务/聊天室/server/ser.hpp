@@ -4,6 +4,7 @@
 #define SIGN_UP "1"//注册
 #define EXIT "0"//退出
 #define Reset_Password "3"//找回密码
+#define Historical_news "4"
 #define FRIENDS_MENU "3"//好友菜单
 #define PRIVATE "1"       //私聊
 #define GROUP "2"         //群菜单
@@ -48,18 +49,25 @@ public:
     ~Server();
     void serun();
     static void thread_work(int cfd);
-    static bool sign_menu(int cfd);
-    static void sign_up(int cfd,Massage m);
-    static void login(int cfd,Massage m);
+    //登陆界面
+    static bool sign_menu(int cfd);//账号主界面
+    static void sign_up(int cfd,Massage m);//注册
+    static void login(int cfd,Massage m);//登陆
     static void resetpassword(int cfd,Massage m);//找回密码
+    //主界面
     static void main_menu(int cfd,string ID);
-    static void friends_menu(int cfd);
-    static void friendadd(int cfd,Massage m);
-    static void ignorefriend(int cfd,Massage m);
-    static void delfriend(int cfd,Massage m);
-    static void viewfriend(int cfd,Massage m);
+    //好友管理
+    static void friends_menu(int cfd);//好友管理主界面
+    static void friendadd(int cfd,Massage m);//添加好友
+    static void ignorefriend(int cfd,Massage m);//屏蔽好友消息
+    static void delfriend(int cfd,Massage m);//删除好友
+    static void viewfriend(int cfd,Massage m); //查看好友在线状态
+    static void friendrequests(int cfd,Massage m);//处理好友申请
+    //
     static void file_menu(int cfd);
-    static void friendrequests(int cfd,Massage m);
+   
+    static void historicalnews(int cfd,string ID);
+    
 };
 
 #endif

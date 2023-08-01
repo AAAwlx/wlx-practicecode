@@ -27,6 +27,7 @@ bool TaskQueue<T>::empty() // 返回队列是否为空
 
 // 线程池
 ThreadPool::ThreadPool(int minNum, int maxNum)
+:m_shutdown(false),m_minNum(minNum),m_maxNum(maxNum),m_busyNum(0),m_aliveNum(minNum),m_threadsID(vector<thread>(maxNum))
 {
     for (int i = 0; i < minNum; ++i)
     {

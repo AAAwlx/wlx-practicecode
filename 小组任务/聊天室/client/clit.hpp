@@ -5,6 +5,7 @@
 #define SIGN_UP "1"//注册
 #define  LOGIN "2"//登陆
 #define Reset_Password "3"//找回密码
+#define Historical_news "4"//用户上线后历史未处理消息
 //主界面
 #define PRIVATE "1"       //私聊
 #define GROUP "2"         //群菜单
@@ -12,12 +13,16 @@
 #define FILE_MANAGE "4"   //文件管理 
 #define SEND_FILE "_sf"   //发文件
 #define RECV_FILE "_rf"   //收文件
+//好友界面
 #define ADD_FRIEND "1"   //加好友
 #define DEL_FRIEND "2"   //删好友
 #define VIEW_FRIENDS "3" //查看好友
 #define MAS_FRIEND "4"   //好友请求
 #define IGN_FRIEND "5"   //屏蔽好友
-#define BE_FRIENDS "0"   //成为好友
+#define BE_FRIENDS "0"   //已经是好友
+//私聊界面
+#define Direct_send "2"//直接发送
+#define Pchat_space "1"//进入与xx用户的聊天空间
 #include<iostream>
 using namespace std;
 class Clenit
@@ -25,7 +30,7 @@ class Clenit
 private:
    int server_port;
    string server_ip;
-   int cfd;
+   std::atomic<int> cfd;
 public:
     Clenit(int port, string ip);
     ~Clenit();
@@ -36,6 +41,7 @@ public:
     int login();
     void resetpassword(string ID);
     void Exit();
+    void historicalnews(string ID);
     void main_mnue(string ID);//主界面函数
     void privateChat(string ID);
     void group_menu(string ID);
@@ -48,6 +54,11 @@ public:
     void viewfriend(string ID);
     void friendrequests(string ID);
     void file_menu(string ID);
-    
+    //实时接收
+    void thread_recv(string ID);
+    void Prientf(string s);//将消息打印到顶部
+    //私聊
+    void directsend(string ID);
+    void pchatspace(string ID);
 };
 #endif
