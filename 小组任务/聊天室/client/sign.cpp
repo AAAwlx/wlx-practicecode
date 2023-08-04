@@ -8,21 +8,29 @@ int Clenit::login()
     char r[BUFFERSIZE] = {0};
     std::cout << "请输入您的ID(3~20位)" << endl;
     std::cin >> Id;
-    while (1){
-        if (Id.length() > 20 || Id.length() < 2){
+    while (1)
+    {
+        if (Id.length() > 20 || Id.length() < 2)
+        {
             std::cout << "您输入的昵称不符合规范，请重新输入一次" << endl;
             std::cin >> Id;
-        }else{
+        }
+        else
+        {
             break;
         }
     }
     std::cout << "请输入您的密码" << endl;
     std::cin >> Pass1;
-    while (1){
-        if (Pass1.length() > 20 || Pass1.length() < 3){
+    while (1)
+    {
+        if (Pass1.length() > 20 || Pass1.length() < 3)
+        {
             std::cout << "您输入的密码不符合规范，请重新输入一次" << endl;
             std::cin >> Pass1;
-        }else{
+        }
+        else
+        {
             break;
         }
     }
@@ -30,13 +38,12 @@ int Clenit::login()
 
     Massage m1(LOGIN, info, "0", "0");
     string s = m1.Serialization();
-    Err::Write(cfd, s.c_str(), s.length());
+    Err::Write(cfd, s.c_str(), s.size());
 
     while (1)
     {
-        if ((read(cfd, r, sizeof(r))) > 0)
+        if (Err::Read(cfd,r,sizeof(r))>0)
         {
-            std::cout << r << endl;
             if (stoi(r) == -1234567)
             {
 
@@ -55,8 +62,8 @@ int Clenit::login()
                     string s = m2.Serialization();
                     Err::Write(cfd, s.c_str(), s.length());
                     Clenit::historicalnews(Id);
-                    // main_mnue(Id);
-                    break;
+                    Clenit::main_mnue(Id);
+                    return 0;
                 }
                 else
                 {
@@ -76,7 +83,8 @@ int Clenit::login()
                             Err::Write(cfd, s.c_str(), s.length());
                             Clenit::historicalnews(Id);
                             std::cout << "进入主菜单" << endl;
-                            // main_mnue(Id);
+                            main_mnue(Id);
+                            return 0;
                         }
                         else
                         {
@@ -87,6 +95,7 @@ int Clenit::login()
                     if (count >= 2)
                     {
                         Clenit::resetpassword(Id);
+                        break;
                     }
                 }
             }
@@ -115,9 +124,8 @@ void Clenit::resetpassword(string ID)
             Err::Write(cfd, s.c_str(), s.length());
             while (1)
             {
-                if ((read(cfd, r, sizeof(r)))>0)
+                if ((Err::Read(cfd, r, sizeof(r))) > 0)
                 {
-                    cout << r << endl;
                     Massage m2(r);
                     string Q = m2.Deserialization("Question"); // 验证问题
                     string A = m2.Deserialization("Answer");   // 答案
@@ -141,6 +149,7 @@ void Clenit::resetpassword(string ID)
                     break;
                 }
             }
+            break;
         }
         else if (in == EXIT)
         {
@@ -206,12 +215,10 @@ int Clenit::sign_up()
 
         std::cout << "请再次输入您设置的问题" << endl;
         std::cin >> Answer2;
-        if (Answer1 == Answer2)
-        {
+        if (Answer1 == Answer2){
             break;
         }
-        else
-        {
+        else{
             continue;
         }
     }
@@ -221,11 +228,11 @@ int Clenit::sign_up()
     info["Answer"] = Answer1;
     Massage m1(SIGN_UP, info, "0", "0");
     string s = m1.Serialization();
-    Err::Write(cfd, s.c_str(), s.length());
+    Err::Write(cfd, s.c_str(), s.size());
     char r[BUFFERSIZE] = {0};
     while (1)
     {
-        if ((read(cfd, r, sizeof(r))))
+        if ((Err::Read(cfd, r, sizeof(r))))
         {
             ID = r;
             std::cout << "您的用户id是：" << ID << endl;

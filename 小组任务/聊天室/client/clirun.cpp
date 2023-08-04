@@ -1,6 +1,6 @@
 #include "public.hpp"
 #include "clit.hpp"
-
+std::atomic<bool> stopFlag{false};
 Clenit::Clenit(int port, string ip)
     : server_port(port), server_ip(ip)
 {

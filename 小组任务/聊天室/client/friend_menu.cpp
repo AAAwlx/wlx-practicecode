@@ -3,7 +3,7 @@
 void Clenit::friendadd(string ID)
 {
     string in;
-    char r[BUFSIZ];
+    char a[BUFSIZ];
     Value j;
     cout<<"请输入新好友的id"<<endl;
     cin>>in;
@@ -12,9 +12,12 @@ void Clenit::friendadd(string ID)
     Massage m(ADD_FRIEND,j,"0","0");
     string s=m.Serialization();
     Err::Write(cfd,s.c_str(),s.length());
+    string r;
     while (1)
     {
-        if(Err::Read(cfd,r,sizeof(r))){
+        if(Err::Read(cfd,a,sizeof(a))){
+            Massage m1(a);
+            r=m1.Deserialization("return");
             if (r=="NULL")
             {
                 cout<<"没有此用户，请再试一次"<<endl;
@@ -25,7 +28,7 @@ void Clenit::friendadd(string ID)
             }else if(r=="Succeed")
             {
                 cout<<"好友请求已发送"<<endl;
-            }else if(strcmp(r, "befriends") == 0){
+            }else if(r == "befriends"  ){
                 cout << "你们已经是好友了" << endl;
             }
             break;    
@@ -48,6 +51,7 @@ void Clenit::delfriend(string ID)
     while (1)
     {
         if(Err::Read(cfd,r,sizeof(r))){
+            cout<<r<<endl;
             if (r=="NULL")
             {
                 cout<<"你与id为"<<in<<"还不是好友，请输入正确id"<<endl;
@@ -127,8 +131,10 @@ void Clenit::friendrequests(string ID)
     {
         char r[BUFFERSIZE];
         if(Err::Read(cfd,r,sizeof(r))>0){
+            cout<<r<<endl;
             std::variant<Json::Value, std::string> result=m.takeMassage("content");
             Value rlist=std::get<Json::Value>(result);
+            cout<<rlist<<endl;
             for (const auto& key : rlist.getMemberNames()) {
                 std::cout << "id为: " << key <<"请求添加你为好友" << std::endl;
             }
@@ -138,9 +144,12 @@ void Clenit::friendrequests(string ID)
     Value info;
     while (1)
     {
-        cout<<"请你输入你要处理的好友(输入-1结束)"<<endl;
         string in,o;
+        cout<<"请你输入你要处理的好友(输入-1结束)"<<endl;
         cin>>in;
+        if(in=="-1"){
+            break;
+        }
         cout<<"请你输入你要处理的选项(accapt或refuse)"<<endl;
         while(1){
             cin>>o;
@@ -151,13 +160,11 @@ void Clenit::friendrequests(string ID)
             }
         }
         info[in]=o;
-        if(in=="-1"){
-            break;
-        }
     }
     Massage m1(MAS_FRIEND,info,"0","0");
     string s1=m1.Serialization();
     Err::Write(cfd,s1.c_str(),s.length());
+    cout<<s1<<endl;
 }
 void Clenit::friends_menu(string ID)
 {
@@ -178,10 +185,12 @@ void Clenit::friends_menu(string ID)
         cout << "|    3:查看好友    |" << endl;
         cout << "|    4:好友请求    |" << endl;
         cout << "|    5:屏蔽好友    |" << endl;
+        cout << "|    6:解除屏蔽    |" << endl;
         cout << "|    0:退出界面    |" << endl;
         cout << "|                  |" << endl;
         cout << "+------------------+" << endl;
         cin>>in;
+        system("clear");
         if(in==ADD_FRIEND){
             Clenit::friendadd(ID);
         }else if(in==DEL_FRIEND){

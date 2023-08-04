@@ -6,20 +6,30 @@ void Clenit::historicalnews(string ID)//用户上线后立即发送未处理消�
     while (1)
     {
         if(Err::Read(cfd,r,sizeof(r))>0){
-            Massage m1(r);
-            string s1=m1.Deserialization("request");
-            if(s1=="NULL"){
+            cout<<r<<endl;
+            Massage m(r);
+            std::variant<Json::Value, std::string> result = m.takeMassage("content");
+            Value s = std::get<Json::Value>(result);
+            Value s1=s["request"];
+            Value s2=s["chat"];
+            cout<<s1["request"].asString()<<endl;
+            cout<<s2["request"].asString()<<endl;
+            if(s1["request"].asString()=="nullptr"){
                 cout<<"无好友申请"<<endl;
             }else{
-                cout<<"有id号为"<<s1<<"的用户想与您建立好友关系"<<endl;
+                Json::Value::Members  members= s1.getMemberNames();
+                for (const auto& key : members) {
+                    std::cout << "id为" << s1[key].asString()<<"请求与你建立好友关系"<< std::endl;
+                }
             }
-            string s2=m1.Deserialization("chat");
-            if(s2=="NULL"){
-
-            }else{
+            if(s2["chat"].asString()=="nullptr"){
                 cout<<"无新消息"<<endl;
+            }else{
+                Json::Value::Members members2 = s2.getMemberNames();
+                for (const auto& key : members2) {
+                    std::cout << "您有新消息" << s2[key].asString() << std::endl;
+                }
             }
-            
             break;
         }
     }
@@ -30,8 +40,7 @@ void Clenit::main_mnue(string ID)
     string in;
     char r[BUFSIZ];
     cout<<"开启实时接收线程"<<endl;
-    std::thread t(thread_recv);
-    t.detach();
+    std::thread t([&]() { thread_recv(ID, cfd, chatobject); });
     while (true)
     {
         bzero(r, sizeof(r));
@@ -47,26 +56,29 @@ void Clenit::main_mnue(string ID)
         cout << "|                  |" << endl;
         cout << "+------------------+" << endl;
         cin >> in;
-        Err::Write(cfd, in.c_str(), in.length());
+        Value j;
+        Massage m(in,j,"0","0");
+        string s=m.Serialization();
+        Err::Write(cfd, s.c_str(), s.length());
         system("clear");
         if (in == PRIVATE){
-            string s = PRIVATE;
-            Err::Write(cfd, s.c_str(), s.length());
             Clenit::privateChat(ID);
-        }else if (in == GROUP){
+        }/*else if (in == GROUP){
             string s = GROUP;
             Err::Write(cfd, s.c_str(), s.length());
             Clenit::group_menu(ID);
-        }else if (in == FRIENDS_MENU){
-            string s = FRIENDS_MENU;
-            Err::Write(cfd, s.c_str(), s.length());
-            Clenit::file_menu(ID);
-        }else if(in==FILE_MANAGE){
+        }*/else if (in == FRIENDS_MENU){
+            Clenit::friends_menu(ID);
+        }/*else if(in==FILE_MANAGE){
             string s = FILE_MANAGE;
             Err::Write(cfd, s.c_str(), s.length());
             Clenit::file_menu(ID);
-        }else if (in==EXIT){
-            
+        }*/else if (in==EXIT){
+            stopFlag = true;//在退出登陆前关闭实时接收的线程
+            if (t.joinable())
+                t.join();
+            Clenit::Exit();
+            break;
         }else{
             cout<<"您的输入不符合规范，请再次输入选项"<<endl;
             continue;

@@ -9,17 +9,18 @@ void Server::sign_up(int cfd,Massage m)//注册
     string a=m.Deserialization("Answer");
     User u(n,p,q,a,Library);//初始化用户类
     string ID=u.distribute_id();//分配ID
-    Err::Write(cfd,ID.c_str(),ID.length());//向客户端返回ID 
+    Err::Write(cfd,ID.c_str(),ID.size());//向客户端返回ID 
     u.save_user();//保存用户信息
     return;
 }
 void Server::login(int cfd,Massage m)//登陆
 {
+    cout<<"++++++++++++++"<<endl;
     string id=m.Deserialization("ID");//用户输入的id
     User u(id,Library);
     string Pass2=u.Inquire("Pass");
-    cout<<Pass2<<"+"<<endl;
-    Err::Write(cfd,Pass2.c_str(),Pass2.length());
+    cout<<Pass2<<endl;
+    Err::Write(cfd,Pass2.c_str(),Pass2.size());
 }
 void Server::resetpassword(int cfd,Massage m)
 {
@@ -43,11 +44,11 @@ bool Server::sign_menu(int cfd)
     char r[BUFSIZ];
     while (fd_in[cfd]==false)
     {
-        if((read(cfd, r, sizeof(r)))>0)
+        bzero(r,sizeof(r));
+        if(Err::Read(cfd,r,sizeof(r))>0)
         {
             cout << r << endl;
-            string s=r;
-            Massage m(s);
+            Massage m(r);
             std::variant<Json::Value, std::string> result=m.takeMassage("option");
             std::string o = std::get<std::string>(result);
             cout << o << endl;
@@ -68,17 +69,17 @@ bool Server::sign_menu(int cfd)
                 Server::resetpassword(cfd,m);
             }
             if (o=="succeed")
-            {
-                
+            { 
                 string ID=m.Deserialization("ID");
                 user_cfd[ID]=cfd;
                 Server::historicalnews(cfd,ID);//客户端上线后将其未处理的消息发给他
                 cout<<cfd<<"已登陆"<<endl;
-                //Server::()
+                Server::main_menu(cfd,ID);
                 user_cfd.erase(ID);
             }
             
         }
+        
     }
     return false;
 }

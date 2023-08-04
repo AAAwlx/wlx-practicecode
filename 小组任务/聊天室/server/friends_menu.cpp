@@ -3,10 +3,16 @@
 void Server::friendadd(int cfd, Massage m)
 {
     string NEW_friendid = m.Deserialization("NEW_friendid"); // 被加人的id
+    string r;
+    Value v;
     User f(NEW_friendid, Library);
     if (f.Inquire("ID") == "0")
     { // 查询是否有此人存在
-        Err::Write(cfd, "NULL", sizeof("NULL"));
+        cout << "NULL" << endl;
+        v["return"] = "NULL";
+        Massage m1("0", v, "0", "0");
+        string s = m1.Serialization();
+        Err::Write(cfd, s.c_str(), s.length());
         return;
     }
     string s2 = m.Deserialization("ID"); //
@@ -14,33 +20,60 @@ void Server::friendadd(int cfd, Massage m)
     Value j = u.friend_List;
     if (j.isMember(NEW_friendid))
     {
-        Err::Write(cfd, "befriends", sizeof("befriends")); // 如果好友列表中有被加人
-        return;
+        cout << "befriends" << endl;
+        r = "befriends"; // 如果好友列表中有被加人
     }
     else
     {
-        try {
-            int cfd2 = user_cfd.at(NEW_friendid);//当被添加人在线，立即向被添加人发送好友申请通知
+        try
+        {
+            int cfd2 = user_cfd.at(NEW_friendid); // 当被添加人在线，立即向被添加人发送好友申请通知
             Value j;
             j["ID"] = s2;
             Massage m2("add_friend", j, "0", "0");
             string s3 = m2.Serialization();
-            Err::Write(cfd2, s3.c_str(), s3.length());     // 该请求应该被保存到被加人的好友申请的记录中
-            Err::Write(cfd, "succeed", sizeof("succeed")); // 向请求人发送请求成功转发
-        } catch (const std::out_of_range& e) {
-            Err::Write(cfd, "NotOnline", sizeof("NotOnline"));
+            Err::Write(cfd2, s3.c_str(), s3.length());
+            r = "succeed"; // 该请求应该被保存到被加人的好友申请的记录中
+            cout << "succeed" << endl;
         }
-        NEW_friendid += "r";//将该好友请求存入redis中
-        std::string command1 = "RPUSH " + NEW_friendid + " " + s2;
-        redisReply *reply = (redisReply *)redisCommand(Library, command1.c_str());
+        catch (const std::out_of_range &e)
+        {
+            r = "NotOnline";
+            cout << "succeed" << endl;
+        }
+        NEW_friendid += "r"; // 将该好友请求存入redis中
+        redisReply *reply = (redisReply *)redisCommand(Library, "LRANGE %s 0 -1", NEW_friendid.c_str());
+        bool valueExists = false;
+        if (reply->type == REDIS_REPLY_ARRAY)
+        {
+            for (size_t i = 0; i < reply->elements; i++)
+            {
+                std::string element(reply->element[i]->str, reply->element[i]->len);
+                if (element == s2)
+                {
+                    valueExists = true;
+                    break;
+                }
+            }
+        }
+        if(!valueExists){
+            redisReply *reply2 = (redisReply *)redisCommand(Library, "LPUSH %s %s", NEW_friendid.c_str(), s2.c_str());
+            freeReplyObject(reply2);
+        }
         freeReplyObject(reply);
     }
+    v["return"] = r;
+    Massage m4("0", v, "0", "0");
+    string s4 = m4.Serialization();
+    Err::Write(cfd, s4.c_str(), s4.length());
 }
 void Server::delfriend(int cfd, Massage m)
 {
+    cout << "---------------------" << endl;
     string s1 = m.Deserialization("Del_friend");
     string s2 = m.Deserialization("ID");
     User u(s2, Library);
+    User u2(s1,Library);
     Value j = u.friend_List;
     if (j.isMember(s1))
     {
@@ -49,11 +82,15 @@ void Server::delfriend(int cfd, Massage m)
     else
     {
         u.delete_friend(s1);
+        u2.delete_friend(s2);
         Err::Write(cfd, "Succeed", sizeof("succeed"));
     }
+    cout<<u.friend_List<<endl;
+    cout<<u2.friend_List<<endl;
 }
 void Server::ignorefriend(int cfd, Massage m)
 {
+    cout << "---------------------" << endl;
     string s1 = m.Deserialization("Ign_friend");
     string s2 = m.Deserialization("ID");
     User u(s2, Library);
@@ -67,13 +104,14 @@ void Server::ignorefriend(int cfd, Massage m)
         u.shield_friend(s1);
         Err::Write(cfd, "Succeed", sizeof("succeed"));
     }
+    cout<<u.friend_List<<endl;
 }
 void Server::viewfriend(int cfd, Massage m)
 {
     string s2 = m.Deserialization("ID");
     User u(s2, Library);
-    Value j = u.friend_List;
-    Value flist;
+    Value j = u.friend_List; // 好友列表
+    Value flist;             // 好友状态列表
     if (j.isObject())
     {
         Json::Value::Members members = j.getMemberNames();
@@ -104,18 +142,18 @@ void Server::friendrequests(int cfd, Massage m)
     redisReply *reply = (redisReply *)redisCommand(Library, "LRANGE %s 0 -1", s.c_str());
     if (reply->type == REDIS_REPLY_ARRAY)
     {
-        // HGETALL命令的返回值是一个数组，其中奇数索引为字段名，偶数索引为对应的值
         for (size_t i = 0; i < reply->elements; ++i)
         {
-            redisReply *value = reply->element[i + 1];
+            redisReply *value = reply->element[i];
             std::string strValue(value->str, value->len);
-            info[strValue]="0";
+            info[strValue] = "0";
         }
     }
     freeReplyObject(reply);
     Massage m1(MAS_FRIEND, info, "0", "0");
     string s1 = m1.Serialization();
-    Err::Write(cfd, s1.c_str(), s.length());//将待处理的请求发送到客户端
+    cout<<s1<<endl;
+    Err::Write(cfd, s1.c_str(), s.length()); // 将待处理的请求发送到客户端
     char r[BUFFERSIZE];
     while (1)
     {
@@ -131,21 +169,25 @@ void Server::friendrequests(int cfd, Massage m)
     {
         std::string key = it.name(); // key为申请人id
         std::string value = (*it).asString();
-        redisReply *reply = (redisReply *)redisCommand(Library, "LREM %s 0 %s", s.c_str(), key.c_str());//将已经处理过的好友请求删除
+        redisReply *reply = (redisReply *)redisCommand(Library, "LREM %s 0 %s", s.c_str(), key.c_str()); // 将已经处理过的好友请求删除
         Value j;
         if (value == "accapt")
         {
-            u.add_friend(key);
-
+            User k(key, Library);
+            k.add_friend(ID);  // 将被加人加入申请人的列表
+            u.add_friend(key); // 将申请人加入被加人的列表
         }
-        try {   
-                int cfd2 = user_cfd.at(key);
-                j["friend"]=key;
-                Massage m3("f_accapt",j,"0","0");
-                Err::Write(cfd2, value.c_str(), value.length());
-            } catch (const std::out_of_range& e) {
-                std::cout << "Key not found." << std::endl;
-            }
+        try
+        {
+            int cfd2 = user_cfd.at(key);
+            j["friend"] = key;
+            Massage m3("f_accapt", j, "0", "0");
+            Err::Write(cfd2, value.c_str(), value.length()); // 如果在线，通知申请人申请已经通过
+        }
+        catch (const std::out_of_range &e)
+        {
+            std::cout << "Key not found." << std::endl;
+        }
     }
 }
 void Server::friends_menu(int cfd)
@@ -157,10 +199,11 @@ void Server::friends_menu(int cfd)
         if (Err::Read(cfd, r, sizeof(r)) > 0)
         {
             cout << r << endl;
+            
             Massage m(r);
             std::variant<Json::Value, std::string> result = m.takeMassage("option");
             std::string s = std::get<std::string>(result);
-
+            cout << s << endl;
             if (s == ADD_FRIEND)
             {
                 Server::friendadd(cfd, m);
@@ -180,7 +223,9 @@ void Server::friends_menu(int cfd)
             else if (s == IGN_FRIEND)
             {
                 Server::ignorefriend(cfd, m);
-            }else if(s==EXIT){
+            }
+            else if (s == EXIT)
+            {
                 break;
             }
         }

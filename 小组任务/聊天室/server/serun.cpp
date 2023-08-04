@@ -45,7 +45,7 @@ int user_ID;
 void Server::serun()
 {
    
-    std::atomic<int> cfd;
+    int cfd;
     struct sockaddr_in serv_addr, clie_addr;
     Library=redisConnect(server_ip.c_str(),6379);
     redisReply *reply = (redisReply *)redisCommand(Library, "GET %s", "User_ID");

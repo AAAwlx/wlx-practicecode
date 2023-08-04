@@ -49,7 +49,6 @@ bool User::save_user() // 将用户信息存入数据库
     const char *hash_user = "User";
     const char *field = ID.c_str(); // 键值为唯一标识用户id
     const char *value = s.c_str();
-    cout<<s<<endl;
     user_mtx.lock();
     redisReply *reply = (redisReply *)redisCommand(Library, "HSET %s %s %s", hash_user, field, value);
     user_mtx.unlock();
@@ -73,7 +72,6 @@ string User::Inquire(string s)
     }
     Reader r;
     Value info;
-    cout<<reply->str<<endl;
     r.parse(reply->str, info);
     return info[s].asString();
 }

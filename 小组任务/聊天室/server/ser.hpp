@@ -1,23 +1,30 @@
 #ifndef _SERVER_CLASS_H_
 #define _SERVER_CLASS_H_
-#define LOGIN "2"//登陆
-#define SIGN_UP "1"//注册
+//登陆页面
 #define EXIT "0"//退出
+#define SIGN_UP "1"//注册
+#define  LOGIN "2"//登陆
 #define Reset_Password "3"//找回密码
-#define Historical_news "4"
-#define FRIENDS_MENU "3"//好友菜单
+#define Historical_news "4"//用户上线后历史未处理消息
+//主界面
 #define PRIVATE "1"       //私聊
 #define GROUP "2"         //群菜单
 #define FRIENDS_MENU "3"  //好友管理
 #define FILE_MANAGE "4"   //文件管理 
+//文件管理
 #define SEND_FILE "_sf"   //发文件
 #define RECV_FILE "_rf"   //收文件
+//好友界面
 #define ADD_FRIEND "1"   //加好友
 #define DEL_FRIEND "2"   //删好友
 #define VIEW_FRIENDS "3" //查看好友
 #define MAS_FRIEND "4"   //好友请求
 #define IGN_FRIEND "5"   //屏蔽好友
 #define BE_FRIENDS "0"   //成为好友
+//私聊界面
+#define Direct_send "2"//直接发送
+#define Pchat_space "1"//进入与xx用户的聊天空间
+#define Chat_History "3"//查看与某用户的聊天历史
 #define EP0LL_SIZE 1024 
 #include<iostream>
 #include<hiredis/hiredis.h>
@@ -63,11 +70,14 @@ public:
     static void delfriend(int cfd,Massage m);//删除好友
     static void viewfriend(int cfd,Massage m); //查看好友在线状态
     static void friendrequests(int cfd,Massage m);//处理好友申请
-    //
-    static void file_menu(int cfd);
-   
-    static void historicalnews(int cfd,string ID);
     
+    //static void file_menu(int cfd);
+   //
+    static void privateChat(int cfd);
+    static void directsend(int cfd,Massage m,char *massage);
+    static void pchatspace(int cfd,Massage m);
+    static void chathistory(int cfd,Massage m);
+    static void historicalnews(int cfd,string ID);
 };
 
 #endif

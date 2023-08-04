@@ -14,7 +14,7 @@ Massage::Massage(string package)
 }
 Massage::~Massage()
 {
-
+    
 }
 string Massage::Serialization()
 {
@@ -26,7 +26,6 @@ string Massage::Serialization()
     info["Time"]=Time;
     FastWriter w;
     string s=w.write(info);
-    cout<<s<<endl;
     Massage_size=s.length();
     return s;
 }
