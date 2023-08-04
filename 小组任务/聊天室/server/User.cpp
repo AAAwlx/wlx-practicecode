@@ -82,8 +82,10 @@ void User::add_friend(string friend_id)
 }
 void User::delete_friend(string friend_id)
 {
-    friend_List.removeMember(friend_id);
-    this->save_user();
+    if (friend_List.isObject()) {
+        friend_List.removeMember(friend_id);
+        this->save_user();
+    }
 }
 void User::shield_friend(string friend_id)
 {

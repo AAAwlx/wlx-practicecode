@@ -39,7 +39,8 @@ void Clenit::friendadd(string ID)
 void Clenit::delfriend(string ID)
 {
     string in;
-    char r[BUFSIZ];
+    char a[BUFSIZ];
+    string r;
     cout <<"请输入你要删除的好友id"<<endl;
     cin >> in;
     Value j;
@@ -50,12 +51,13 @@ void Clenit::delfriend(string ID)
     Err::Write(cfd,s.c_str(),s.length());
     while (1)
     {
-        if(Err::Read(cfd,r,sizeof(r))){
-            cout<<r<<endl;
+        if(Err::Read(cfd,a,sizeof(a))){
+            Massage m1(a);
+            r=m1.Deserialization("return");
+            cout<<a<<endl;
             if (r=="NULL")
             {
                 cout<<"你与id为"<<in<<"还不是好友，请输入正确id"<<endl;
-                delfriend(ID);
             }else if(r=="Succeed")
             {
                 cout<<"你已将id为"<<in<<"的用户已成功删除"<<endl;
@@ -69,7 +71,7 @@ void Clenit::delfriend(string ID)
 void Clenit::ignorefriend(string ID)
 {
     string in;
-    char r[BUFSIZ];
+    char a[BUFSIZ];
     cout <<"请输入你要屏蔽的好友id"<<endl;
     cin >> in;
     Value j;
@@ -79,9 +81,12 @@ void Clenit::ignorefriend(string ID)
     Massage m(DEL_FRIEND,j,"0","0");
     string s=m.Serialization();
     Err::Write(cfd,s.c_str(),s.length());
+    string r;
     while (1)
     {
-        if(Err::Read(cfd,r,sizeof(r))){
+        if(Err::Read(cfd,a,sizeof(a))){
+            Massage m1(a);
+            r=m1.Deserialization("return");
             if (r=="NULL")
             {
                 cout<<"你与id为"<<in<<"还不是好友，请输入正确id"<<endl;

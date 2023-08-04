@@ -69,24 +69,24 @@ void Server::friendadd(int cfd, Massage m)
 }
 void Server::delfriend(int cfd, Massage m)
 {
-    cout << "---------------------" << endl;
     string s1 = m.Deserialization("Del_friend");
     string s2 = m.Deserialization("ID");
     User u(s2, Library);
     User u2(s1,Library);
     Value j = u.friend_List;
-    if (j.isMember(s1))
-    {
-        Err::Write(cfd, "NULL", sizeof("NULL"));
-    }
-    else
+    Value v;
+    if (u.friend_List.isMember(s1))
     {
         u.delete_friend(s1);
         u2.delete_friend(s2);
-        Err::Write(cfd, "Succeed", sizeof("succeed"));
+        v["return"]="Succeed";
     }
-    cout<<u.friend_List<<endl;
-    cout<<u2.friend_List<<endl;
+    else
+    {
+       v["return"]="Succeed";
+    }
+    Massage m1("0",v,"0","0");
+    Err::Write(cfd,m1.Serialization().c_str(),m1.Serialization().length());
 }
 void Server::ignorefriend(int cfd, Massage m)
 {
@@ -95,16 +95,18 @@ void Server::ignorefriend(int cfd, Massage m)
     string s2 = m.Deserialization("ID");
     User u(s2, Library);
     Value j = u.friend_List;
+    Value v;
     if (j.isMember(s1))
-    {
-        Err::Write(cfd, "NULL", sizeof("NULL"));
+    { 
+        u.shield_friend(s1);
+        v["return"]="Succeed";
     }
     else
     {
-        u.shield_friend(s1);
-        Err::Write(cfd, "Succeed", sizeof("succeed"));
+        v["return"]="NULL";
     }
-    cout<<u.friend_List<<endl;
+    Massage m1("0",v,"0","0");
+    Err::Write(cfd,m1.Serialization().c_str(),m1.Serialization().length());
 }
 void Server::viewfriend(int cfd, Massage m)
 {

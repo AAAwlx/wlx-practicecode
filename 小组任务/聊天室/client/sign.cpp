@@ -63,7 +63,7 @@ int Clenit::login()
                     Err::Write(cfd, s.c_str(), s.length());
                     Clenit::historicalnews(Id);
                     Clenit::main_mnue(Id);
-                    return 0;
+                    break;
                 }
                 else
                 {
