@@ -20,6 +20,7 @@
 #define VIEW_FRIENDS "3" //查看好友
 #define MAS_FRIEND "4"   //好友请求
 #define IGN_FRIEND "5"   //屏蔽好友
+#define REC_FRIEND "6"   //解除屏蔽
 #define BE_FRIENDS "0"   //已经是好友
 //私聊界面
 #define Direct_send "2"//直接发送
@@ -61,6 +62,7 @@ public:
     void viewfriend(string ID);//查看好友在线状态
     void friendrequests(string ID);//处理好友申请
     void file_menu(string ID);
+    void friendrecover(string ID);
     //实时接收
     static void PrientfT(string s);
     static void PrientfR(string s);

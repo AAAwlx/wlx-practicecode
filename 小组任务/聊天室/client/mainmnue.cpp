@@ -40,6 +40,7 @@ void Clenit::main_mnue(string ID)
     string in;
     char r[BUFSIZ];
     cout<<"开启实时接收线程"<<endl;
+    stopFlag=true;
     std::thread t([&]() { thread_recv(ID, cfd, chatobject); });
     while (true)
     {
@@ -74,10 +75,12 @@ void Clenit::main_mnue(string ID)
             Err::Write(cfd, s.c_str(), s.length());
             Clenit::file_menu(ID);
         }*/else if (in==EXIT){
-            stopFlag = true;//在退出登陆前关闭实时接收的线程
-            if (t.joinable())
+            stopFlag = false;//在退出登陆前关闭实时接收的线程
+            if (t.joinable()){
                 t.join();
+            }
             Clenit::Exit();
+            cout<<"线程结束"<<endl;
             break;
         }else{
             cout<<"您的输入不符合规范，请再次输入选项"<<endl;

@@ -20,6 +20,7 @@
 #define VIEW_FRIENDS "3" //查看好友
 #define MAS_FRIEND "4"   //好友请求
 #define IGN_FRIEND "5"   //屏蔽好友
+#define REC_FRIEND "6"  
 #define BE_FRIENDS "0"   //成为好友
 //私聊界面
 #define Direct_send "2"//直接发送
@@ -70,7 +71,7 @@ public:
     static void delfriend(int cfd,Massage m);//删除好友
     static void viewfriend(int cfd,Massage m); //查看好友在线状态
     static void friendrequests(int cfd,Massage m);//处理好友申请
-    
+    static void friendrecover(int cfd,Massage m);
     //static void file_menu(int cfd);
    //
     static void privateChat(int cfd);

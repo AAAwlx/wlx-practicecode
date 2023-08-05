@@ -70,7 +70,6 @@ ssize_t Err::Write(int fd, const void *buf, size_t count)
     }
     return ret;
 }
-
 ssize_t Err::Sendfile(int out_fd, int in_fd, off_t* offset, size_t count)
 {
     int ret=sendfile(out_fd, in_fd, offset, count);

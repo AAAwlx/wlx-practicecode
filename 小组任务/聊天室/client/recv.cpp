@@ -3,13 +3,13 @@
 //实时接收好友申请提示，私聊与群聊消息，群中权限变更提醒
 void thread_recv(const std::string& ID, int cfd, const std::string& chatobject )
 {
-    while (!stopFlag){
+    while (stopFlag){
         char r[BUFFERSIZE];
         if(Err::Read(cfd,r,sizeof(r)) > 0){
             Massage m(r);
             std::variant<Json::Value, std::string> result = m.takeMassage("option");
             string o = std::get<std::string>(result);
-            Clenit::PrientfT(o);
+            Clenit::PrientfR(o);
             if (o == "f_accapt"){
                 string friendid = m.Deserialization("friend");
                 string s = "id为" + friendid + "通过了你的好友申请，你们可以开始聊天了。";

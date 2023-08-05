@@ -92,3 +92,8 @@ void User::shield_friend(string friend_id)
     friend_List[friend_id] = 0;
     this->save_user();
 }
+void User::recover_friend(string friend_id)
+{
+    friend_List[friend_id] = 1;
+    this->save_user();
+}

@@ -49,15 +49,13 @@ public:
     static void Listen(int sockfd, int backlog);
     static int Accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
     static int Connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
-    static char* Read(int fd);
-    static int Write(int fd, std::string massage);
+    static ssize_t Read(int fd, void *buf, size_t count);
+    static ssize_t Write(int fd, const void *buf, size_t count);
     static ssize_t Sendfile(int out_fd, int in_fd, off_t* offset, size_t count);
     static int Epoll_create(int size);
     static int Epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);
     static int Epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
     static void Close(int fd);
-    static int writen(int fd,char *msg,int size);
-    static int readn(int fd,char *buf,int size);
 };
 //消息类
 class Massage
@@ -101,6 +99,7 @@ public:
     void add_friend(string friend_id);//添加好友
     void delete_friend(string friend_id);//删除好友
     void shield_friend(string friend_id);//屏蔽好友
+    void recover_friend(string friend_id);//解除屏蔽
     //void Revise();//修改用户信息
     ~User();
 };

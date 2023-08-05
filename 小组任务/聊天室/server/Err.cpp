@@ -48,65 +48,33 @@ int Err::Connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
     }
     return ret;
 }
-int Err::readn(int fd,char *buf,int size)
+ssize_t Err::Read(int fd, void *buf, size_t count)
 {
-    int count=size;
-    char *pt=buf;
-    while (count>0)
+    ssize_t ret=read(fd,buf,count);
+    if (ret<0)
     {
-        int len=recv(fd, pt, count, 0);
-        if(len==-1){
-            return -1;
-        }else if(len==0){
-            continue;
+        if (!(errno == EAGAIN || errno == EWOULDBLOCK))
+        {
+            perror("write()");
+            exit(0);
         }
-        count-=len;
-        pt+=len;
     }
-    return size;
-}
-char* Err::Read(int fd)
-{
-    int len=0;
-    readn(fd,(char*)&len,4);
-    len=ntohl(len);
-    char *buffer=(char *)malloc(len+1);
-    int ret=readn(fd,buffer,len);
-    if(ret!=len){
-        close(fd);
-        free(buffer);
-        return NULL;
-    }
-    buffer[len]='\0';
-    return buffer;
-}
-int Err::writen(int fd,char *msg,int size)
-{
-    const char *buf=msg;
-    int count=size;
-    while (count>0)
-    {
-        int len = send(fd, buf, count, 0);
-        if(len==0){
-            continue;
-        }else if(len==-1){
-            close(fd);
-            return -1;
-        }
-        count-=len;
-        buf+=len;
-    }
-}
-int Err::Write(int fd, std::string massage)
-{
-    char *data=(char *)malloc(massage.size());
-    int netlen=htonl(massage.size());
-    memcpy(data,&netlen,4);
-    memcpy(data+4,massage.data(),massage.size());
-    int ret=writen(fd,data,massage.size()+4);
-    free(data);
     return ret;
 }
+ssize_t Err::Write(int fd, const void *buf, size_t count)
+{
+    ssize_t ret=write(fd,buf,count);
+    if (ret<0)
+    {
+        if (!(errno == EAGAIN || errno == EWOULDBLOCK))
+        {
+            perror("write()");
+            exit(0);
+        }
+    }
+    return ret;
+}
+
 ssize_t Err::Sendfile(int out_fd, int in_fd, off_t *offset, size_t count)
 {
     int ret = sendfile(out_fd, in_fd, offset, count);

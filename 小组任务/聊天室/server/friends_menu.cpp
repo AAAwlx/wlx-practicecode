@@ -20,7 +20,6 @@ void Server::friendadd(int cfd, Massage m)
     Value j = u.friend_List;
     if (j.isMember(NEW_friendid))
     {
-        cout << "befriends" << endl;
         r = "befriends"; // 如果好友列表中有被加人
     }
     else
@@ -33,13 +32,11 @@ void Server::friendadd(int cfd, Massage m)
             Massage m2("add_friend", j, "0", "0");
             string s3 = m2.Serialization();
             Err::Write(cfd2, s3.c_str(), s3.length());
-            r = "succeed"; // 该请求应该被保存到被加人的好友申请的记录中
-            cout << "succeed" << endl;
+            r = "Succeed"; // 该请求应该被保存到被加人的好友申请的记录中
         }
         catch (const std::out_of_range &e)
         {
             r = "NotOnline";
-            cout << "succeed" << endl;
         }
         NEW_friendid += "r"; // 将该好友请求存入redis中
         redisReply *reply = (redisReply *)redisCommand(Library, "LRANGE %s 0 -1", NEW_friendid.c_str());
@@ -65,6 +62,7 @@ void Server::friendadd(int cfd, Massage m)
     v["return"] = r;
     Massage m4("0", v, "0", "0");
     string s4 = m4.Serialization();
+    cout<<s4<<endl;
     Err::Write(cfd, s4.c_str(), s4.length());
 }
 void Server::delfriend(int cfd, Massage m)
@@ -73,7 +71,6 @@ void Server::delfriend(int cfd, Massage m)
     string s2 = m.Deserialization("ID");
     User u(s2, Library);
     User u2(s1,Library);
-    Value j = u.friend_List;
     Value v;
     if (u.friend_List.isMember(s1))
     {
@@ -83,7 +80,7 @@ void Server::delfriend(int cfd, Massage m)
     }
     else
     {
-       v["return"]="Succeed";
+       v["return"]="NULL";
     }
     Massage m1("0",v,"0","0");
     Err::Write(cfd,m1.Serialization().c_str(),m1.Serialization().length());
@@ -94,12 +91,36 @@ void Server::ignorefriend(int cfd, Massage m)
     string s1 = m.Deserialization("Ign_friend");
     string s2 = m.Deserialization("ID");
     User u(s2, Library);
-    Value j = u.friend_List;
     Value v;
-    if (j.isMember(s1))
+    if (u.friend_List.isMember(s1))
     { 
         u.shield_friend(s1);
         v["return"]="Succeed";
+        cout<<u.friend_List<<endl;
+    }
+    else
+    {
+        v["return"]="NULL";
+    }
+    Massage m1("0",v,"0","0");
+    Err::Write(cfd,m1.Serialization().c_str(),m1.Serialization().length());
+}
+void Server::friendrecover(int cfd, Massage m)
+{
+    cout << "---------------------" << endl;
+    string s1 = m.Deserialization("REC_friend");
+    string s2 = m.Deserialization("ID");
+    User u(s2, Library);
+    Value v;
+    if (u.friend_List.isMember(s1))
+    { 
+        if(u.friend_List[s1]==0){
+            u.recover_friend(s1);
+            v["return"]="Succeed";
+            cout<<u.friend_List<<endl;
+        }else{
+            v["return"]="not_blocked";
+        }
     }
     else
     {
@@ -225,6 +246,9 @@ void Server::friends_menu(int cfd)
             else if (s == IGN_FRIEND)
             {
                 Server::ignorefriend(cfd, m);
+            }else if(s==REC_FRIEND)
+            {
+                Server::friendrecover(cfd,m);
             }
             else if (s == EXIT)
             {

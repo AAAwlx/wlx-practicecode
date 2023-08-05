@@ -18,6 +18,7 @@ void Clenit::friendadd(string ID)
         if(Err::Read(cfd,a,sizeof(a))){
             Massage m1(a);
             r=m1.Deserialization("return");
+            cout<<r<<endl;
             if (r=="NULL")
             {
                 cout<<"没有此用户，请再试一次"<<endl;
@@ -54,6 +55,7 @@ void Clenit::delfriend(string ID)
         if(Err::Read(cfd,a,sizeof(a))){
             Massage m1(a);
             r=m1.Deserialization("return");
+            cout<<r<<endl;
             cout<<a<<endl;
             if (r=="NULL")
             {
@@ -78,7 +80,7 @@ void Clenit::ignorefriend(string ID)
     j["Ign_friend"]=in;
     j["ID"]=ID;
 
-    Massage m(DEL_FRIEND,j,"0","0");
+    Massage m(IGN_FRIEND,j,"0","0");
     string s=m.Serialization();
     Err::Write(cfd,s.c_str(),s.length());
     string r;
@@ -87,13 +89,48 @@ void Clenit::ignorefriend(string ID)
         if(Err::Read(cfd,a,sizeof(a))){
             Massage m1(a);
             r=m1.Deserialization("return");
+            cout<<r<<endl;
             if (r=="NULL")
             {
                 cout<<"你与id为"<<in<<"还不是好友，请输入正确id"<<endl;
-                delfriend(ID);
+                ignorefriend(ID);
             }else if(r=="Succeed")
             {
                 cout<<"你已将id为"<<in<<"的用户已成功屏蔽"<<endl;
+            }
+            break;    
+        }
+    }
+    return;
+}
+void Clenit::friendrecover(string ID)
+{
+     string in;
+    char a[BUFSIZ];
+    cout <<"请输入你要恢复的好友id"<<endl;
+    cin >> in;
+    Value j;
+    j["REC_friend"]=in;
+    j["ID"]=ID;
+    Massage m(REC_FRIEND,j,"0","0");
+    string s=m.Serialization();
+    Err::Write(cfd,s.c_str(),s.length());
+    string r;
+    while (1)
+    {
+        if(Err::Read(cfd,a,sizeof(a))){
+            Massage m1(a);
+            r=m1.Deserialization("return");
+            cout<<r<<endl;
+            if (r=="NULL")
+            {
+                cout<<"你与id为"<<in<<"还不是好友，请输入正确id"<<endl;
+                friendrecover(ID);
+            }else if(r=="not_blocked"){
+                cout<<"你未将id为"<<in<<"的用户已屏蔽"<<endl;
+            }else if(r=="Succeed")
+            {
+                cout<<"你已将id为"<<in<<"的用户已成功解除屏蔽"<<endl;
             }
             break;    
         }
@@ -206,6 +243,8 @@ void Clenit::friends_menu(string ID)
             Clenit::friendrequests(ID);
         }else if(in==IGN_FRIEND){
             Clenit::ignorefriend(ID);
+        }else if(in==REC_FRIEND){
+            Clenit::friendrecover(ID);
         }else if (in==EXIT)
         {
             Clenit::Exit();
