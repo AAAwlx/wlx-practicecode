@@ -14,7 +14,7 @@ void Server::historicalnews(int cfd, string ID)
             {
                 std::string id(element->str, element->len);
                 std::string str = std::to_string(i);
-                j2[str] = id;
+                j1[str] = id;
             }
         }
     }
@@ -47,7 +47,7 @@ void Server::historicalnews(int cfd, string ID)
     j["chat"]=j2;
     Massage m1(Historical_news, j, "0", "0");
     string s4 = m1.Serialization();
-    Err::Write(cfd, s4.c_str(), s.length());
+    Err::sendMsg(cfd, s4.c_str(), s4.length());
     cout<<"历史消息已发送"<<endl;
     freeReplyObject(reply);
     freeReplyObject(reply2);
@@ -55,10 +55,10 @@ void Server::historicalnews(int cfd, string ID)
 }
 void Server::main_menu(int cfd, string ID)
 {
-    char r[BUFFERSIZE];
+    char *r;
     while (1)
     {
-        if (Err::Read(cfd, r, sizeof(r)) > 0)
+        if (Err::recvMsg(cfd, &r) > 0)
         {
             cout<<r<<endl;
             

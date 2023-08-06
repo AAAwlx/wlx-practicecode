@@ -4,8 +4,8 @@
 void thread_recv(const std::string& ID, int cfd, const std::string& chatobject )
 {
     while (stopFlag){
-        char r[BUFFERSIZE];
-        if(Err::Read(cfd,r,sizeof(r)) > 0){
+        char *r;
+        if(Err::recvMsg(cfd,&r) > 0){
             Massage m(r);
             std::variant<Json::Value, std::string> result = m.takeMassage("option");
             string o = std::get<std::string>(result);
@@ -37,6 +37,10 @@ void thread_recv(const std::string& ID, int cfd, const std::string& chatobject )
                     string s2 = "id为" + f + "发给你："+ s;
                     Clenit::PrientfT(s);
                 }
+            }else{//非实时消息
+                qmutex.lock();
+                masqueue.push(r);
+                qmutex.unlock();
             }
         }
     }

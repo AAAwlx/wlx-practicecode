@@ -5,7 +5,7 @@ int Clenit::login()
     string Id, Pass1, in; // 用户的id，密码
     Value info;
     int i;
-    char r[BUFFERSIZE] = {0};
+    char *r;
     std::cout << "请输入您的ID(3~20位)" << endl;
     std::cin >> Id;
     while (1)
@@ -38,11 +38,11 @@ int Clenit::login()
 
     Massage m1(LOGIN, info, "0", "0");
     string s = m1.Serialization();
-    Err::Write(cfd, s.c_str(), s.size());
+    Err::sendMsg(cfd, s.c_str(), s.length());
 
     while (1)
     {
-        if (Err::Read(cfd,r,sizeof(r))>0)
+        if ((Err::recvMsg(cfd, &r))>0)
         {
             if (stoi(r) == -1234567)
             {
@@ -60,7 +60,7 @@ int Clenit::login()
                     j["ID"] = Id;
                     Massage m2("succeed", j, "0", "0");
                     string s = m2.Serialization();
-                    Err::Write(cfd, s.c_str(), s.length());
+                    Err::sendMsg(cfd, s.c_str(), s.length());
                     Clenit::historicalnews(Id);
                     Clenit::main_mnue(Id);
                     break;
@@ -80,10 +80,10 @@ int Clenit::login()
                             j["ID"] = Id;
                             Massage m2("succeed", j, "0", "0");
                             string s = m2.Serialization();
-                            Err::Write(cfd, s.c_str(), s.length());
+                            Err::sendMsg(cfd, s.c_str(), s.length());
                             Clenit::historicalnews(Id);
                             std::cout << "进入主菜单" << endl;
-                            main_mnue(Id);
+                            Clenit::main_mnue(Id);
                             return 0;
                         }
                         else
@@ -106,7 +106,7 @@ int Clenit::login()
 
 void Clenit::resetpassword(string ID)
 {
-    char r[BUFFERSIZE];
+    char *r;
     string in;
     while (1)
     {
@@ -121,10 +121,10 @@ void Clenit::resetpassword(string ID)
             j["ID"] = ID;
             Massage m1(Reset_Password, j, "0", "0");
             string s = m1.Serialization();
-            Err::Write(cfd, s.c_str(), s.length());
+            Err::sendMsg(cfd, s.c_str(), s.length());
             while (1)
             {
-                if ((Err::Read(cfd, r, sizeof(r))) > 0)
+                if ((Err::recvMsg(cfd, &r)) > 0)
                 {
                     Massage m2(r);
                     string Q = m2.Deserialization("Question"); // 验证问题
@@ -228,11 +228,11 @@ int Clenit::sign_up()
     info["Answer"] = Answer1;
     Massage m1(SIGN_UP, info, "0", "0");
     string s = m1.Serialization();
-    Err::Write(cfd, s.c_str(), s.size());
-    char r[BUFFERSIZE] = {0};
+    Err::sendMsg(cfd, s.c_str(), s.size());
+    char *r;
     while (1)
     {
-        if ((Err::Read(cfd, r, sizeof(r))))
+        if ((Err::recvMsg(cfd, &r))>0)
         {
             ID = r;
             std::cout << "您的用户id是：" << ID << endl;
@@ -249,7 +249,7 @@ void Clenit::Exit()
     j["0"] = "0";
     Massage m(EXIT, j, "0", "0");
     string s = m.Serialization();
-    Err::Write(cfd, s.c_str(), s.length());
+    Err::sendMsg(cfd, s.c_str(), s.length());
     std::cout << s << endl;
 }
 void Clenit::sign_menu()

@@ -27,20 +27,23 @@
 #define Pchat_space "1"//进入与xx用户的聊天空间
 #define Chat_History "3"//查看与某用户的聊天历史
 #include<iostream>
-#include <atomic>
+#include <mutex>
+#include <queue>
+#include<atomic>
 using namespace std;
-
-
 extern std::atomic<bool> stopFlag;
+extern std::mutex qmutex;
+extern std::queue<string> masqueue;
 void thread_recv(const std::string& ID, int cfd, const std::string& chatobject);
 class Clenit
 {
 private:
-   std::atomic<int> cfd;
+   int cfd;
    int server_port;
    string server_ip;
    string chatobject;
 public:
+    
     Clenit(int port, string ip);
     ~Clenit();
     void clirun();

@@ -20,11 +20,9 @@
 #include <sys/sendfile.h>
 #include <sys/stat.h>
 #include <vector>
-#include <queue>
 #include <gtest/gtest.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
-#include <mutex>
 #include <functional>
 #include <future>
 #include <utility>
@@ -48,14 +46,15 @@ public:
     static void Listen(int sockfd, int backlog);
     static int Accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
     static int Connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen);
-    static ssize_t Read(int fd, void *buf, size_t count);
-    static ssize_t Write(int fd, const void *buf, size_t count);
     static ssize_t Sendfile(int out_fd, int in_fd, off_t* offset, size_t count);
     static int Epoll_create(int size);
     static int Epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);
     static int Epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);
     static void Close(int fd);
-    
+    static int writen(int fd, const char* msg, int size);
+    static int sendMsg(int cfd,const char* msg, int len);
+    static int readn(int fd, char* buf, int size);
+    static int recvMsg(int cfd, char** msg);
 };
 //消息类
 class Massage

@@ -2,19 +2,17 @@
 #include "clit.hpp"
 void Clenit::historicalnews(string ID)//用户上线后立即发送未处理消息
 {
-    char r[BUFFERSIZE];
+    char *r;
     while (1)
     {
-        if(Err::Read(cfd,r,sizeof(r))>0){
+        if(Err::recvMsg(cfd, &r)>0){
             cout<<r<<endl;
             Massage m(r);
             std::variant<Json::Value, std::string> result = m.takeMassage("content");
             Value s = std::get<Json::Value>(result);
             Value s1=s["request"];
             Value s2=s["chat"];
-            cout<<s1["request"].asString()<<endl;
-            cout<<s2["request"].asString()<<endl;
-            if(s1["request"].asString()=="nullptr"){
+            if(s1["request"].asString()=="null"){
                 cout<<"无好友申请"<<endl;
             }else{
                 Json::Value::Members  members= s1.getMemberNames();
@@ -22,7 +20,7 @@ void Clenit::historicalnews(string ID)//用户上线后立即发送未处理消�
                     std::cout << "id为" << s1[key].asString()<<"请求与你建立好友关系"<< std::endl;
                 }
             }
-            if(s2["chat"].asString()=="nullptr"){
+            if(s2["chat"].asString()=="null"){
                 cout<<"无新消息"<<endl;
             }else{
                 Json::Value::Members members2 = s2.getMemberNames();
@@ -38,13 +36,12 @@ void Clenit::historicalnews(string ID)//用户上线后立即发送未处理消�
 void Clenit::main_mnue(string ID)
 {
     string in;
-    char r[BUFSIZ];
+    //char r[BUFSIZ];
     cout<<"开启实时接收线程"<<endl;
     stopFlag=true;
     std::thread t([&]() { thread_recv(ID, cfd, chatobject); });
     while (true)
     {
-        bzero(r, sizeof(r));
         cout << "+------------------+" << endl;
         cout << "|     ChatRoom     |" << endl;
         cout << "+------------------+" << endl;
@@ -60,7 +57,7 @@ void Clenit::main_mnue(string ID)
         Value j;
         Massage m(in,j,"0","0");
         string s=m.Serialization();
-        Err::Write(cfd, s.c_str(), s.length());
+        Err::sendMsg(cfd, s.c_str(), s.length());
         system("clear");
         if (in == PRIVATE){
             Clenit::privateChat(ID);

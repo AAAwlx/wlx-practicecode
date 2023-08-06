@@ -21,7 +21,7 @@ void Server::directsend(int cfd, Massage m, char *massage)
             try
             {
                 int cfd2 = user_cfd.at(to_id); // 当被添加人在线，立即向被添加人发送好友申请通知
-                Err::Write(cfd2, massage, sizeof(massage));
+                Err::sendMsg(cfd2, massage, sizeof(massage));
                 r = "Succeed";
                 cout << cfd2<<massage << endl;
             }
@@ -44,7 +44,7 @@ void Server::directsend(int cfd, Massage m, char *massage)
     v["return"] = r;
     Massage m1("0", v, "0", "0");
     string s = m1.Serialization();
-    Err::Write(cfd, s.c_str(), s.length());
+    Err::sendMsg(cfd, s.c_str(), s.length());
     cout << r << endl;
     return;
 }
@@ -90,26 +90,26 @@ void Server::pchatspace(int cfd, Massage m)
             info[s2] = j2;
             Massage m1(Pchat_space, info, "0", "0");
             s = m1.Serialization();
-            Err::Write(cfd, s.c_str(), s.length());
+            Err::sendMsg(cfd, s.c_str(), s.length());
         }
         else
         {
             s = "Hidden";
-            Err::Write(cfd, s.c_str(), s.length());
+            Err::sendMsg(cfd, s.c_str(), s.length());
             return;
         }
     }
     else
     {
         s = "NOTfriend";
-        Err::Write(cfd, s.c_str(), s.length());
+        Err::sendMsg(cfd, s.c_str(), s.length());
         return;
     }
     cout << "----------------------------------------------------" << endl;
     while (1)
     {
-        char r[BUFFERSIZE];
-        if (Err::Read(cfd, r, sizeof(r)) > 0)
+        char *r;
+        if (Err::recvMsg(cfd, &r) > 0)
         {
             Massage m2(r);
             std::variant<Json::Value, std::string> result = m2.takeMassage("option");
@@ -126,7 +126,7 @@ void Server::pchatspace(int cfd, Massage m)
                 if (user_cfd.count(friendID))
                 {
                     cfd2 = user_cfd[friendID];
-                    Err::Write(cfd2, r, sizeof(r));
+                    Err::sendMsg(cfd2, r, sizeof(r));
                 }
                 else
                 { // 如果不在线存入未处理消息列表
@@ -178,21 +178,21 @@ void Server::chathistory(int cfd, Massage m)
         info[s2] = j2;
         Massage m1(Pchat_space, info, "0", "0");
         s = m1.Serialization();
-        Err::Write(cfd, s.c_str(), s.length());
+        Err::sendMsg(cfd, s.c_str(), s.length());
     }
     else
     {
         s = "NOTfriend";
-        Err::Write(cfd, s.c_str(), s.length());
+        Err::sendMsg(cfd, s.c_str(), s.length());
         return;
     }
 }
 void Server::privateChat(int cfd)
 {
-    char r[BUFFERSIZE];
+    char *r;
     while (1)
     {
-        if (Err::Read(cfd, r, sizeof(r)) > 0)
+        if (Err::recvMsg(cfd, &r) > 0)
         {
             cout << r << endl;
             Massage m(r);

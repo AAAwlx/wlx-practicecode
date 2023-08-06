@@ -1,6 +1,8 @@
 #include "public.hpp"
 #include "clit.hpp"
 std::atomic<bool> stopFlag;
+std::mutex qmutex;
+std::queue<string> masqueue;
 Clenit::Clenit(int port, string ip)
     : server_port(port), server_ip(ip)
 {

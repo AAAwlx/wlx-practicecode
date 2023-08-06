@@ -12,13 +12,12 @@ void Server::friendadd(int cfd, Massage m)
         v["return"] = "NULL";
         Massage m1("0", v, "0", "0");
         string s = m1.Serialization();
-        Err::Write(cfd, s.c_str(), s.length());
+        Err::sendMsg(cfd, s.c_str(), s.length());
         return;
     }
     string s2 = m.Deserialization("ID"); //
     User u(s2, Library);
-    Value j = u.friend_List;
-    if (j.isMember(NEW_friendid))
+    if (u.friend_List.isMember(NEW_friendid))
     {
         r = "befriends"; // 如果好友列表中有被加人
     }
@@ -31,7 +30,7 @@ void Server::friendadd(int cfd, Massage m)
             j["ID"] = s2;
             Massage m2("add_friend", j, "0", "0");
             string s3 = m2.Serialization();
-            Err::Write(cfd2, s3.c_str(), s3.length());
+            Err::sendMsg(cfd2, s3.c_str(), s3.length());
             r = "Succeed"; // 该请求应该被保存到被加人的好友申请的记录中
         }
         catch (const std::out_of_range &e)
@@ -63,7 +62,7 @@ void Server::friendadd(int cfd, Massage m)
     Massage m4("0", v, "0", "0");
     string s4 = m4.Serialization();
     cout<<s4<<endl;
-    Err::Write(cfd, s4.c_str(), s4.length());
+    Err::sendMsg(cfd, s4.c_str(), s4.length());
 }
 void Server::delfriend(int cfd, Massage m)
 {
@@ -71,19 +70,23 @@ void Server::delfriend(int cfd, Massage m)
     string s2 = m.Deserialization("ID");
     User u(s2, Library);
     User u2(s1,Library);
+    string r;
     Value v;
     if (u.friend_List.isMember(s1))
     {
         u.delete_friend(s1);
         u2.delete_friend(s2);
-        v["return"]="Succeed";
+        r="Succeed";
     }
     else
     {
-       v["return"]="NULL";
+       r="NULL";
     }
-    Massage m1("0",v,"0","0");
-    Err::Write(cfd,m1.Serialization().c_str(),m1.Serialization().length());
+    v["return"] = r;
+    Massage m4("0", v, "0", "0");
+    string s4 = m4.Serialization();
+    cout<<s4<<endl;
+    Err::sendMsg(cfd, s4.c_str(), s4.length());
 }
 void Server::ignorefriend(int cfd, Massage m)
 {
@@ -91,19 +94,23 @@ void Server::ignorefriend(int cfd, Massage m)
     string s1 = m.Deserialization("Ign_friend");
     string s2 = m.Deserialization("ID");
     User u(s2, Library);
+    string r;
     Value v;
     if (u.friend_List.isMember(s1))
     { 
         u.shield_friend(s1);
-        v["return"]="Succeed";
+        r="Succeed";
         cout<<u.friend_List<<endl;
     }
     else
     {
-        v["return"]="NULL";
+        r="NULL";
     }
-    Massage m1("0",v,"0","0");
-    Err::Write(cfd,m1.Serialization().c_str(),m1.Serialization().length());
+    v["return"] = r;
+    Massage m4("0", v, "0", "0");
+    string s4 = m4.Serialization();
+    cout<<s4<<endl;
+    Err::sendMsg(cfd, s4.c_str(), s4.length());
 }
 void Server::friendrecover(int cfd, Massage m)
 {
@@ -112,22 +119,26 @@ void Server::friendrecover(int cfd, Massage m)
     string s2 = m.Deserialization("ID");
     User u(s2, Library);
     Value v;
+    string r;
     if (u.friend_List.isMember(s1))
     { 
         if(u.friend_List[s1]==0){
             u.recover_friend(s1);
-            v["return"]="Succeed";
+            r="Succeed";
             cout<<u.friend_List<<endl;
         }else{
-            v["return"]="not_blocked";
+            r="not_blocked";
         }
     }
     else
     {
-        v["return"]="NULL";
+        r="NULL";
     }
-    Massage m1("0",v,"0","0");
-    Err::Write(cfd,m1.Serialization().c_str(),m1.Serialization().length());
+    v["return"] = r;
+    Massage m4("0", v, "0", "0");
+    string s4 = m4.Serialization();
+    cout<<s4<<endl;
+    Err::sendMsg(cfd, s4.c_str(), s4.length());
 }
 void Server::viewfriend(int cfd, Massage m)
 {
@@ -154,7 +165,7 @@ void Server::viewfriend(int cfd, Massage m)
 
     Massage m1("0", flist, "0", "0");
     string s = m1.Serialization();
-    Err::Write(cfd, s.c_str(), s.length());
+    Err::sendMsg(cfd, s.c_str(), s.length());
 }
 void Server::friendrequests(int cfd, Massage m)
 {
@@ -176,11 +187,11 @@ void Server::friendrequests(int cfd, Massage m)
     Massage m1(MAS_FRIEND, info, "0", "0");
     string s1 = m1.Serialization();
     cout<<s1<<endl;
-    Err::Write(cfd, s1.c_str(), s.length()); // 将待处理的请求发送到客户端
-    char r[BUFFERSIZE];
+    Err::sendMsg(cfd, s1.c_str(), s1.length()); // 将待处理的请求发送到客户端
+    char *r;
     while (1)
     {
-        if (Err::Read(cfd, r, sizeof(r)) > 0)
+        if (Err::recvMsg(cfd, &r) > 0)
         {
             break;
         }
@@ -205,7 +216,7 @@ void Server::friendrequests(int cfd, Massage m)
             int cfd2 = user_cfd.at(key);
             j["friend"] = key;
             Massage m3("f_accapt", j, "0", "0");
-            Err::Write(cfd2, value.c_str(), value.length()); // 如果在线，通知申请人申请已经通过
+            Err::sendMsg(cfd2, value.c_str(), value.length()); // 如果在线，通知申请人申请已经通过
         }
         catch (const std::out_of_range &e)
         {
@@ -216,10 +227,10 @@ void Server::friendrequests(int cfd, Massage m)
 void Server::friends_menu(int cfd)
 {
     cout << cfd << "已进入好友管理界面" << endl;
-    char r[BUFFERSIZE];
+    char *r;
     while (1)
     {
-        if (Err::Read(cfd, r, sizeof(r)) > 0)
+        if (Err::recvMsg(cfd, &r) > 0)
         {
             cout << r << endl;
             

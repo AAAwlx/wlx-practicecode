@@ -48,32 +48,6 @@ int Err::Connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
     }
     return ret;
 }
-ssize_t Err::Read(int fd, void *buf, size_t count)
-{
-    ssize_t ret=read(fd,buf,count);
-    if (ret<0)
-    {
-        if (!(errno == EAGAIN || errno == EWOULDBLOCK))
-        {
-            perror("write()");
-            exit(0);
-        }
-    }
-    return ret;
-}
-ssize_t Err::Write(int fd, const void *buf, size_t count)
-{
-    ssize_t ret=write(fd,buf,count);
-    if (ret<0)
-    {
-        if (!(errno == EAGAIN || errno == EWOULDBLOCK))
-        {
-            perror("write()");
-            exit(0);
-        }
-    }
-    return ret;
-}
 
 ssize_t Err::Sendfile(int out_fd, int in_fd, off_t *offset, size_t count)
 {
@@ -122,4 +96,86 @@ void Err::Close(int fd)
         perror("close()");
         exit(0);
     }
+}
+int Err::writen(int fd, const char* msg, int size)
+{
+    const char* buf = msg;
+    int count = size;
+    while (count > 0)
+    {
+        int len = send(fd, buf, count, 0);
+        if (len == -1)
+        {
+            close(fd);
+            return -1;
+        }
+        else if (len == 0)
+        {
+            continue;
+        }
+        buf += len;
+        count -= len;
+    }
+    return size;
+}
+int Err::sendMsg(int cfd,const char* msg, int len)
+{
+   if(msg == NULL || len <= 0 || cfd <=0)
+   {
+       return -1;
+   }
+   cout<<"数据长度为"<<len<<endl;
+   // 申请内存空间: 数据长度 + 包头4字节(存储数据长度)
+   char* data = (char*)malloc(len+4);
+   int bigLen = htonl(len);
+   memcpy(data, &bigLen, 4);
+   memcpy(data+4, msg, len);
+   // 发送数据
+   int ret = writen(cfd, data, len+4);
+   // 释放内存
+   free(data);
+   return ret;
+}
+int Err::readn(int fd, char* buf, int size)
+{
+    char* pt = buf;
+    int count = size;
+    while (count > 0)
+    {
+        int len = recv(fd, pt, count, 0);
+        if (len == -1)
+        {
+            return -1;
+        }
+        else if (len == 0)
+        {
+            return size - count;
+        }
+        pt += len;
+        count -= len;
+    }
+    return size;
+}
+int Err::recvMsg(int cfd, char** msg)
+{
+    // 接收数据
+    // 1. 读数据头
+    int len = 0;
+    readn(cfd, (char*)&len, 4);
+    len = ntohl(len);
+    //printf("数据块大小: %d\n", len);
+
+    // 根据读出的长度分配内存，+1 -> 这个字节存储\0
+    char *buf = (char*)malloc(len+1);
+    int ret = readn(cfd, buf, len);
+    if(ret != len)
+    {
+        close(cfd);
+        free(buf);
+        return -1;
+    }
+    buf[len] = '\0';
+    *msg = buf;
+
+    return ret;
 }

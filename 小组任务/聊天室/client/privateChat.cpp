@@ -6,11 +6,11 @@ void Clenit::directsend(string ID)
     {
         string id, massage;
         Value info;
-        char a[BUFFERSIZE];
-        cout << "请输入发送对象的id" << endl;
+        char *a;
+        std::cout << "请输入发送对象的id" << endl;
         while (1)
         {
-            cin >> id;
+            std::cin >> id;
             if (id.length() > 20 || id.length() < 3)
             {
                 std::cout << "您输入的id不符合规范，请重新输入一次" << endl;
@@ -20,16 +20,16 @@ void Clenit::directsend(string ID)
                 break;
             }
         }
-        cout << "请输入你要说的话" << endl;
-        cin >> massage;
+        std::cout << "请输入你要说的话" << endl;
+        std::cin >> massage;
         info["massage"] = massage;
         Massage m("Direct_send", info, id, ID);
         string s = m.Serialization();
-        Err::Write(cfd, s.c_str(), s.length());
+        Err::sendMsg(cfd, s.c_str(), s.length());
         string r;
         while (1)
         {
-            if (Err::Read(cfd, a, sizeof(a)) > 0)
+            if (Err::recvMsg(cfd, &a) > 0)
             {
                 Massage m1(a);
                 r=m1.Deserialization("return");
@@ -56,7 +56,7 @@ void Clenit::directsend(string ID)
         bool flag;
         while (1)
         {
-            cin >> in;
+            std::cin >> in;
             if (in == "0")
             {
                 true;
@@ -87,11 +87,11 @@ void Clenit::pchatspace(string ID)
     {
         string id, massage;
         Value info;
-        char r[BUFFERSIZE];
-        cout << "请输入发送对象的id" << endl;
+        char *r;
+        std::cout << "请输入发送对象的id" << endl;
         while (1)
         {
-            cin >> id;
+            std::cin >> id;
             if (id.length() > 20 || id.length() < 3)
             {
                 std::cout << "您输入的id不符合规范，请重新输入一次" << endl;
@@ -105,10 +105,10 @@ void Clenit::pchatspace(string ID)
         info["myID"] = ID;
         Massage m1(Pchat_space, info, "0", "0");
         string s1 = m1.Serialization();
-        Err::Write(cfd, s1.c_str(), s1.length());
+        Err::sendMsg(cfd, s1.c_str(), s1.length());
         while (1)
         {
-            if (Err::Read(cfd, r, sizeof(r)) > 0)
+            if (Err::recvMsg(cfd, &r) > 0)
             {
                 break;
             }
@@ -117,7 +117,7 @@ void Clenit::pchatspace(string ID)
         if (r == "NOTfriend")
         {
             std::cout << "您与id为" << id << "还不是好友，请先添加他为好友（输入1继续，输入0退出）" << endl;
-            cin >> in;
+            std::cin >> in;
             if (in == "1")
             {
                 continue;
@@ -130,7 +130,7 @@ void Clenit::pchatspace(string ID)
         else if (r == "Hidden")
         {
             std::cout << "您被id为" << id << "屏蔽了（输入1继续，输入0退出）" << endl;
-            cin >> in;
+            std::cin >> in;
             if (in == "1")
             {
                 continue;
@@ -159,12 +159,12 @@ void Clenit::pchatspace(string ID)
             }
         }
 
-        cout << "您已经进入与好友：" << id << "的私聊空间（输入Q退出）" << endl;
+        std::cout << "您已经进入与好友：" << id << "的私聊空间（输入Q退出）" << endl;
         chatobject = id;
         string in2;
         while (1)
         {
-            cin >> in2;
+            std::cin >> in2;
             if (in2 == "Q")
             {
                 chatobject = id;
@@ -177,8 +177,8 @@ void Clenit::pchatspace(string ID)
                 j["massage"] = in2;
                 Massage m3(Pchat_space, j, id, ID);
                 string s = m3.Serialization();
-                Err::Write(cfd, s.c_str(), s.length());
-                cout << "----------------------------------------------------" << endl;
+                Err::sendMsg(cfd, s.c_str(), s.length());
+                std::cout << "----------------------------------------------------" << endl;
             }
         }
     }
@@ -189,18 +189,18 @@ void Clenit::chathistory(string ID)
     while (1)
     {
         string friendid;
-        cout << "请输入您要查看的好友id" << endl;
-        cin >> friendid;
+        std::cout << "请输入您要查看的好友id" << endl;
+        std::cin >> friendid;
         Value j;
         j["friendID"] = friendid;
         j["myID"] = ID;
         Massage m(Chat_History, j, "0", "0");
         string s = m.Serialization();
-        Err::Write(cfd, s.c_str(), s.length());
-        char r[BUFFERSIZE];
+        Err::sendMsg(cfd, s.c_str(), s.length());
+        char *r;
         while (1)
         {
-            if (Err::Read(cfd, r, sizeof(r)) > 0)
+            if (Err::recvMsg(cfd, &r ) > 0)
             {
                 if (r == "NOTfriend")
                 {
@@ -228,9 +228,9 @@ void Clenit::chathistory(string ID)
                 break;
             }
         }
-        cout << "是否继续查看历史" << endl;
+        std::cout << "是否继续查看历史" << endl;
         string in;
-        cin >> in;
+        std::cin >> in;
         if (in == "Q")
         {
             break;
@@ -243,17 +243,17 @@ void Clenit::privateChat(string ID)
     string in;
     while (1)
     {
-        cout << "+------------------+" << endl;
-        cout << "|     ChatRoom     |" << endl;
-        cout << "+------------------+" << endl;
-        cout << "|                  |" << endl;
-        cout << "|    1:私聊空间    |" << endl; // 可显示部分聊天记录
-        cout << "|    2.直接发送    |" << endl;
-        cout << "|    3.历史消息    |" << endl;
-        cout << "|    0:退回上步    |" << endl;
-        cout << "|                  |" << endl;
-        cout << "+------------------+" << endl;
-        cin >> in;
+        std::cout << "+------------------+" << endl;
+        std:: cout << "|     ChatRoom     |" << endl;
+        std::cout << "+------------------+" << endl;
+        std::cout << "|                  |" << endl;
+        std::cout << "|    1:私聊空间    |" << endl; // 可显示部分聊天记录
+        std::cout << "|    2.直接发送    |" << endl;
+        std::cout << "|    3.历史消息    |" << endl;
+        std::cout << "|    0:退回上步    |" << endl;
+        std::cout << "|                  |" << endl;
+        std::cout << "+------------------+" << endl;
+        std::cin >> in;
         system("clear");
         if (in == Pchat_space)
         {
@@ -274,7 +274,7 @@ void Clenit::privateChat(string ID)
         }
         else
         {
-            cout << "您的输入不符合规范，请再次输入选项" << endl;
+            std::cout << "您的输入不符合规范，请再次输入选项" << endl;
             continue;
         }
     }
