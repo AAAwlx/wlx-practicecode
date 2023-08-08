@@ -111,6 +111,8 @@ void Clenit::ignorefriend(string ID)
     else if (r == "Succeed")
     {
         std::cout << "你已将id为" << in << "的用户已成功屏蔽" << endl;
+    }if(r=="blocked"){
+        std::cout << "你已将id为" << in << "请勿重复操作" << endl;
     }
 }
 void Clenit::friendrecover(string ID)
@@ -144,7 +146,7 @@ void Clenit::friendrecover(string ID)
     }
     else if (r == "not_blocked")
     {
-        std::cout << "你已将id为" << in << "屏蔽" << endl;
+       std::cout << "你尚未将id为" << in << "屏蔽" << endl;
     }
 }
 void Clenit::viewfriend(string ID)

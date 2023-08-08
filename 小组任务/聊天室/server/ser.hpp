@@ -32,7 +32,18 @@
 #define QUIT_GROUP "3"   //退出群聊
 #define CREATE_GROUP "4" //创建群聊
 #define VIEW_GROUP "5"   //查看群
-#define MAN_GROUP "6"    //管理群
+#define MAN_GROUP "6"    
+//管理群
+#define MAN_ADDGROUP "1"    //加群申请
+#define MAN_VIEW "2"        //查看群信息
+#define MAN_ADDMANAGER "3"  //添加管理
+#define MAN_QUITMANAGER "4" //取消管理
+#define MAN_QUITMEMBER "5"  //踢出成员
+#define MAN_DELGROUP "6"    //解散该群
+#define IGN_GROUP "7"
+#define REC_GROUP "8"
+#define TRA_GROUP "9"
+#define MAN_ADDMEMBER "10"
 #define EP0LL_SIZE 1024 
 #include<iostream>
 #include<hiredis/hiredis.h>
@@ -93,10 +104,18 @@ public:
     static void quit_group(int cfd);    //退出群
     static void view_group(int cfd);    //查看群
     static void publicChat(int cfd);
-    static void manage_menu(int cfd); //管理群
-    static void manage_menu0(int cfd);
-    static void manage_menu1(int cfd);
-    static void manage_menu2(int cfd);
+    static void manage_menu(int cfd);
+     //管理群
+    static void man_addgroup(int cfd);          //入群请求
+    static void man_view(int cfd);                //查看群成员
+    static void man_addmanager(int cfd);  //添加管理员
+    static void man_delmanager(int cfd);         //取消管理员
+    static void man_delmember(int cfd);        //踢出成员
+    static bool man_delgroup(int cfd);          //解散群
+    static void ignoregroup(int cfd);//屏蔽群
+    static void grouprecover(int cfd);//解除屏蔽
+    static void transfer_group(int cfd);//转让群主
+    static void man_addmember(int cfd);//添加成员
 };
 
 #endif

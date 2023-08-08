@@ -4,7 +4,7 @@ void Clenit::man_addgroup(string ID,string man_groupid)
 {
     Value j;
     j["ID"] = ID;
-    j["NEW_groupid"]=man_groupid;
+    j["groupid"]=man_groupid;
     Massage m(MAN_ADDGROUP, j, "0", "0");
     string s = m.Serialization();
     Err::sendMsg(cfd, s.c_str(), s.length());
@@ -57,12 +57,11 @@ void Clenit::man_addgroup(string ID,string man_groupid)
 void Clenit::man_view(string ID,string man_groupid)
 {
     Value j;
-    j["ID"] = ID;
-    j["NEW_groupid"]=man_groupid;
-    Massage m(MAN_ADDGROUP, j, "0", "0");
+    j["groupid"]=man_groupid;
+    Massage m(MAN_VIEW, j, "0", "0");
     string s = m.Serialization();
     Err::sendMsg(cfd, s.c_str(), s.length());
-    std::cout << "已发送查看入群申请请求" << endl;
+    std::cout << "已发送查看入群群成员请求" << endl;
     std::unique_lock<std::mutex> lock(qmutex);
     queueCondVar.wait(lock, []
                       { return !masqueue.empty(); });
@@ -88,23 +87,24 @@ void Clenit::man_view(string ID,string man_groupid)
         std::cout << str << std::endl;
     }
 }
+
 void Clenit::man_addmanager(string ID,string man_groupid)
 {
     Value j;
     j["ID"] = ID;
-    j["NEW_groupid"]=man_groupid;
+    j["groupid"]=man_groupid;
     string in;
     cout<<"请输入你要添加的管理员id"<<endl;
     cin>>in;
     j["add_id"]=in;
     if(in == ID){
         cout<<"不能将自己设为管理员"<<endl;
-        return
+        return;
     }
     Massage m(MAN_ADDMANAGER, j, "0", "0");
     string s = m.Serialization();
     Err::sendMsg(cfd, s.c_str(), s.length());
-    std::cout << "已发送查看入群申请请求" << endl;
+    std::cout << "已发送添加管理请求" << endl;
     std::unique_lock<std::mutex> lock(qmutex);
     queueCondVar.wait(lock, []
                       { return !masqueue.empty(); });
@@ -114,13 +114,216 @@ void Clenit::man_addmanager(string ID,string man_groupid)
     std::cout << r << endl;
     if (r=="Succeed")
     {
-        
+        cout<<"已成功添加"<<in<<"为管理员"<<endl;
     }else if(r=="NULL"){
-
-    }else if(){
-
+        cout<<in<<"还不是群成员"<<endl;
+    }else if(r=="bemanage"){
+        cout<<in<<"已经是管理员了，请勿重复添加"<<endl;
     }
+}
+
+void Clenit::man_delmanager(string ID,string man_groupid)
+{
+    Value j;
+    j["ID"] = ID;
+    j["groupid"]=man_groupid;
+    string in;
+    cout<<"请输入你要移除的管理员id"<<endl;
+    cin>>in;
+    j["del_id"]=in;
+    if(in == ID){
+        cout<<"不能将自己移除"<<endl;
+        return;
+    }
+    Massage m(MAN_QUITMANAGER, j, "0", "0");
+    string s = m.Serialization();
+    Err::sendMsg(cfd, s.c_str(), s.length());
+    std::cout << "已发送移除管理请求" << endl;
+    std::unique_lock<std::mutex> lock(qmutex);
+    queueCondVar.wait(lock, []
+                      { return !masqueue.empty(); });
+    string r = masqueue.front();
+    masqueue.pop();
+    qmutex.unlock();
+    std::cout << r << endl;
+    if (r=="Succeed")
+    {
+        cout<<"已成功移除管理员"<<in<<endl;
+    }else if(r=="NULL"){
+        cout<<in<<"还不是群管理"<<endl;
+    }
+}
+void Clenit::man_delmember(string ID,string man_groupid)
+{
+    Value j;
+    j["ID"] = ID;
+    j["groupid"]=man_groupid;
+    string in;
+    cout<<"请输入你要移除的成员id"<<endl;
+    cin>>in;
+    j["del_id"]=in;
+    if(in == ID){
+        cout<<"不能将自己移除"<<endl;
+        return;
+    }
+    Massage m(MAN_QUITMEMBER, j, "0", "0");
+    string s = m.Serialization();
+    Err::sendMsg(cfd, s.c_str(), s.length());
+    std::cout << "已发送移除成员请求" << endl;
+    std::unique_lock<std::mutex> lock(qmutex);
+    queueCondVar.wait(lock, []
+                      { return !masqueue.empty(); });
+    string r = masqueue.front();
+    masqueue.pop();
+    qmutex.unlock();
+    std::cout << r << endl;
+    if (r=="Succeed")
+    {
+        cout<<"已成功移除成员"<<in<<endl;
+    }else if(r=="NULL"){
+        cout<<in<<"还不是群成员"<<endl;
+    }
+}
+void Clenit::ignoregroup(string ID,string man_groupid)
+{
+    Value j;
+    j["groupid"] = man_groupid;
+    j["ID"] = ID;
+
+    Massage m(IGN_GROUP, j, "0", "0");
+    string s = m.Serialization();
+    Err::sendMsg(cfd, s.c_str(), s.length());
+    std::cout << "已发送屏蔽群请求" << endl;
+    string r;
+
+    std::unique_lock<std::mutex> lock(qmutex);
+    queueCondVar.wait(lock, []
+                      { return !masqueue.empty(); });
+    string a = masqueue.front();
+    masqueue.pop();
+    qmutex.unlock();
+    Massage m1(a);
+    r = m1.Deserialization("return");
+    if (r == "Succeed")
+    {
+        std::cout << "你已将id为" << man_groupid << "的群已成功屏蔽" << endl;
+    }else if(r=="blocked"){
+        std::cout << "你已将id为" << man_groupid << "屏蔽，请勿重复操作" << endl;
+    }
+}
     
+void Clenit::grouprecover(string ID,string man_groupid)
+{
+    Value j;
+    j["REC_group"] = man_groupid;
+    j["ID"] = ID;
+    Massage m(REC_FRIEND, j, "0", "0");
+    string s = m.Serialization();
+    Err::sendMsg(cfd, s.c_str(), s.length());
+    std::cout << "已发送解除屏蔽群请求" << endl;
+    string r;
+    std::unique_lock<std::mutex> lock(qmutex);
+    queueCondVar.wait(lock, []
+                      { return !masqueue.empty(); });
+    string a = masqueue.front();
+    masqueue.pop();
+    qmutex.unlock();
+    Massage m1(a);
+    r = m1.Deserialization("return");
+    if (r == "Succeed")
+    {
+        std::cout << "你已将id为" << man_groupid << "的用户已成功解除屏蔽" << endl;
+    }
+    else if (r == "not_blocked")
+    {
+        std::cout << "你尚未将id为" << man_groupid << "屏蔽" << endl;
+    }
+}
+void Clenit::transfer_group(string ID,string man_groupid)
+{
+    string in;
+    cout<<"请输入转让对象的id"<<endl;
+    cin>>in;
+    Value j;
+    if(in == ID){
+        cout<<"不能转让给自己"<<endl;
+        return;
+    }
+    j["groupid"] = man_groupid;
+    j["ID"] = ID;
+    j["tra_id"]=in;
+    Massage m(TRA_GROUP, j, "0", "0");
+    string s = m.Serialization();
+    Err::sendMsg(cfd, s.c_str(), s.length());
+    std::cout << "已发送转让群主请求" << endl;
+    string r;
+    std::unique_lock<std::mutex> lock(qmutex);
+    queueCondVar.wait(lock, []
+                      { return !masqueue.empty(); });
+    string a = masqueue.front();
+    masqueue.pop();
+    qmutex.unlock();
+    Massage m1(a);
+    r = m1.Deserialization("return");
+    if(r=="Succeed"){
+        std::cout << "你已将群主转移给id为" << in << "的用户已" << endl;
+    }else if(r=="NULL"){
+        std::cout << "id为" << in << "还不是群成员" << endl;
+    }
+
+}
+bool Clenit::man_delgroup(string ID,string man_groupid)
+{
+    Value j;
+    j["groupid"] = man_groupid;
+    j["ID"] = ID;
+    Massage m(MAN_DELGROUP, j, "0", "0");
+    string s = m.Serialization();
+    Err::sendMsg(cfd, s.c_str(), s.length());
+    string r;
+    std::unique_lock<std::mutex> lock(qmutex);
+    queueCondVar.wait(lock, []
+                      { return !masqueue.empty(); });
+    string a = masqueue.front();
+    masqueue.pop();
+    qmutex.unlock();
+    Massage m1(a);
+    r = m1.Deserialization("return");
+    if(r=="Succeed"){
+        std::cout << "已成功解散" << man_groupid << endl;
+        return true;
+    }
+}
+void Clenit::man_addmember(string ID,string man_groupid)
+{
+    Value j;
+    j["ID"] = ID;
+    j["groupid"]=man_groupid;
+    string in;
+    cout<<"请输入你要添加的成员id"<<endl;
+    cin>>in;
+    j["del_id"]=in;
+    if(in == ID){
+        cout<<"不能将自己添加入群"<<endl;
+        return;
+    }
+    Massage m(MAN_QUITMEMBER, j, "0", "0");
+    string s = m.Serialization();
+    Err::sendMsg(cfd, s.c_str(), s.length());
+    std::cout << "已发送添加成员请求" << endl;
+    std::unique_lock<std::mutex> lock(qmutex);
+    queueCondVar.wait(lock, []
+                      { return !masqueue.empty(); });
+    string r = masqueue.front();
+    masqueue.pop();
+    qmutex.unlock();
+    std::cout << r << endl;
+    if (r=="Succeed")
+    {
+        cout<<"已成功添加成员"<<in<<endl;
+    }else if(r=="NULL"){
+        cout<<in<<"没有此用户"<<endl;
+    }
 }
 void Clenit::manage_menu2(string ID,string man_groupid)
 {
@@ -138,6 +341,8 @@ void Clenit::manage_menu2(string ID,string man_groupid)
         cout << "|    6:解散该群    |" << endl;
         cout << "|    7:屏蔽该群    |" << endl;
         cout << "|    8:解除屏蔽    |" << endl;
+        cout << "|    9:转让群主    |" << endl;
+        cout << "|    10:添加成员   |" << endl;
         cout << "|    0:退出界面    |" << endl;
         cout << "|                  |" << endl;
         cout << "+------------------+" << endl;
@@ -147,25 +352,35 @@ void Clenit::manage_menu2(string ID,string man_groupid)
 
         if (in == MAN_ADDGROUP)
         {
-            man_addgroup(ID,man_groupid);
+            Clenit::man_addgroup(ID,man_groupid);
         }
         else if (in == MAN_VIEW)
         {
-            man_view(ID,man_groupid);
+            Clenit::man_view(ID,man_groupid);
         }
         else if (in == MAN_ADDMANAGER)
         {
-            man_addmanager(ID,man_groupid);
+            Clenit::man_addmanager(ID,man_groupid);
         }
         else if (in == MAN_QUITMANAGER)
         {
-            man_delmanager(ID,man_groupid);
+            Clenit::man_delmanager(ID,man_groupid);
         }
         else if (in == MAN_QUITMEMBER)
         {
-            man_delmember(ID,man_groupid);
-        }
-        else if (in == MAN_DELGROUP)
+            Clenit::man_delmember(ID,man_groupid);
+        }else if(in == IGN_GROUP)
+        {
+            Clenit::ignoregroup(ID,man_groupid);
+        }else if(in == REC_GROUP)
+        {
+            Clenit::grouprecover(ID,man_groupid);
+        }else if(in == TRA_GROUP)
+        {
+            Clenit::transfer_group( ID,man_groupid);
+        }else if(in == MAN_ADDMEMBER){
+            Clenit::man_addmember(ID,man_groupid);
+        }else if (in == MAN_DELGROUP)
         {
             bool del = man_delgroup(ID,man_groupid);
             if (del)

@@ -32,13 +32,18 @@
 #define QUIT_GROUP "3"   //退出群聊
 #define CREATE_GROUP "4" //创建群聊
 #define VIEW_GROUP "5"   //查看群
-#define MAN_GROUP "6"    //管理群
+#define MAN_GROUP "6"    
+//管理群
 #define MAN_ADDGROUP "1"    //加群申请
 #define MAN_VIEW "2"        //查看群信息
 #define MAN_ADDMANAGER "3"  //添加管理
 #define MAN_QUITMANAGER "4" //取消管理
 #define MAN_QUITMEMBER "5"  //踢出成员
 #define MAN_DELGROUP "6"    //解散该群
+#define IGN_GROUP "7"
+#define REC_GROUP "8"
+#define TRA_GROUP "9"
+#define MAN_ADDMEMBER "10"
 #include<iostream>
 #include <mutex>
 #include <queue>
@@ -105,5 +110,9 @@ public:
     void man_delmanager(string ID,string man_groupid);         //取消管理员
     void man_delmember(string ID,string man_groupid);        //踢出成员
     bool man_delgroup(string ID,string man_groupid);          //解散群
+    void ignoregroup(string ID,string man_groupid);
+    void grouprecover(string ID,string man_groupid);
+    void transfer_group(string ID,string man_groupid);
+    void man_addmember(string ID,string man_groupid);
 };
 #endif

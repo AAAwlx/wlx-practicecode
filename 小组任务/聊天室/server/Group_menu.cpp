@@ -5,9 +5,8 @@ void Server::add_group(int cfd)
     string s;
     while (1)
     {
-        s=Err::recvMsg(cfd);
-        if (s.length() > 0)
-        {
+        s = Err::recvMsg(cfd);
+        if (s.length() > 0){
             cout << s << endl;
         }
     }
@@ -26,13 +25,11 @@ void Server::add_group(int cfd)
     if (g.member_List.isMember(ID))
     {
         r = "bemember"; // 如果好友列表中有被加人
-    }
-    else
-    {
+    }else{
         Json::Value::Members members = g.member_List.getMemberNames();
         for (const auto &key : members)
         {
-            if (g.member_List[key].asInt() == 1 || g.member_List[key].asInt() == 2)
+            if (g.member_List[key].asInt() == 1 || g.member_List[key].asInt() == 2)//判断是否是管理员
             {
                 try
                 {
@@ -47,7 +44,6 @@ void Server::add_group(int cfd)
                 catch (const std::out_of_range &e)
                 {
                     std::cout << "Key not found." << std::endl;
-
                 }
             }
         }
@@ -59,21 +55,22 @@ void Server::add_group(int cfd)
             for (size_t i = 0; i < reply->elements; i++)
             {
                 std::string element(reply->element[i]->str, reply->element[i]->len);
-                if (element ==ID)
+                if (element == ID)
                 {
                     valueExists = true;
                     break;
                 }
             }
         }
-        if(!valueExists){
+        if (!valueExists)
+        {
             redisReply *reply2 = (redisReply *)redisCommand(Library, "LPUSH %s %s", NEW_groupid.c_str(), ID.c_str());
             freeReplyObject(reply2);
         }
         freeReplyObject(reply);
     }
     cout << r << endl;
-    Err::sendMsg(cfd, r.c_str(), r.length());//向客户端返回处理结果
+    Err::sendMsg(cfd, r.c_str(), r.length()); // 向客户端返回处理结果
 }
 void Server::quit_group(int cfd)
 {
@@ -81,8 +78,8 @@ void Server::quit_group(int cfd)
     string r;
     while (1)
     {
-        
-        s=Err::recvMsg(cfd);
+
+        s = Err::recvMsg(cfd);
         if (s.length() > 0)
         {
             cout << s << endl;
@@ -91,18 +88,48 @@ void Server::quit_group(int cfd)
     Massage m(s);
     string Del_groupid = m.Deserialization("Del_groupid");
     string ID = m.Deserialization("ID");
-    Group g(Del_groupid,Library);
-    User u(ID,Library);
-    if(u.group_List.isMember(Del_groupid)){
-        if(g.member_List[ID].asInt()==2){
-            r="belord";
-        }else{
+    Group g(Del_groupid, Library);
+    User u(ID, Library);
+    if (u.group_List.isMember(Del_groupid))
+    {
+        if (g.member_List[ID].asInt() == 2)
+        {
+            r = "belord";
+        }
+        else
+        {
             u.delete_group(Del_groupid);
             g.delete_member(ID);
+            // 通知所有管理员有人退群
+            Json::Value::Members members = g.member_List.getMemberNames();
+            for (const auto &key : members)
+            {
+                if (g.member_List[key].asInt() > 0)
+                {
+                    try
+                    {
+                        int cfd2 = user_cfd.at(key); // 当管理员在线，立即向被添加人发送好友申请通知
+                        Value j;
+                        j["ID"] = ID;
+                        Massage m2("quit_group", j, "0", "0");
+                        string s3 = m2.Serialization();
+                        Err::sendMsg(cfd2, s3.c_str(), s3.length());
+                        r = "Succeed";
+                    }
+                    catch (const std::out_of_range &e)
+                    {
+                        std::cout << "Key not found." << std::endl;
+                    }
+                }
+            }
         }
-    }else{
-        r="NULL";
     }
+    else
+    {
+        r = "NULL";
+    }
+    cout << r << endl;
+    Err::sendMsg(cfd, r.c_str(), r.length());
 }
 void Server::create_group(int cfd)
 {
@@ -110,8 +137,8 @@ void Server::create_group(int cfd)
     string r;
     while (1)
     {
-        
-        s=Err::recvMsg(cfd);
+
+        s = Err::recvMsg(cfd);
         if (s.length() > 0)
         {
             cout << s << endl;
@@ -120,9 +147,9 @@ void Server::create_group(int cfd)
     Massage m(s);
     string group_name = m.Deserialization("group_name");
     string ID = m.Deserialization("ID");
-    Group g(group_name,ID,Library);
-    string gid=g.distribute_id();
-    Err::sendMsg(cfd,gid.c_str(),gid.size());
+    Group g(group_name, ID, Library);
+    string gid = g.distribute_id();
+    Err::sendMsg(cfd, gid.c_str(), gid.size());
     g.save_group();
 }
 void Server::view_group(int cfd)
@@ -131,8 +158,8 @@ void Server::view_group(int cfd)
     string r;
     while (1)
     {
-        
-        s=Err::recvMsg(cfd);
+
+        s = Err::recvMsg(cfd);
         if (s.length() > 0)
         {
             cout << s << endl;
@@ -141,8 +168,8 @@ void Server::view_group(int cfd)
     Massage m(s);
     string group_name = m.Deserialization("group_name");
     string ID = m.Deserialization("ID");
-    User u(ID,Library);
-    Massage m2(VIEW_FRIENDS,u.group_List,"0","0");
+    User u(ID, Library);
+    Massage m2(VIEW_FRIENDS, u.group_List, "0", "0");
     Err::sendMsg(cfd, m2.Serialization().c_str(), m2.Serialization().length());
 }
 void Server::manage_menu(int cfd)
@@ -151,8 +178,8 @@ void Server::manage_menu(int cfd)
     string r;
     while (1)
     {
-        
-        s=Err::recvMsg(cfd);
+
+        s = Err::recvMsg(cfd);
         if (s.length() > 0)
         {
             cout << s << endl;
@@ -161,19 +188,14 @@ void Server::manage_menu(int cfd)
     Massage m(s);
     string man_groupid = m.Deserialization("man_groupid");
     string ID = m.Deserialization("ID");
-    User u(ID,Library);
-    if(u.group_List.isMember(man_groupid)){
-        Group g(man_groupid,Library);
-        int flag=g.member_List[ID].asInt();
-        if(flag==0){
-            manage_menu0(cfd);
-        }else if(flag==1){
-            manage_menu1(cfd);
-        }else if(flag==2){
-            manage_menu2(cfd);
-        }
-    }else{
-        r="NULL";
+    User u(ID, Library);
+    if (u.group_List.isMember(man_groupid))
+    {
+        manage_menu(cfd);
+    }
+    else
+    {
+        r = "NULL";
     }
 }
 void Server::group_menu(int cfd)
@@ -182,7 +204,7 @@ void Server::group_menu(int cfd)
     string s;
     while (1)
     {
-        s=Err::recvMsg(cfd);
+        s = Err::recvMsg(cfd);
         if (s.length() > 0)
         {
             cout << s << endl;
@@ -205,7 +227,8 @@ void Server::group_menu(int cfd)
             else if (s == CREATE_GROUP)
             {
                 Server::create_group(cfd);
-            }else if(s == MAN_GROUP)
+            }
+            else if (s == MAN_GROUP)
             {
                 Server::manage_menu(cfd);
             }

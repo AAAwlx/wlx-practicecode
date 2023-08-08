@@ -97,13 +97,15 @@ void Server::ignorefriend(int cfd, Massage m)
     string r;
     Value v;
     if (u.friend_List.isMember(s1))
-    { 
-        u.shield_friend(s1);
-        r="Succeed";
-        cout<<u.friend_List<<endl;
-    }
-    else
     {
+        if(u.friend_List[s1].asInt()==1){
+            u.shield_friend(s1);
+            r="Succeed";
+            cout<<u.friend_List<<endl;
+        }else{
+            r="blocked";
+        }    
+    }else{
         r="NULL";
     }
     v["return"] = r;
@@ -120,8 +122,7 @@ void Server::friendrecover(int cfd, Massage m)
     User u(s2, Library);
     Value v;
     string r;
-    if (u.friend_List.isMember(s1))
-    { 
+    if (u.friend_List.isMember(s1)){ 
         if(u.friend_List[s1]==0){
             u.recover_friend(s1);
             r="Succeed";
@@ -129,9 +130,7 @@ void Server::friendrecover(int cfd, Massage m)
         }else{
             r="not_blocked";
         }
-    }
-    else
-    {
+    }else{
         r="NULL";
     }
     v["return"] = r;
@@ -146,23 +145,18 @@ void Server::viewfriend(int cfd, Massage m)
     User u(s2, Library);
     Value j = u.friend_List; // 好友列表
     Value flist;             // 好友状态列表
-    if (j.isObject())
-    {
+    if (j.isObject()){
         Json::Value::Members members = j.getMemberNames();
         for (const auto &key : members)
         {
             int count = user_cfd.count(key);
-            if (count > 0)
-            {
+            if (count > 0){
                 flist[key] = "online";
-            }
-            else
-            {
+            }else{
                 flist[key] = "not online";
             }
         }
     }
-
     Massage m1("0", flist, "0", "0");
     string s = m1.Serialization();
     Err::sendMsg(cfd, s.c_str(), s.length());
@@ -206,17 +200,21 @@ void Server::friendrequests(int cfd, Massage m)
         std::string value = (*it).asString();
         redisReply *reply = (redisReply *)redisCommand(Library, "LREM %s 0 %s", s.c_str(), key.c_str()); // 将已经处理过的好友请求删除
         Value j;
+        string result;
         if (value == "accapt")
         {
             User k(key, Library);
             k.add_friend(ID);  // 将被加人加入申请人的列表
             u.add_friend(key); // 将申请人加入被加人的列表
+            result="f_accapt";
+        }else{
+            result="f_reject";
         }
         try
         {
             int cfd2 = user_cfd.at(key);
             j["friend"] = key;
-            Massage m3("f_accapt", j, "0", "0");
+            Massage m3(result, j, "0", "0");
             
             Err::sendMsg(cfd2, m3.Serialization().c_str(), m3.Serialization().length()); // 如果在线，通知申请人申请已经通过
             std::cout<< m3.Serialization()<<endl;
