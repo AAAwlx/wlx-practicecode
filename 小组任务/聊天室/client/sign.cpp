@@ -5,7 +5,7 @@ int Clenit::login()
     string Id, Pass1, in; // 用户的id，密码
     Value info;
     int i;
-    char *r;
+    string r;
     std::cout << "请输入您的ID(3~20位)" << endl;
     std::cin >> Id;
     while (1)
@@ -42,7 +42,8 @@ int Clenit::login()
 
     while (1)
     {
-        if ((Err::recvMsg(cfd, &r))>0)
+        r=Err::recvMsg(cfd);
+        if (r.length() > 0)
         {
             if (stoi(r) == -1234567)
             {
@@ -106,7 +107,7 @@ int Clenit::login()
 
 void Clenit::resetpassword(string ID)
 {
-    char *r;
+    string r;
     string in;
     while (1)
     {
@@ -121,10 +122,11 @@ void Clenit::resetpassword(string ID)
             j["ID"] = ID;
             Massage m1(Reset_Password, j, "0", "0");
             string s = m1.Serialization();
-            Err::sendMsg(cfd, s.c_str(), s.length());
+            Err::sendMsg(cfd,s.c_str(),s.length());
             while (1)
             {
-                if ((Err::recvMsg(cfd, &r)) > 0)
+                r=Err::recvMsg(cfd);
+                if (r.length() > 0)
                 {
                     Massage m2(r);
                     string Q = m2.Deserialization("Question"); // 验证问题
@@ -215,10 +217,12 @@ int Clenit::sign_up()
 
         std::cout << "请再次输入您设置的问题" << endl;
         std::cin >> Answer2;
-        if (Answer1 == Answer2){
+        if (Answer1 == Answer2)
+        {
             break;
         }
-        else{
+        else
+        {
             continue;
         }
     }
@@ -229,10 +233,11 @@ int Clenit::sign_up()
     Massage m1(SIGN_UP, info, "0", "0");
     string s = m1.Serialization();
     Err::sendMsg(cfd, s.c_str(), s.size());
-    char *r;
+    string r;
     while (1)
     {
-        if ((Err::recvMsg(cfd, &r))>0)
+        r = Err::recvMsg(cfd);
+        if (r.length() > 0)
         {
             ID = r;
             std::cout << "您的用户id是：" << ID << endl;

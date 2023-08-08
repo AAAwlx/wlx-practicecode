@@ -26,12 +26,27 @@
 #define Direct_send "2"//直接发送
 #define Pchat_space "1"//进入与xx用户的聊天空间
 #define Chat_History "3"//查看与某用户的聊天历史
+//群管理界面
+#define JOIN_GROUP "1"   //群聊
+#define ADD_GROUP "2"    //加入群聊
+#define QUIT_GROUP "3"   //退出群聊
+#define CREATE_GROUP "4" //创建群聊
+#define VIEW_GROUP "5"   //查看群
+#define MAN_GROUP "6"    //管理群
+#define MAN_ADDGROUP "1"    //加群申请
+#define MAN_VIEW "2"        //查看群信息
+#define MAN_ADDMANAGER "3"  //添加管理
+#define MAN_QUITMANAGER "4" //取消管理
+#define MAN_QUITMEMBER "5"  //踢出成员
+#define MAN_DELGROUP "6"    //解散该群
 #include<iostream>
 #include <mutex>
 #include <queue>
 #include<atomic>
+#include <condition_variable>
 using namespace std;
 extern std::atomic<bool> stopFlag;
+extern std::condition_variable queueCondVar;
 extern std::mutex qmutex;
 extern std::queue<string> masqueue;
 void thread_recv(const std::string& ID, int cfd, const std::string& chatobject);
@@ -55,8 +70,6 @@ public:
     void Exit();
     void historicalnews(string ID);
     void main_mnue(string ID);//主界面函数
-    
-    //void group_menu(string ID);
     //好友管理函数组
     void friends_menu(string ID);
     void friendadd(string ID);//加好友
@@ -75,5 +88,22 @@ public:
     void directsend(string ID);
     void pchatspace(string ID);
     void chathistory(string ID);
+    //群管理
+    void group_menu(string ID);
+    void create_group( string ID); //创建群聊
+    void add_group(string ID);               //申请入群
+    void quit_group(string ID);              //退出群
+    void view_group(string ID);              //查看群
+    void publicChat(string ID);
+    void manage_menu(string ID); //管理群
+    void manage_menu0(string ID,string man_groupid);
+    void manage_menu1(string ID,string man_groupid);
+    void manage_menu2(string ID,string man_groupid);
+    void man_addgroup(string ID,string man_groupid);          //入群请求
+    void man_view(string ID,string man_groupid);                //查看群成员
+    void man_addmanager(string ID,string man_groupid);  //添加管理员
+    void man_delmanager(string ID,string man_groupid);         //取消管理员
+    void man_delmember(string ID,string man_groupid);        //踢出成员
+    bool man_delgroup(string ID,string man_groupid);          //解散群
 };
 #endif

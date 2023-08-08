@@ -36,7 +36,7 @@
 #include <atomic>
 #define Epoll_size 500
 #define SERVERPORT 8888
-#define BUFFERSIZE 500//单个消息不能超过五百字
+#define BUFFERSIZE 1024//单个消息不能超过五百字
 #define Blank_option "100"//当消息为普通消息而非请求
 using namespace std;
 using namespace Json;
@@ -57,7 +57,7 @@ public:
     static int writen(int fd, const char* msg, int size);
     static int sendMsg(int cfd, const char* msg, int len);
     static int readn(int fd, char* buf, int size);
-    static int recvMsg(int cfd, char** msg);
+    static string recvMsg(int cfd);
 };
 //消息类
 class Massage
@@ -97,13 +97,38 @@ public:
     User(const User &other);
     string distribute_id();//分配用户id
     bool save_user();//保存用户信息
-    string Inquire(string s);//查询用户信
+    string Inquire(string s);//查询用户信息
     void add_friend(string friend_id);//添加好友
     void delete_friend(string friend_id);//删除好友
     void shield_friend(string friend_id);//屏蔽好友
     void recover_friend(string friend_id);//解除屏蔽
+    void add_group(string group_id);
+    void delete_group(string group_id);//退群
+    void shield_group(string group_id);//屏蔽群
+    void recover_group(string group_id);//解除屏蔽
     //void Revise();//修改用户信息
     ~User();
+};
+class Group
+{
+private:
+    static int Group_count;
+    string GID,Name;
+    std::mutex user_mtx;//对数据库进行写入或删除操作时的 
+    redisContext* Library;
+public:
+    Value member_List;
+    Group(string name,string Lordname,redisContext* userm);
+    Group(string ID,redisContext* userm);
+    string distribute_id();//分配群id
+    bool save_group();//保存群信息
+    string Inquire(string s);//查询群信息
+    void add_member(string member_id);//添加成员
+    void delete_member(string member_id);//删除成员
+    void Revise_group();//修改群信息
+    void Modify_permissions(string member_id,int flag);//修改成员权限
+    ~Group
+    ();
 };
 /*template <typename T>
 class TaskQueue

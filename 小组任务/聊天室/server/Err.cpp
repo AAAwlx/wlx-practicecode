@@ -1,4 +1,5 @@
 #include "public.hpp"
+#include"ser.hpp"
 /*系统调用函数以及相应的错误处理函数*/
 int Err::Socket(int domain, int type, int protocol)
 {
@@ -156,7 +157,7 @@ int Err::readn(int fd, char* buf, int size)
     }
     return size;
 }
-int Err::recvMsg(int cfd, char** msg)
+string Err::recvMsg(int cfd)
 {
     // 接收数据
     // 1. 读数据头
@@ -164,18 +165,17 @@ int Err::recvMsg(int cfd, char** msg)
     readn(cfd, (char*)&len, 4);
     len = ntohl(len);
     //printf("数据块大小: %d\n", len);
-
     // 根据读出的长度分配内存，+1 -> 这个字节存储\0
     char *buf = (char*)malloc(len+1);
-    int ret = readn(cfd, buf, len);
+    int ret = readn(cfd,buf, len);
     if(ret != len)
     {
-        close(cfd);
         free(buf);
-        return -1;
+        close(cfd);
+        return "-1";    
     }
     buf[len] = '\0';
-    *msg = buf;
-
-    return ret;
+    std::string str(buf);
+    free(buf);
+    return str;
 }

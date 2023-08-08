@@ -26,6 +26,13 @@
 #define Direct_send "2"//直接发送
 #define Pchat_space "1"//进入与xx用户的聊天空间
 #define Chat_History "3"//查看与某用户的聊天历史
+//群管理界面
+#define JOIN_GROUP "1"   //群聊
+#define ADD_GROUP "2"    //加入群聊
+#define QUIT_GROUP "3"   //退出群聊
+#define CREATE_GROUP "4" //创建群聊
+#define VIEW_GROUP "5"   //查看群
+#define MAN_GROUP "6"    //管理群
 #define EP0LL_SIZE 1024 
 #include<iostream>
 #include<hiredis/hiredis.h>
@@ -35,6 +42,7 @@ using namespace std;
 extern redisContext* Library;//启用一个redis库
 extern std::unordered_map<std::string, int> user_cfd;
 extern int user_ID;
+extern std::atomic<int> cfd;
 class Server
 {
 private:
@@ -52,8 +60,7 @@ private:
 public:
     
      
-    Server(int port, string ip)
-    :server_port(port),server_ip(ip){};
+    Server(int port, string ip);
     ~Server();
     void serun();
     static void thread_work(int cfd);
@@ -75,10 +82,21 @@ public:
     //static void file_menu(int cfd);
    //
     static void privateChat(int cfd);
-    static void directsend(int cfd,Massage m,char *massage);
+    static void directsend(int cfd,Massage m,string massage);
     static void pchatspace(int cfd,Massage m);
     static void chathistory(int cfd,Massage m);
     static void historicalnews(int cfd,string ID);
+    //群
+    static void group_menu(int cfd);
+    static void create_group( int cfd); //创建群聊
+    static void add_group(int cfd);     //申请入群
+    static void quit_group(int cfd);    //退出群
+    static void view_group(int cfd);    //查看群
+    static void publicChat(int cfd);
+    static void manage_menu(int cfd); //管理群
+    static void manage_menu0(int cfd);
+    static void manage_menu1(int cfd);
+    static void manage_menu2(int cfd);
 };
 
 #endif

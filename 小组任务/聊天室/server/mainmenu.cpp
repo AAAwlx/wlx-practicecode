@@ -55,25 +55,25 @@ void Server::historicalnews(int cfd, string ID)
 }
 void Server::main_menu(int cfd, string ID)
 {
-    char *r;
     while (1)
     {
-        if (Err::recvMsg(cfd, &r) > 0)
+        string r;
+        r=Err::recvMsg(cfd);
+        if (r.length() > 0)
         {
             cout<<r<<endl;
-            
             Massage m(r);
             std::variant<Json::Value, std::string> result = m.takeMassage("option");
             std::string o = std::get<std::string>(result);
             cout<<o<<endl;
-            if (o == PRIVATE)
+            /*if (o == PRIVATE)
             {
                 
                 Server::privateChat(cfd);
-            } /*else if(s==GROUP){
+            } else if(s==GROUP){
 
-             }*/
-            else if (o == FRIENDS_MENU)
+             }
+            else */if (o == FRIENDS_MENU)
             {
                 Server::friends_menu(cfd);
             } /*else if(s==FILE_MANAGE){

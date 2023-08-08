@@ -54,7 +54,7 @@ public:
     static int writen(int fd, const char* msg, int size);
     static int sendMsg(int cfd,const char* msg, int len);
     static int readn(int fd, char* buf, int size);
-    static int recvMsg(int cfd, char** msg);
+    static string recvMsg(int cfd);
 };
 //消息类
 class Massage

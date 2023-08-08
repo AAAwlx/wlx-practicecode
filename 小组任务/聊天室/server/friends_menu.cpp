@@ -6,7 +6,7 @@ void Server::friendadd(int cfd, Massage m)
     string r;
     Value v;
     User f(NEW_friendid, Library);
-    if (f.Inquire("ID") == "0")
+    if (f.Inquire("ID") == "-1234567")
     { // 查询是否有此人存在
         cout << "NULL" << endl;
         v["return"] = "NULL";
@@ -188,10 +188,11 @@ void Server::friendrequests(int cfd, Massage m)
     string s1 = m1.Serialization();
     cout<<s1<<endl;
     Err::sendMsg(cfd, s1.c_str(), s1.length()); // 将待处理的请求发送到客户端
-    char *r;
+    string r;
     while (1)
     {
-        if (Err::recvMsg(cfd, &r) > 0)
+        r=Err::recvMsg(cfd);
+        if (r.length() > 0)
         {
             break;
         }
@@ -216,7 +217,10 @@ void Server::friendrequests(int cfd, Massage m)
             int cfd2 = user_cfd.at(key);
             j["friend"] = key;
             Massage m3("f_accapt", j, "0", "0");
-            Err::sendMsg(cfd2, value.c_str(), value.length()); // 如果在线，通知申请人申请已经通过
+            
+            Err::sendMsg(cfd2, m3.Serialization().c_str(), m3.Serialization().length()); // 如果在线，通知申请人申请已经通过
+            std::cout<< m3.Serialization()<<endl;
+            std::cout<<value<<endl;
         }
         catch (const std::out_of_range &e)
         {
@@ -227,10 +231,11 @@ void Server::friendrequests(int cfd, Massage m)
 void Server::friends_menu(int cfd)
 {
     cout << cfd << "已进入好友管理界面" << endl;
-    char *r;
     while (1)
     {
-        if (Err::recvMsg(cfd, &r) > 0)
+        string r;
+        r=Err::recvMsg(cfd);
+        if (r.length() > 0)
         {
             cout << r << endl;
             

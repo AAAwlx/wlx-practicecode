@@ -3,6 +3,7 @@
 std::atomic<bool> stopFlag;
 std::mutex qmutex;
 std::queue<string> masqueue;
+std::condition_variable queueCondVar;
 Clenit::Clenit(int port, string ip)
     : server_port(port), server_ip(ip)
 {

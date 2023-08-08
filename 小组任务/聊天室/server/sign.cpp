@@ -9,7 +9,6 @@ void Server::sign_up(int cfd,Massage m)//注册
     string a=m.Deserialization("Answer");
     User u(n,p,q,a,Library);//初始化用户类
     string ID=u.distribute_id();//分配ID
-    //Err::Write(cfd,ID.c_str(),ID.size());//向客户端返回ID 
     Err::sendMsg(cfd,ID.c_str(),ID.size());
     u.save_user();//保存用户信息
     return;
@@ -42,10 +41,11 @@ void Server::resetpassword(int cfd,Massage m)
 bool Server::sign_menu(int cfd)
 {
     cout << "进入sign" << endl;
-    char *r;
     while (fd_in[cfd]==false)
     {
-        if(Err::recvMsg(cfd,&r)>0)
+        string r;
+        r=Err::recvMsg(cfd);
+        if (r.length() > 0)
         {
             cout << r << endl;
             Massage m(r);
@@ -53,7 +53,6 @@ bool Server::sign_menu(int cfd)
             std::string o = std::get<std::string>(result);
             cout << o << endl;
             cout << "sign循环" << endl;
-            free(r);
             if(o==EXIT){
                 Err::Close(cfd);
                 cout<<cfd<<"已离开"<<endl;

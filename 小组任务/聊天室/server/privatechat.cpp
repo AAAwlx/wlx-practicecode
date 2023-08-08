@@ -1,6 +1,6 @@
 #include "public.hpp"
 #include "ser.hpp"
-void Server::directsend(int cfd, Massage m, char *massage)
+void Server::directsend(int cfd, Massage m, string massage)
 {
     std::variant<Json::Value, std::string> result1 = m.takeMassage("to");
     std::string to_id = std::get<std::string>(result1);
@@ -20,10 +20,10 @@ void Server::directsend(int cfd, Massage m, char *massage)
             freeReplyObject(reply);
             try
             {
+                
                 int cfd2 = user_cfd.at(to_id); // 当被添加人在线，立即向被添加人发送好友申请通知
-                Err::sendMsg(cfd2, massage, sizeof(massage));
+                Err::sendMsg(cfd2, massage.c_str(), massage.length());
                 r = "Succeed";
-                cout << cfd2<<massage << endl;
             }
             catch (const std::out_of_range &e)
             {
@@ -44,6 +44,7 @@ void Server::directsend(int cfd, Massage m, char *massage)
     v["return"] = r;
     Massage m1("0", v, "0", "0");
     string s = m1.Serialization();
+    cout << r << endl;
     Err::sendMsg(cfd, s.c_str(), s.length());
     cout << r << endl;
     return;
@@ -108,8 +109,9 @@ void Server::pchatspace(int cfd, Massage m)
     cout << "----------------------------------------------------" << endl;
     while (1)
     {
-        char *r;
-        if (Err::recvMsg(cfd, &r) > 0)
+        string r;
+        r=Err::recvMsg(cfd);
+        if (r.length() > 0)
         {
             Massage m2(r);
             std::variant<Json::Value, std::string> result = m2.takeMassage("option");
@@ -126,7 +128,7 @@ void Server::pchatspace(int cfd, Massage m)
                 if (user_cfd.count(friendID))
                 {
                     cfd2 = user_cfd[friendID];
-                    Err::sendMsg(cfd2, r, sizeof(r));
+                    Err::sendMsg(cfd2, r.c_str(),r.length());
                 }
                 else
                 { // 如果不在线存入未处理消息列表
@@ -189,10 +191,11 @@ void Server::chathistory(int cfd, Massage m)
 }
 void Server::privateChat(int cfd)
 {
-    char *r;
+    string r;
     while (1)
     {
-        if (Err::recvMsg(cfd, &r) > 0)
+        r=Err::recvMsg(cfd);
+        if (r.length() > 0)
         {
             cout << r << endl;
             Massage m(r);
@@ -202,7 +205,7 @@ void Server::privateChat(int cfd)
             {
                 directsend(cfd, m, r);
             }
-            else if (o == Pchat_space)
+            else if (o == "Pchat_space")
             {
                 pchatspace(cfd, m);
             }

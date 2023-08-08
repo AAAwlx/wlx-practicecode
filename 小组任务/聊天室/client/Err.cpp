@@ -116,7 +116,6 @@ int Err::sendMsg(int cfd,const char* msg, int len)
    {
        return -1;
    }
-    cout<<"数据长度为"<<len<<endl;
    // 申请内存空间: 数据长度 + 包头4字节(存储数据长度)
    char* data = (char*)malloc(len+4);
    int bigLen = htonl(len);
@@ -148,26 +147,25 @@ int Err::readn(int fd, char* buf, int size)
     }
     return size;
 }
-int Err::recvMsg(int cfd, char** msg)
+string Err::recvMsg(int cfd)
 {
     // 接收数据
     // 1. 读数据头
     int len = 0;
     readn(cfd, (char*)&len, 4);
     len = ntohl(len);
-    printf("数据块大小: %d\n", len);
-
+    //printf("数据块大小: %d\n", len);
     // 根据读出的长度分配内存，+1 -> 这个字节存储\0
     char *buf = (char*)malloc(len+1);
-    int ret = readn(cfd, buf, len);
+    int ret = readn(cfd,buf, len);
     if(ret != len)
     {
-        close(cfd);
         free(buf);
-        return -1;
+        close(cfd);
+        return "-1";    
     }
     buf[len] = '\0';
-    *msg = buf;
-
-    return ret;
+    std::string str(buf);
+    free(buf);
+    return str;
 }

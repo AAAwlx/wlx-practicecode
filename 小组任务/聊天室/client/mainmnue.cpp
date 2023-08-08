@@ -2,17 +2,18 @@
 #include "clit.hpp"
 void Clenit::historicalnews(string ID)//用户上线后立即发送未处理消息
 {
-    char *r;
+    string r;
     while (1)
     {
-        if(Err::recvMsg(cfd, &r)>0){
+        r=Err::recvMsg(cfd);
+        if(r.length()>0){
             cout<<r<<endl;
             Massage m(r);
             std::variant<Json::Value, std::string> result = m.takeMassage("content");
             Value s = std::get<Json::Value>(result);
             Value s1=s["request"];
             Value s2=s["chat"];
-            if(s1["request"].asString()=="null"){
+            if(s1["request"].asString()==" "){
                 cout<<"无好友申请"<<endl;
             }else{
                 Json::Value::Members  members= s1.getMemberNames();
@@ -20,7 +21,7 @@ void Clenit::historicalnews(string ID)//用户上线后立即发送未处理消�
                     std::cout << "id为" << s1[key].asString()<<"请求与你建立好友关系"<< std::endl;
                 }
             }
-            if(s2["chat"].asString()=="null"){
+            if(s2["chat"].asString()==" "){
                 cout<<"无新消息"<<endl;
             }else{
                 Json::Value::Members members2 = s2.getMemberNames();
@@ -40,6 +41,7 @@ void Clenit::main_mnue(string ID)
     cout<<"开启实时接收线程"<<endl;
     stopFlag=true;
     std::thread t([&]() { thread_recv(ID, cfd, chatobject); });
+    t.detach();
     while (true)
     {
         cout << "+------------------+" << endl;
@@ -72,10 +74,10 @@ void Clenit::main_mnue(string ID)
             Err::Write(cfd, s.c_str(), s.length());
             Clenit::file_menu(ID);
         }*/else if (in==EXIT){
-            stopFlag = false;//在退出登陆前关闭实时接收的线程
+            /*stopFlag = false;//在退出登陆前关闭实时接收的线程
             if (t.joinable()){
                 t.join();
-            }
+            }*/
             Clenit::Exit();
             cout<<"线程结束"<<endl;
             break;

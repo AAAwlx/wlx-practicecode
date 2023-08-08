@@ -4,9 +4,11 @@
 void thread_recv(const std::string& ID, int cfd, const std::string& chatobject )
 {
     while (stopFlag){
-        char *r;
-        if(Err::recvMsg(cfd,&r) > 0){
+        string r;
+        r=Err::recvMsg(cfd); 
+        if(r.length()> 0){
             Massage m(r);
+            cout<<r<<endl;
             std::variant<Json::Value, std::string> result = m.takeMassage("option");
             string o = std::get<std::string>(result);
             Clenit::PrientfR(o);
@@ -19,14 +21,12 @@ void thread_recv(const std::string& ID, int cfd, const std::string& chatobject )
                 string s = "id为" + friendid + "申请与您成为好友关系";
                 Clenit::PrientfT(s);
             }else if(o == "Direct_send"){
-                cout<<"----------------------------------------"<<endl;
                 string massage = m.Deserialization("massage");
                 std::variant<Json::Value, std::string> result = m.takeMassage("From");
                 string id = std::get<std::string>(result);
                 string s = "id为" + id + "发给你："+massage;
-
                 Clenit::PrientfT(s);
-            }else if(o == Pchat_space){
+            }else if(o == "Pchat_space"){
                 std::variant<Json::Value, std::string> result = m.takeMassage("From");
                 string f = std::get<std::string>(result);//取出发送者
                 string s = m.Deserialization("massage");
@@ -40,7 +40,10 @@ void thread_recv(const std::string& ID, int cfd, const std::string& chatobject )
             }else{//非实时消息
                 qmutex.lock();
                 masqueue.push(r);
+                bool aaa=masqueue.empty();
+                cout<<aaa<<"----------"<<endl;
                 qmutex.unlock();
+                queueCondVar.notify_one();
             }
         }
     }

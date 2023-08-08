@@ -26,7 +26,6 @@ User::~User()
 string User::distribute_id()
 {
     User_count++;
-    user_ID++;
     string s = to_string(User_count);
     ID = "11" + s;
     return ID;
@@ -39,7 +38,6 @@ bool User::save_user() // 将用户信息存入数据库
     inof["Pass"] = Pass;
     inof["Question"] = Question;
     inof["Answer"] = Answer;
-    Value GList; // 将群列表序列化
     FastWriter w;
     string f = w.write(friend_List);
     string g = w.write(group_List);
@@ -95,5 +93,22 @@ void User::shield_friend(string friend_id)
 void User::recover_friend(string friend_id)
 {
     friend_List[friend_id] = 1;
+    this->save_user();
+}
+void User::add_group(string group_id)
+{
+    group_List[group_id] = 1;
+    this->save_user();
+}
+void User::delete_group(string group_id)
+{
+    if (group_List.isObject()) {
+        group_List.removeMember(group_id);
+        this->save_user();
+    }
+}
+void User::shield_group(string group_id)
+{
+    group_List[group_id] = 0;
     this->save_user();
 }
