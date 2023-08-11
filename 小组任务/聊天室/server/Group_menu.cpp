@@ -189,14 +189,49 @@ void Server::manage_menu(int cfd)
     string man_groupid = m.Deserialization("man_groupid");
     string ID = m.Deserialization("ID");
     User u(ID, Library);
+    Group g(man_groupid,Library);
     if (u.group_List.isMember(man_groupid))
     {
+        if(g.member_List.asInt()==0){
+            r = "0";
+        }else if(g.member_List.asInt()==1){
+            r = "1";
+        }else if(g.member_List.asInt()==2){
+            r = "2";
+        }
         manage_menu(cfd);
     }
     else
     {
         r = "NULL";
     }
+    Err::sendMsg(cfd,r.c_str(),r.length());
+}
+void Server::publicChat(int cfd)
+{
+    string s;
+    string r;
+    while (1)
+    {
+
+        s = Err::recvMsg(cfd);
+        if (s.length() > 0)
+        {
+            cout << s << endl;
+        }
+    }
+    Massage m(s);
+    string groupid = m.Deserialization("chat_groupid");
+    string ID = m.Deserialization("ID");
+    User u(ID,Library);
+    if(u.group_List.isMember(groupid))
+    {
+        r="Succeed";
+        //跳转到群聊界面
+    }else{
+        r="NULL";
+    }
+    Err::sendMsg(cfd, r.c_str(), r.size());
 }
 void Server::group_menu(int cfd)
 {

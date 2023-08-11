@@ -3,7 +3,7 @@
     "configurations": [
        
         
-          {
+          /*{
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
@@ -22,6 +22,6 @@
                 "ignoreFailures": true
                 }
             ]
-        }
+        }*/
     ]
 }

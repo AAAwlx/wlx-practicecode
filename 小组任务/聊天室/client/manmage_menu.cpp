@@ -194,16 +194,12 @@ void Clenit::ignoregroup(string ID,string man_groupid)
     string s = m.Serialization();
     Err::sendMsg(cfd, s.c_str(), s.length());
     std::cout << "已发送屏蔽群请求" << endl;
-    string r;
-
     std::unique_lock<std::mutex> lock(qmutex);
     queueCondVar.wait(lock, []
                       { return !masqueue.empty(); });
-    string a = masqueue.front();
+    string r = masqueue.front();
     masqueue.pop();
     qmutex.unlock();
-    Massage m1(a);
-    r = m1.Deserialization("return");
     if (r == "Succeed")
     {
         std::cout << "你已将id为" << man_groupid << "的群已成功屏蔽" << endl;
@@ -225,11 +221,9 @@ void Clenit::grouprecover(string ID,string man_groupid)
     std::unique_lock<std::mutex> lock(qmutex);
     queueCondVar.wait(lock, []
                       { return !masqueue.empty(); });
-    string a = masqueue.front();
+    r = masqueue.front();
     masqueue.pop();
     qmutex.unlock();
-    Massage m1(a);
-    r = m1.Deserialization("return");
     if (r == "Succeed")
     {
         std::cout << "你已将id为" << man_groupid << "的用户已成功解除屏蔽" << endl;
@@ -260,17 +254,14 @@ void Clenit::transfer_group(string ID,string man_groupid)
     std::unique_lock<std::mutex> lock(qmutex);
     queueCondVar.wait(lock, []
                       { return !masqueue.empty(); });
-    string a = masqueue.front();
+    r = masqueue.front();
     masqueue.pop();
     qmutex.unlock();
-    Massage m1(a);
-    r = m1.Deserialization("return");
     if(r=="Succeed"){
         std::cout << "你已将群主转移给id为" << in << "的用户已" << endl;
     }else if(r=="NULL"){
         std::cout << "id为" << in << "还不是群成员" << endl;
     }
-
 }
 bool Clenit::man_delgroup(string ID,string man_groupid)
 {
@@ -302,7 +293,7 @@ void Clenit::man_addmember(string ID,string man_groupid)
     string in;
     cout<<"请输入你要添加的成员id"<<endl;
     cin>>in;
-    j["del_id"]=in;
+    j["add_id"]=in;
     if(in == ID){
         cout<<"不能将自己添加入群"<<endl;
         return;
@@ -323,6 +314,8 @@ void Clenit::man_addmember(string ID,string man_groupid)
         cout<<"已成功添加成员"<<in<<endl;
     }else if(r=="NULL"){
         cout<<in<<"没有此用户"<<endl;
+    }else if(r=="bemember"){
+        cout<<in<<"已经是群成员了"<<endl;
     }
 }
 void Clenit::manage_menu2(string ID,string man_groupid)
@@ -392,6 +385,95 @@ void Clenit::manage_menu2(string ID,string man_groupid)
         {
             Clenit::Exit();
             break;
+        }else{
+            cout<<"无效选项，请重新输入"<<endl;
+        }
+    }
+}
+void Clenit::manage_menu0(string ID,string man_groupid)
+{
+    while (true)
+    {
+        cout << "+------------------+" << endl;
+        cout << "|     ChatRoom     |" << endl;
+        cout << "+------------------+" << endl;
+        cout << "|                  |" << endl;
+        cout << "|    2:查看成员    |" << endl;
+        cout << "|    7:屏蔽该群    |" << endl;
+        cout << "|    8:解除屏蔽    |" << endl;
+        cout << "|    0:退出界面    |" << endl;
+        cout << "|                  |" << endl;
+        cout << "+------------------+" << endl;
+        string in;
+        cin >> in;
+        Err::sendMsg(cfd, in.c_str(), in.length());
+
+        if (in == MAN_VIEW)
+        {
+            Clenit::man_view(ID,man_groupid);
+        }
+        else if(in == IGN_GROUP)
+        {
+            Clenit::ignoregroup(ID,man_groupid);
+        }else if(in == REC_GROUP)
+        {
+            Clenit::grouprecover(ID,man_groupid);
+        }
+        else if (in == EXIT)
+        {
+            Clenit::Exit();
+            break;
+        }else{
+            cout<<"无效选项，请重新输入"<<endl;
+        }
+    }
+}
+void Clenit::manage_menu1(string ID,string man_groupid)
+{
+    while (true)
+    {
+        cout << "+------------------+" << endl;
+        cout << "|     ChatRoom     |" << endl;
+        cout << "+------------------+" << endl;
+        cout << "|                  |" << endl;
+        cout << "|    1:入群请求    |" << endl;
+        cout << "|    2:查看成员    |" << endl;
+        cout << "|    5:踢出成员    |" << endl;
+        cout << "|    7:屏蔽该群    |" << endl;
+        cout << "|    8:解除屏蔽    |" << endl;
+        cout << "|    10:添加成员   |" << endl;
+        cout << "|    0:退出界面    |" << endl;
+        cout << "|                  |" << endl;
+        cout << "+------------------+" << endl;
+        string in;
+        cin >> in;
+        Err::sendMsg(cfd, in.c_str(), in.length());
+
+        if (in == MAN_ADDGROUP)
+        {
+            Clenit::man_addgroup(ID,man_groupid);
+        }
+        else if (in == MAN_VIEW)
+        {
+            Clenit::man_view(ID,man_groupid);
+        }else if (in == MAN_QUITMEMBER)
+        {
+            Clenit::man_delmember(ID,man_groupid);
+        }else if(in == IGN_GROUP)
+        {
+            Clenit::ignoregroup(ID,man_groupid);
+        }else if(in == REC_GROUP)
+        {
+            Clenit::grouprecover(ID,man_groupid);
+        }else if(in == MAN_ADDMEMBER){
+            Clenit::man_addmember(ID,man_groupid);
+        }
+        else if (in == EXIT)
+        {
+            Clenit::Exit();
+            break;
+        }else{
+            cout<<"无效选项，请重新输入"<<endl;
         }
     }
 }

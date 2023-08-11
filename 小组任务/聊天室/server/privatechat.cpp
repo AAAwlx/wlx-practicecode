@@ -51,6 +51,7 @@ void Server::directsend(int cfd, Massage m, string massage)
 }
 void Server::pchatspace(int cfd, Massage m)
 {
+    cout << "----------------------------------------------------" << endl;
     string friendID = m.Deserialization("friendID");
     string myID = m.Deserialization("myID");
     User u(myID, Library);
@@ -91,7 +92,9 @@ void Server::pchatspace(int cfd, Massage m)
             info[s2] = j2;
             Massage m1(Pchat_space, info, "0", "0");
             s = m1.Serialization();
+            cout<<s<<endl;
             Err::sendMsg(cfd, s.c_str(), s.length());
+
         }
         else
         {
@@ -106,7 +109,7 @@ void Server::pchatspace(int cfd, Massage m)
         Err::sendMsg(cfd, s.c_str(), s.length());
         return;
     }
-    cout << "----------------------------------------------------" << endl;
+    
     while (1)
     {
         string r;
@@ -203,15 +206,15 @@ void Server::privateChat(int cfd)
             std::string o = std::get<std::string>(result);
             if (o == "Direct_send")
             {
-                directsend(cfd, m, r);
+                Server::directsend(cfd, m, r);
             }
             else if (o == "Pchat_space")
             {
-                pchatspace(cfd, m);
+                Server::pchatspace(cfd, m);
             }
             else if (o == Chat_History)
             {
-                chathistory(cfd, m);
+                Server::chathistory(cfd, m);
             }
             else if (o == EXIT)
             {

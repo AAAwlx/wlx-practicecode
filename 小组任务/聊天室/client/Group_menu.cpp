@@ -116,9 +116,9 @@ void Clenit::manage_menu(string ID)
     Value j;
     j["ID"] = ID;
     string in;
-    j["man_groupid"]=in;
     std::cout << "请输入群id" << endl;
     std::cin >> in;
+    j["man_groupid"]=in;
     Massage m(MAN_GROUP, j, "0", "0");
     string s = m.Serialization();
     Err::sendMsg(cfd, s.c_str(), s.length());
@@ -135,6 +135,30 @@ void Clenit::manage_menu(string ID)
         manage_menu1(ID,in);
     }else if(r=="2"){//群主
         manage_menu2(ID,in);
+    }else if(r=="NULL"){
+        std::cout << "你还未进入" << in << "请输入正确id" << endl;
+    }
+}
+void Clenit::publicChat(string ID)
+{
+    Value j;
+    j["ID"] = ID;
+    string in;
+    std::cout << "请输入群id" << endl;
+    std::cin >> in;
+    j["man_groupid"]=in;
+    Massage m(MAN_GROUP, j, "0", "0");
+    string s = m.Serialization();
+    Err::sendMsg(cfd, s.c_str(), s.length());
+    std::cout << "已发送聊天请求" << endl;
+    std::unique_lock<std::mutex> lock(qmutex);
+    queueCondVar.wait(lock, []
+                      { return !masqueue.empty(); });
+    string r = masqueue.front();
+    masqueue.pop();
+    qmutex.unlock();
+    if(r=="Succeed"){
+        //跳转到群聊界面
     }else if(r=="NULL"){
         std::cout << "你还未进入" << in << "请输入正确id" << endl;
     }
@@ -162,27 +186,27 @@ void Clenit::group_menu(string ID)
         Err::sendMsg(cfd, in.c_str(), in.length());
         if (in == JOIN_GROUP)
         {
-            publicChat(ID);
+            Clenit::publicChat(ID);
         }
         else if (in == ADD_GROUP)
         {
-            add_group(ID);
+            Clenit::add_group(ID);
         }
         else if (in == QUIT_GROUP)
         {
-            quit_group(ID);
+            Clenit::quit_group(ID);
         }
         else if (in == CREATE_GROUP)
         {
-            create_group(ID);
+            Clenit::create_group(ID);
         }
         else if (in == VIEW_GROUP)
         {
-            view_group(ID);
+            Clenit::view_group(ID);
         }
         else if (in == MAN_GROUP)
         {
-            manage_menu(ID);
+            Clenit::manage_menu(ID);
         }
         else if (in == EXIT)
         {

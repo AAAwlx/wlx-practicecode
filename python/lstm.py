@@ -1,46 +1,44 @@
-import numpy as np
 import matplotlib.pyplot as plt
-import tensorflow as tf
-import pandas as pd
-# 准备数据，并将其转换为LSTM模型所需的形状
-def prepare_data(data, seq_length):
-    data_X, data_y = [], []
-    for i in range(len(data) - seq_length - 1):
-        x = data[i:(i+seq_length)]
-        y = data[(i+1):(i+seq_length+1)]
-        data_X.append(x)
-        data_y.append(y)
-    return np.array(data_X), np.array(data_y)
+import numpy as np
 
-data = pd.read_excel('/home/wlx/pm2.5.xlsx')# 加载混沌时间序列数据
-data['日期'] = data['日期'].apply(lambda x: int(pd.Timestamp(x).timestamp()))
-data = data[['PM2.5','PM10','SO2','CO','NO2']].to_numpy().astype(np.float32)
-seq_length = 10
-train_size = int(len(data) * 0.7)
-train_data = data[:train_size]
-test_data = data[train_size:]
-X_train, y_train = prepare_data(train_data, seq_length)
-X_test, y_test = prepare_data(test_data, seq_length)
+# 构建数据
+x = [1, 2, 3, 4, 5]
+y = [10, 20, 15, 30, 25]
 
-# 构建LSTM模型
-# 归一化特征和标签
-# 归一化特征和标签
-model = tf.keras.Sequential([
-    tf.keras.layers.LSTM(units=64, input_shape=(None,5)),
-    tf.keras.layers.Dense(units=1)
-])
-model.compile(loss='mean_squared_error', optimizer=tf.keras.optimizers.Adam(), metrics=['accuracy'])
-model.fit(X_train, y_train, epochs=50, batch_size=1)
+# 创建图形和坐标轴
+fig, ax = plt.subplots()
 
-# 对测试集进行预测并还原数据
-pred = model.predict(X_test)
-pred = np.squeeze(pred)
-y_test = np.squeeze(y_test)
+# 绘制散点图
+scatter = ax.scatter(x, y, color='blue', marker='o', s=100, label='Data Points')
 
-# 可视化结果
-plt.plot(y_test, label='True Data')
-plt.plot(pred, label='LSTM Predict')
-plt.xlabel('Time')
-plt.ylabel('Value')
-plt.legend()
+# 设置坐标轴标签和标题
+ax.set_xlabel('X-axis')
+ax.set_ylabel('Y-axis')
+ax.set_title('Scatter Plot with Angle Annotation')
+
+# 在每个散点上添加注释文本
+for i, (xi, yi) in enumerate(zip(x, y)):
+    ax.annotate(f'Point {i}', (xi, yi), textcoords="offset points", xytext=(0,10), ha='center')
+
+# 连接第一个和最后一个散点，绘制虚线
+line1 = ax.plot([x[0], x[-1]], [y[0], y[-1]], color='red', linestyle='dashed', linewidth=2, label='Line 1')
+
+# 连接第二个和倒数第二个散点，绘制虚线
+line2 = ax.plot([x[1], x[-2]], [y[1], y[-2]], color='green', linestyle='dashed', linewidth=2, label='Line 2')
+
+# 计算夹角角度
+angle_rad = np.arctan2(y[-1] - y[0], x[-1] - x[0]) - np.arctan2(y[-2] - y[1], x[-2] - x[1])
+angle_deg = np.degrees(angle_rad) % 360  # 将角度限制在0到360之间
+
+# 在图中间位置添加夹角角度标注
+mid_x = (x[0] + x[-1]) / 2
+mid_y = (y[0] + y[-1]) / 2
+ax.annotate(f'{angle_deg:.2f}°', (mid_x, mid_y), textcoords="offset points", xytext=(0,10), ha='center')
+
+# 显示图例
+ax.legend()
+
+# 显示图像
 plt.show()
+
+

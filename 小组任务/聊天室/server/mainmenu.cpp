@@ -18,11 +18,6 @@ void Server::historicalnews(int cfd, string ID)
             }
         }
     }
-    else
-    {
-        j1["request"] = "nullptr";
-        cout<<j1["request"].asString()<<endl;
-    }
     string s2 = ID + "c";                                                                   // 私聊消息
     redisReply *reply2 = (redisReply *)redisCommand(Library, "LRANGE %s 0 -1", s2.c_str()); // 获取存有聊天记录的列表
     if (reply2 != nullptr)
@@ -38,17 +33,12 @@ void Server::historicalnews(int cfd, string ID)
             }
         }
     }
-    else
-    {
-        j2["chat"] = "nullptr";
-        cout<<j2["char"].asString()<<endl;
-    }
     j["request"]=j1;
     j["chat"]=j2;
     Massage m1(Historical_news, j, "0", "0");
     string s4 = m1.Serialization();
     Err::sendMsg(cfd, s4.c_str(), s4.length());
-    cout<<"历史消息已发送"<<endl;
+    cout<<"历史消息已发送"<<s4<<endl;
     freeReplyObject(reply);
     freeReplyObject(reply2);
     return;
@@ -66,14 +56,14 @@ void Server::main_menu(int cfd, string ID)
             std::variant<Json::Value, std::string> result = m.takeMassage("option");
             std::string o = std::get<std::string>(result);
             cout<<o<<endl;
-            /*if (o == PRIVATE)
+            if (o == PRIVATE)
             {
                 
                 Server::privateChat(cfd);
-            } else if(s==GROUP){
+            }else if(o==GROUP){
 
-             }
-            else */if (o == FRIENDS_MENU)
+            }
+            else if (o == FRIENDS_MENU)
             {
                 Server::friends_menu(cfd);
             } /*else if(s==FILE_MANAGE){

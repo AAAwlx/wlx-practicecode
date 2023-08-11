@@ -67,7 +67,7 @@ void Clenit::pchatspace(string ID)
     }
     info["friendID"] = id;
     info["myID"] = ID;
-    Massage m1(Pchat_space, info, "0", "0");
+    Massage m1("Pchat_space", info, "0", "0");
     string s1 = m1.Serialization();
     Err::sendMsg(cfd, s1.c_str(), s1.length());
     std::unique_lock<std::mutex> lock(qmutex);

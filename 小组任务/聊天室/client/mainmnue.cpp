@@ -13,7 +13,7 @@ void Clenit::historicalnews(string ID)//用户上线后立即发送未处理消�
             Value s = std::get<Json::Value>(result);
             Value s1=s["request"];
             Value s2=s["chat"];
-            if(s1["request"].asString()==" "){
+            if(s1.empty()){
                 cout<<"无好友申请"<<endl;
             }else{
                 Json::Value::Members  members= s1.getMemberNames();
@@ -21,7 +21,7 @@ void Clenit::historicalnews(string ID)//用户上线后立即发送未处理消�
                     std::cout << "id为" << s1[key].asString()<<"请求与你建立好友关系"<< std::endl;
                 }
             }
-            if(s2["chat"].asString()==" "){
+            if(s1.empty()){
                 cout<<"无新消息"<<endl;
             }else{
                 Json::Value::Members members2 = s2.getMemberNames();
