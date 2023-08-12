@@ -63,21 +63,15 @@ void Clenit::main_mnue(string ID)
         system("clear");
         if (in == PRIVATE){
             Clenit::privateChat(ID);
-        }/*else if (in == GROUP){
-            string s = GROUP;
-            Err::Write(cfd, s.c_str(), s.length());
+        }else if (in == GROUP){
             Clenit::group_menu(ID);
-        }*/else if (in == FRIENDS_MENU){
+        }else if (in == FRIENDS_MENU){
             Clenit::friends_menu(ID);
         }/*else if(in==FILE_MANAGE){
             string s = FILE_MANAGE;
             Err::Write(cfd, s.c_str(), s.length());
             Clenit::file_menu(ID);
         }*/else if (in==EXIT){
-            /*stopFlag = false;//在退出登陆前关闭实时接收的线程
-            if (t.joinable()){
-                t.join();
-            }*/
             Clenit::Exit();
             cout<<"线程结束"<<endl;
             break;

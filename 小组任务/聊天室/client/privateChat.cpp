@@ -52,24 +52,14 @@ void Clenit::directsend(string ID)
 }
 void Clenit::pchatspace(string ID)
 {
-
-    string id, massage;
     Value info;
-    std::cout << "请输入发送对象的id" << endl;
-    while (1)
-    {
-        std::cin >> id;
-        if (id.length() > 20 || id.length() < 3){
-            std::cout << "您输入的id不符合规范，请重新输入一次" << endl;
-        }else{
-            break;
-        }
-    }
-    info["friendID"] = id;
+    string friendid;
+    std::cout << "请输入您要聊天的好友id" << endl;
+    std::cin >> friendid;
+    info["friendid"] = friendid;
     info["myID"] = ID;
-    Massage m1("Pchat_space", info, "0", "0");
-    string s1 = m1.Serialization();
-    Err::sendMsg(cfd, s1.c_str(), s1.length());
+    Massage m(Pchat_space, info, friendid, ID);
+    Err::sendMsg(cfd,m.Serialization().c_str(),m.Serialization().length());
     std::unique_lock<std::mutex> lock(qmutex);
     queueCondVar.wait(lock, []
                       { return !masqueue.empty(); });
@@ -79,65 +69,39 @@ void Clenit::pchatspace(string ID)
     string in;
     if (r == "NOTfriend")
     {
-        std::cout << "您与id为" << id << "还不是好友，请先添加他为好友（输入0退出）" << endl;
+        std::cout << "您与id为" << friendid << "还不是好友，请先添加他为好友" << endl;
         std::cin >> in;
-        if (in == "0")
-        {
-            return;
-        }
     }
     else if (r == "Hidden")
     {
-        std::cout << "您被id为" << id << "屏蔽了（输入0退出）" << endl;
+        std::cout << "您被id为" << friendid << "屏蔽了" << endl;
         std::cin >> in;
-        if (in == "0")
-        {
-            return;
-        }
     }
-    else
+    else if (r == "Succeed")
     {
-        Massage m2(r);
-        std::variant<Json::Value, std::string> result = m2.takeMassage("content");
-        Value o = std::get<Json::Value>(result);
-        Value j1 = o[ID + id];
-        Value j2 = o[id + ID];
-        Json::Value::Members members1 = j1.getMemberNames();
-        for (const auto &key : members1)
+        string in2;
+        chatobject = friendid;
+        std::cout << "您已经进入与好友：" << friendid << "的私聊空间（输入Q退出）" << endl;
+        while (1)
         {
-            PrientfL(j1[key].asString());
-        }
-        Json::Value::Members members2 = j2.getMemberNames();
-        for (const auto &key : members2)
-        {
-            PrientfR(j2[key].asString());
-        }
-    }
-
-    std::cout << "您已经进入与好友：" << id << "的私聊空间（输入Q退出）" << endl;
-    chatobject = id;
-    string in2;
-    while (1)
-    {
-        std::cin >> in2;
-        if (in2 == "Q")
-        {
-            chatobject = id;
-            Clenit::Exit();
-            break;
-        }
-        else
-        {
-            Value j;
-            j["massage"] = in2;
-            Massage m3("Pchat_space", j, id, ID);
-            string s = m3.Serialization();
-            Err::sendMsg(cfd, s.c_str(), s.length());
-            std::cout << "----------------------------------------------------" << endl;
+            std::cin >> in2;
+            if (in2 == "Q")
+            {
+                chatobject = friendid;
+                Clenit::Exit();
+                break;
+            }
+            else
+            {
+                Value j;
+                j["massage"] = in2;
+                Massage m3("Pchat_space", j, friendid, ID);
+                string s = m3.Serialization();
+                Err::sendMsg(cfd, s.c_str(), s.length());
+                std::cout << "----------------------------------------------------" << endl;
+            }
         }
     }
-
-    return;
 }
 void Clenit::chathistory(string ID)
 {

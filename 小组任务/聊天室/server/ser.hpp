@@ -32,7 +32,8 @@
 #define QUIT_GROUP "3"   //退出群聊
 #define CREATE_GROUP "4" //创建群聊
 #define VIEW_GROUP "5"   //查看群
-#define MAN_GROUP "6"    
+#define MAN_GROUP "6"//管理菜单
+#define GROUP_HISTORY "7"//查看历史记录    
 //管理群
 #define MAN_ADDGROUP "1"    //加群申请
 #define MAN_VIEW "2"        //查看群信息
@@ -104,8 +105,11 @@ public:
     static void quit_group(int cfd);    //退出群
     static void view_group(int cfd);    //查看群
     static void publicChat(int cfd);
+    static void chat_forwarding(int cfd);
     static void manage_menu(int cfd);
-     //管理群
+    static void manage_menu0(int cfd);
+    static void history_group(int cfd);
+    //管理群
     static void man_addgroup(int cfd);          //入群请求
     static void man_view(int cfd);                //查看群成员
     static void man_addmanager(int cfd);  //添加管理员

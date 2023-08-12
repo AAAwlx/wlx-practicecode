@@ -5,7 +5,6 @@ int User::User_count = user_ID;
 User::User(string name, string pass, string question, string answer, redisContext *userm)
 :Name(name),Pass(pass),Question(question),Answer(answer),Library(userm)
 {
-    ID = this->distribute_id();
 } // 新用户
 User::User(string id, redisContext *userm) 
 :ID(id),Library(userm)
@@ -110,5 +109,10 @@ void User::delete_group(string group_id)
 void User::shield_group(string group_id)
 {
     group_List[group_id] = 0;
+    this->save_user();
+}
+void User::recover_group(string group_id)
+{
+    group_List[group_id] = 1;
     this->save_user();
 }

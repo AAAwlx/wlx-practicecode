@@ -58,10 +58,9 @@ void Server::main_menu(int cfd, string ID)
             cout<<o<<endl;
             if (o == PRIVATE)
             {
-                
                 Server::privateChat(cfd);
             }else if(o==GROUP){
-
+                Server::group_menu(cfd);
             }
             else if (o == FRIENDS_MENU)
             {

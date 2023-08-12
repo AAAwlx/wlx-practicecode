@@ -4,14 +4,14 @@ int Group::Group_count = 0;
 Group::Group(string name, string Lordname, redisContext *userm)
     : Name(name), Library(userm)
 {
-    GID = this->distribute_id();
     this->member_List[Lordname] = 2;//创建群聊的人为
+    cout << this->member_List[Lordname].asInt()<< endl;
 }
 Group::Group(string ID, redisContext *userm)
     : GID(ID), Library(userm)
 {
     Name = this->Inquire("Name");
-    string f = this->Inquire("FriendList");
+    string f = this->Inquire("member_List");
     Reader r;
     r.parse(f, member_List);
 }
@@ -20,7 +20,11 @@ Group::~Group()
 }
 string Group::distribute_id()
 {
-
+    Group_count++;
+    string s = to_string(Group_count);
+    GID = "22" + s;
+    cout<< GID << "已被创建" <<endl;
+    return GID;
 }
 bool Group::save_group()
 {
@@ -29,6 +33,7 @@ bool Group::save_group()
     inof["Name"] = Name;
     FastWriter w;
     string ml = w.write(member_List);
+    inof["member_List"]=ml;
     string s = w.write(inof); // 将各项用户信息打包成字符串存入redis
     const char *hash_user = "Group";
     const char *field = GID.c_str(); // 键值为唯一标识用户id

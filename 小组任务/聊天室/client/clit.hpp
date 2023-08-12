@@ -32,7 +32,8 @@
 #define QUIT_GROUP "3"   //退出群聊
 #define CREATE_GROUP "4" //创建群聊
 #define VIEW_GROUP "5"   //查看群
-#define MAN_GROUP "6"    
+#define MAN_GROUP "6" 
+#define GROUP_HISTORY "7"//群聊历史记录
 //管理群
 #define MAN_ADDGROUP "1"    //加群申请
 #define MAN_VIEW "2"        //查看群信息
@@ -100,6 +101,7 @@ public:
     void quit_group(string ID);              //退出群
     void view_group(string ID);              //查看群
     void publicChat(string ID);
+    void history_group(string ID);
     void manage_menu(string ID); //管理群
     void manage_menu0(string ID,string man_groupid);
     void manage_menu1(string ID,string man_groupid);
@@ -114,5 +116,6 @@ public:
     void grouprecover(string ID,string man_groupid);
     void transfer_group(string ID,string man_groupid);
     void man_addmember(string ID,string man_groupid);
+
 };
 #endif

@@ -40,6 +40,7 @@ void Server::man_addgroup(int cfd)
         }
     }
     Massage m2(r);
+    cout<<r<<endl;
     std::variant<Json::Value, std::string> result = m2.takeMassage("content");
     Value rlist = std::get<Json::Value>(result);
     for (Json::ValueIterator it = rlist.begin(); it != rlist.end(); ++it)
@@ -215,7 +216,7 @@ void Server::man_addmember(int cfd)
                 Value j;
                 int cfd2 = user_cfd.at(add_id);
                 j["groupid"] = groupid;
-                Massage m3("addmanager", j, "0", "0");
+                Massage m3("addmember", j, "0", "0");
                 Err::sendMsg(cfd2, m3.Serialization().c_str(), m3.Serialization().length()); // 如果在线，通知申请人申请已经通过
                 std::cout << m3.Serialization() << endl;
             }
@@ -380,7 +381,7 @@ bool Server::man_delgroup(int cfd)
     freeReplyObject(reply);
     return true;
 }
-void Server::manage_menu(int cfd)
+void Server::manage_menu0(int cfd)
 {
     cout << cfd << "已进入群管理界面" << endl;
     string s;

@@ -282,8 +282,8 @@ bool Clenit::man_delgroup(string ID,string man_groupid)
     r = m1.Deserialization("return");
     if(r=="Succeed"){
         std::cout << "已成功解散" << man_groupid << endl;
-        return true;
     }
+    return true;
 }
 void Clenit::man_addmember(string ID,string man_groupid)
 {
@@ -342,7 +342,7 @@ void Clenit::manage_menu2(string ID,string man_groupid)
         string in;
         cin >> in;
         Err::sendMsg(cfd, in.c_str(), in.length());
-
+        system("clear");
         if (in == MAN_ADDGROUP)
         {
             Clenit::man_addgroup(ID,man_groupid);
