@@ -1,6 +1,5 @@
 #include "public.hpp"
 #include "ser.hpp"
-int Group::Group_count = 0;
 Group::Group(string name, string Lordname, redisContext *userm)
     : Name(name), Library(userm)
 {
@@ -20,7 +19,12 @@ Group::~Group()
 }
 string Group::distribute_id()
 {
+    redisReply *reply = (redisReply *)redisCommand(Library, "GET %s", "group_count");
+    Group_count= atoi(reply->str);
+    freeReplyObject(reply);
     Group_count++;
+    redisReply *reply1 = (redisReply *)redisCommand(Library, "SET %s %d", "group_count",Group_count);
+    freeReplyObject(reply1);
     string s = to_string(Group_count);
     GID = "22" + s;
     cout<< GID << "已被创建" <<endl;
@@ -34,6 +38,7 @@ bool Group::save_group()
     FastWriter w;
     string ml = w.write(member_List);
     inof["member_List"]=ml;
+
     string s = w.write(inof); // 将各项用户信息打包成字符串存入redis
     const char *hash_user = "Group";
     const char *field = GID.c_str(); // 键值为唯一标识用户id

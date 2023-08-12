@@ -50,11 +50,17 @@
 #include <queue>
 #include<atomic>
 #include <condition_variable>
+#include <termios.h>
+#include <unistd.h>
+
 using namespace std;
-extern std::atomic<bool> stopFlag;
+extern std::atomic<bool>stopFlag;
 extern std::condition_variable queueCondVar;
 extern std::mutex qmutex;
 extern std::queue<string> masqueue;
+extern bool f_flag;
+extern bool g_flag;
+extern bool m_flag;
 void thread_recv(const std::string& ID, int cfd, const std::string& chatobject);
 class Clenit
 {

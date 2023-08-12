@@ -1,9 +1,12 @@
 #include "public.hpp"
 #include "clit.hpp"
-std::atomic<bool> stopFlag;
+std::atomic<bool>stopFlag(true);
 std::mutex qmutex;
 std::queue<string> masqueue;
 std::condition_variable queueCondVar;
+bool f_flag;
+bool g_flag;
+bool m_flag;
 Clenit::Clenit(int port, string ip)
     : server_port(port), server_ip(ip)
 {

@@ -3,6 +3,9 @@
 //实时接收好友申请提示，私聊与群聊消息，群中权限变更提醒
 void thread_recv(const std::string& ID, int cfd, const std::string& chatobject )
 {
+    if(stopFlag==false){
+        cout<<stopFlag<<endl;
+    }
     while (stopFlag){
         string r;
         r=Err::recvMsg(cfd); 
@@ -20,7 +23,13 @@ void thread_recv(const std::string& ID, int cfd, const std::string& chatobject )
                 string friendid = m.Deserialization("ID");
                 string s = "id为" + friendid + "申请与您成为好友关系";
                 Clenit::PrientfT(s);
-            }else if(o == "Direct_send"){//私聊消息
+            }else if(o == "del_friend"){
+                string friendid = m.Deserialization("friend");
+                string s = "id为" + friendid + "解除了与你的好友关系";
+                f_flag=false;
+                Clenit::PrientfT(s);
+            }
+            else if(o == "Direct_send"){//私聊消息
                 string massage = m.Deserialization("massage");
                 std::variant<Json::Value, std::string> result = m.takeMassage("form");
                 string id = std::get<std::string>(result);
@@ -64,7 +73,8 @@ void thread_recv(const std::string& ID, int cfd, const std::string& chatobject )
                 string result;
                 if(o == "addmember"){
                     result="群管理将你拉入";
-                }else if(o == "deldelmember"){
+                }else if(o == "delmember"){
+                    g_flag=false;
                     result="群管理将你踢出";
                 }
                 string s=result+"id为："+groupid+"的群聊";
@@ -75,7 +85,8 @@ void thread_recv(const std::string& ID, int cfd, const std::string& chatobject )
                 string result;
                 if(o == "addmanager"){
                     result="的群主将你设置为管理员";
-                }else if(o == "addmanager"){
+                }else if(o == "delmanager"){
+                    m_flag=false;
                     result="的群主取消了你的管理员";
                 }
                 string s="id为："+groupid+result;
@@ -86,18 +97,29 @@ void thread_recv(const std::string& ID, int cfd, const std::string& chatobject )
                 Clenit::PrientfT(s);
             }
             else if(o == "JOIN_GROUP"){//群聊
-                std::variant<Json::Value, std::string> result = m.takeMassage("form");
-                string f = std::get<std::string>(result);//取出发送者
-                if(f==chatobject){
-                    Clenit::PrientfR(f);
-                    Clenit::PrientfR(m.Deserialization("massage"));
+                std::variant<Json::Value, std::string> result = m.takeMassage("to");
+                string t = std::get<std::string>(result);//取出发送者
+                std::variant<Json::Value, std::string> result1 = m.takeMassage("form");
+                string f = std::get<std::string>(result1);//取出发送者
+                if(t==chatobject){
+                    if(f==ID){
+                        Clenit::PrientfL(f);
+                        Clenit::PrientfL(m.Deserialization("massage"));
+                    }else{
+                        Clenit::PrientfR(f);
+                        Clenit::PrientfR(m.Deserialization("massage"));
+                    }  
                 }
+            }else if(o == "man_delgroup"){
+                string groupid=m.Deserialization("groupid");
+                string s = "id为" + groupid + "群聊已被群主解散";
+                g_flag=false;
+                Clenit::PrientfT(s);
             }
             else{//非实时消息
                 qmutex.lock();
                 masqueue.push(r);
                 bool aaa=masqueue.empty();
-                cout<<aaa<<"----------"<<endl;
                 qmutex.unlock();
                 queueCondVar.notify_one();
             }

@@ -12,6 +12,12 @@ void Server::man_addgroup(int cfd)
         }
     }
     Massage m(s);
+    std::variant<Json::Value, std::string> result = m.takeMassage("option");
+    std::string o = std::get<std::string>(result);
+    if(o==EXIT){
+        cout<<"退出"<<endl;
+        return;
+    }
     string groupid = m.Deserialization("groupid");
     groupid += "g";
     Value info;
@@ -30,6 +36,12 @@ void Server::man_addgroup(int cfd)
     string s1 = m1.Serialization();
     cout << s1 << endl;
     Err::sendMsg(cfd, s1.c_str(), s1.length()); // 将待处理的请求发送到客户端
+    if(info.empty()){
+        cout<<"好友申请为空"<<endl;
+        freeReplyObject(reply);
+        return;
+    }
+    
     string r;
     while (1)
     {
@@ -41,12 +53,21 @@ void Server::man_addgroup(int cfd)
     }
     Massage m2(r);
     cout<<r<<endl;
-    std::variant<Json::Value, std::string> result = m2.takeMassage("content");
-    Value rlist = std::get<Json::Value>(result);
+    std::variant<Json::Value, std::string> result2 = m.takeMassage("option");
+    std::string o1 = std::get<std::string>(result2);
+    if(o1==EXIT){
+        cout<<"退出"<<endl;
+        return;
+    }
+    std::variant<Json::Value, std::string> result1 = m2.takeMassage("content");
+    Value rlist = std::get<Json::Value>(result1);
     for (Json::ValueIterator it = rlist.begin(); it != rlist.end(); ++it)
     {
-        std::string key = it.name();                                                                           // key为申请人id
-        std::string value = (*it).asString();                                                                  // 值为处理结果
+        std::string key = it.name(); 
+        cout<<key<<endl;                                                                          // key为申请人id
+        std::string value = (*it).asString();
+        cout<<value<<endl;   
+        cout<<"11111111111"<<endl;                                                                  // 值为处理结果
         redisReply *reply = (redisReply *)redisCommand(Library, "LREM %s 0 %s", groupid.c_str(), key.c_str()); // 将已经处理过的好友请求删除
         Value j;
         string result1;
@@ -54,9 +75,12 @@ void Server::man_addgroup(int cfd)
         {
             User k(key, Library);
             Group g(groupid, Library);
-
+            cout<<"333333333"<<endl;
             k.add_group(groupid); // 将被加人加入申请人的列表
-            g.add_member(key);    // 将申请人加入被加人的列表
+            cout<<"444444444"<<endl;
+            //g.add_member(key);    // 将申请人加入被加人的列表
+            g.member_List[key]=0;
+            g.save_group();
             result1 = "g_accapt";
         }
         else
@@ -89,6 +113,12 @@ void Server::man_view(int cfd)
         }
     }
     Massage m(s);
+    std::variant<Json::Value, std::string> result = m.takeMassage("option");
+    std::string o = std::get<std::string>(result);
+    if(o==EXIT){
+        cout<<"退出"<<endl;
+        return;
+    }
     string groupid = m.Deserialization("groupid");
     Group g(groupid, Library);
     Massage m1(MAN_VIEW, g.member_List, "0", "0");
@@ -191,6 +221,12 @@ void Server::man_addmember(int cfd)
         }
     }
     Massage m(s);
+    std::variant<Json::Value, std::string> result = m.takeMassage("option");
+    std::string o = std::get<std::string>(result);
+    if(o==EXIT){
+        cout<<"退出"<<endl;
+        return;
+    }
     string groupid = m.Deserialization("groupid");
     string add_id = m.Deserialization("add_id");
     Group g(groupid, Library);
@@ -240,6 +276,12 @@ void Server::man_delmember(int cfd)
         }
     }
     Massage m(s);
+    std::variant<Json::Value, std::string> result = m.takeMassage("option");
+    std::string o = std::get<std::string>(result);
+    if(o==EXIT){
+        cout<<"退出"<<endl;
+        return;
+    }
     string groupid = m.Deserialization("groupid");
     string del_id = m.Deserialization("del_id");
     Group g(groupid, Library);
@@ -247,6 +289,8 @@ void Server::man_delmember(int cfd)
     if (!g.member_List.isMember(del_id))
     {
         r = "NULL";
+    }else if(g.member_List[del_id].asInt()==2){
+        r="Lord";
     }
     else
     {
@@ -280,6 +324,12 @@ void Server::ignoregroup(int cfd)
         }
     }
     Massage m(s);
+    std::variant<Json::Value, std::string> result = m.takeMassage("option");
+    std::string o = std::get<std::string>(result);
+    if(o==EXIT){
+        cout<<"退出"<<endl;
+        return;
+    }
     string groupid = m.Deserialization("groupid");
     string ID = m.Deserialization("ID");
     User u(ID,Library);
@@ -304,6 +354,12 @@ void Server::grouprecover(int cfd)
         }
     }
     Massage m(s);
+    std::variant<Json::Value, std::string> result = m.takeMassage("option");
+    std::string o = std::get<std::string>(result);
+    if(o==EXIT){
+        cout<<"退出"<<endl;
+        return;
+    }
     string groupid = m.Deserialization("REC_group");
     string ID = m.Deserialization("ID");
     User u(ID,Library);
@@ -353,6 +409,7 @@ void Server::transfer_group(int cfd)
     }else{
         r="NULL";
     }
+    Err::sendMsg(cfd,r.c_str(),r.length());
 }
 bool Server::man_delgroup(int cfd)
 {
@@ -368,7 +425,6 @@ bool Server::man_delgroup(int cfd)
     Massage m(s);
     string groupid = m.Deserialization("groupid");
     string ID = m.Deserialization("ID");
-    string tra_id = m.Deserialization("tra_id");
     Group g(groupid, Library);
     string r;
     Json::Value::Members members = g.member_List.getMemberNames();
@@ -376,6 +432,19 @@ bool Server::man_delgroup(int cfd)
     {
         User u(key,Library);
         u.delete_group(groupid);
+        try
+        {
+            Value j;
+            int cfd2 = user_cfd.at(key);
+            j["groupid"] = groupid;
+            Massage m3("man_delgroup", j, "0", "0");
+            Err::sendMsg(cfd2, m3.Serialization().c_str(), m3.Serialization().length()); // 如果在线，通知申请人申请已经通过
+            std::cout << m3.Serialization() << endl;
+        }
+        catch (const std::out_of_range &e)
+        {
+            std::cout << "Key not found." << std::endl;
+        }
     }
     redisReply *reply = (redisReply *)redisCommand(Library, "HDEL Group %s",groupid.c_str());
     freeReplyObject(reply);

@@ -80,8 +80,13 @@ void Clenit::create_group(string ID)
     string a = masqueue.front();
     masqueue.pop();
     qmutex.unlock();
-    std::cout << "你已成功创建群聊"<<a << endl;
-    //cout << "你已成功创建群聊/* << in << */群号为：" << a << endl;
+    Massage m1(a);
+    string r = m1.Deserialization("return");
+    string groupid = m1.Deserialization("groupid");
+    if (r == "Succeed")
+    {
+        cout << "你已经成功创建群聊" << groupid << endl;
+    }
 }
 void Clenit::view_group(string ID)
 {
@@ -100,18 +105,25 @@ void Clenit::view_group(string ID)
     Massage m1(r);
     std::variant<Json::Value, std::string> result = m1.takeMassage("content");
     Value glist = std::get<Json::Value>(result);
-    Json::Value::Members members = glist.getMemberNames();
-    for (const auto &key : members)
+    if (glist.empty())
     {
-        if (glist[key].asInt() == 1)
+        cout << "你还没有加入任何一个群聊，快去添加吧" << endl;
+    }
+    else
+    {
+        Json::Value::Members members = glist.getMemberNames();
+        for (const auto &key : members)
         {
-            s = "id: " + key + " 未屏蔽";
+            if (glist[key].asInt() == 1)
+            {
+                s = "id: " + key + " 未屏蔽";
+            }
+            else
+            {
+                s = "id: " + key + " 未屏蔽";
+            }
+            std::cout << s << std::endl;
         }
-        else
-        {
-            s = "id: " + key + " 未屏蔽";
-        }
-        std::cout << s << std::endl;
     }
 }
 void Clenit::manage_menu(string ID)
@@ -133,7 +145,7 @@ void Clenit::manage_menu(string ID)
     masqueue.pop();
     qmutex.unlock();
     Massage m1(s1);
-    string r=m1.Deserialization("return");
+    string r = m1.Deserialization("return");
     if (r == "0")
     { // 普通群成员
         std::cout << "你是" << in << "的普通成员，下面即将进入管理界面" << endl;
@@ -174,17 +186,23 @@ void Clenit::publicChat(string ID)
     qmutex.unlock();
     if (r == "Succeed")
     {
+        g_flag = true;
         cout << "你已进入" << in << "可以开始聊天了(输入Q退出)" << endl;
         chatobject = in;
         while (1)
-        {
-            string chat;
+        {   string chat;
             cin >> chat;
+            if (!g_flag)
+            {
+                chat="Q";
+                cout << in << "已被群主解散" << endl;
+            }
             Value info;
             info["massage"] = chat;
             Massage m1("JOIN_GROUP", info, in, ID);
-            Err::sendMsg(cfd,m1.Serialization().c_str(),m1.Serialization().length());
-            if(chat == "Q"){
+            Err::sendMsg(cfd, m1.Serialization().c_str(), m1.Serialization().length());
+            if (chat == "Q")
+            {
                 break;
             }
         }
@@ -223,7 +241,7 @@ void Clenit::history_group(string ID)
         for (const auto &key : members)
         {
             Massage m2(chatlist[key].asString());
-            std::cout << key << ":"  << endl;
+            std::cout << key << ":" << endl;
             std::cout << m2.Deserialization("massage") << endl;
         }
     }
@@ -285,6 +303,10 @@ void Clenit::group_menu(string ID)
         else if (in == EXIT)
         {
             break;
+        }
+        else
+        {
+            cout << "你输入的选项不符合规范，请再试一次" << endl;
         }
     }
     return;

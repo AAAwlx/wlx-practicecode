@@ -84,7 +84,7 @@ public:
 class User
 {
 private:
-    static int User_count;
+    int User_count;
     string ID,Name,Pass,Question,Answer;
    
     std::mutex user_mtx;//对数据库进行写入或删除操作时的 
@@ -112,7 +112,7 @@ public:
 class Group
 {
 private:
-    static int Group_count;
+    int Group_count;
     string GID,Name;
     std::mutex user_mtx;//对数据库进行写入或删除操作时的 
     redisContext* Library;

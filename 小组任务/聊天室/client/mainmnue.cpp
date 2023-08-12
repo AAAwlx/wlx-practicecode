@@ -39,9 +39,7 @@ void Clenit::main_mnue(string ID)
     string in;
     //char r[BUFSIZ];
     cout<<"开启实时接收线程"<<endl;
-    stopFlag=true;
     std::thread t([&]() { thread_recv(ID, cfd, chatobject); });
-    t.detach();
     while (true)
     {
         cout << "+------------------+" << endl;
@@ -72,7 +70,9 @@ void Clenit::main_mnue(string ID)
             Err::Write(cfd, s.c_str(), s.length());
             Clenit::file_menu(ID);
         }*/else if (in==EXIT){
-            Clenit::Exit();
+            stopFlag=false;
+            cout<<"1111111"<<endl;
+            t.join();
             cout<<"线程结束"<<endl;
             break;
         }else{

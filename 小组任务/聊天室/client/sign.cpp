@@ -51,6 +51,10 @@ int Clenit::login()
                 std::cout << "用户不存在,请您先注册账号" << endl;
                 sign_up();
                 break;
+            }else if(stoi(r) == -7654321)
+            {
+                std::cout << "该用户已登陆,请再试一次" << endl;
+                break;
             }
             else
             {
@@ -257,6 +261,7 @@ void Clenit::Exit()
     Err::sendMsg(cfd, s.c_str(), s.length());
     std::cout << s << endl;
 }
+
 void Clenit::sign_menu()
 {
     string in; // 输入选项

@@ -159,7 +159,11 @@ void Server::create_group(int cfd)
     User u(ID,Library);
     string gid = g.distribute_id();
     u.add_group(gid);
-    Err::sendMsg(cfd, gid.c_str(), gid.size());
+    Value j;
+    j["return"]="Succeed";
+    j["groupid"]=gid;
+    Massage m1(CREATE_GROUP,j,"0","0");
+    Err::sendMsg(cfd, m1.Serialization().c_str(), m1.Serialization().size());
     g.save_group();
 }
 void Server::view_group(int cfd)

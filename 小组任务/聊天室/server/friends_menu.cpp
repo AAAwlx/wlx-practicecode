@@ -77,6 +77,20 @@ void Server::delfriend(int cfd, Massage m)
         u.delete_friend(s1);
         u2.delete_friend(s2);
         r="Succeed";
+        try
+        {
+            Value j;
+            int cfd2 = user_cfd.at(s1);
+            j["friend"] = s2;
+            Massage m3("del_friend", j, "0", "0");
+            
+            Err::sendMsg(cfd2, m3.Serialization().c_str(), m3.Serialization().length()); // 如果在线，通知申请人申请已经通过
+            std::cout<< m3.Serialization()<<endl;
+        }
+        catch (const std::out_of_range &e)
+        {
+            std::cout << "Key not found." << std::endl;
+        }
     }
     else
     {

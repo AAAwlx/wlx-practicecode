@@ -167,10 +167,14 @@ void Clenit::viewfriend(string ID)
     Massage m1(r);
     std::variant<Json::Value, std::string> result = m1.takeMassage("content");
     Value flist = std::get<Json::Value>(result);
-    Json::Value::Members members = flist.getMemberNames();
-    for (const auto &key : members)
-    {
-        std::cout << "好友: " << key << "在线状态" << flist[key].asString() << std::endl;
+    if(flist.empty()){
+        cout<<"你还没有好友，快去添加吧"<<endl;
+    }else{
+        Json::Value::Members members = flist.getMemberNames();
+        for (const auto &key : members)
+        {
+            std::cout << "好友: " << key << "在线状态" << flist[key].asString() << std::endl;
+        }
     }
 }
 void Clenit::friendrequests(string ID)

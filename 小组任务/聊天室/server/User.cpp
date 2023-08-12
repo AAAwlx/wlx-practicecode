@@ -1,7 +1,6 @@
 #include "public.hpp"
 #include"ser.hpp"
 // id是标识用户的唯一信息
-int User::User_count = user_ID;
 User::User(string name, string pass, string question, string answer, redisContext *userm)
 :Name(name),Pass(pass),Question(question),Answer(answer),Library(userm)
 {
@@ -24,7 +23,12 @@ User::~User()
 }
 string User::distribute_id()
 {
+    redisReply *reply = (redisReply *)redisCommand(Library, "GET %s", "user_count");
+    User_count= atoi(reply->str);
+    freeReplyObject(reply);
     User_count++;
+    redisReply *reply1 = (redisReply *)redisCommand(Library, "SET %s %d", "user_count",User_count);
+    freeReplyObject(reply1);
     string s = to_string(User_count);
     ID = "11" + s;
     return ID;

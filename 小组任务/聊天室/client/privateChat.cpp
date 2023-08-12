@@ -82,8 +82,13 @@ void Clenit::pchatspace(string ID)
         string in2;
         chatobject = friendid;
         std::cout << "您已经进入与好友：" << friendid << "的私聊空间（输入Q退出）" << endl;
+        f_flag=true;
         while (1)
         {
+            if(!f_flag){
+                std::cout << "您的好友：" << friendid << "已将你删除" << endl;
+                break;
+            }
             std::cin >> in2;
             if (in2 == "Q")
             {

@@ -15,10 +15,15 @@ void Server::sign_up(int cfd,Massage m)//注册
 }
 void Server::login(int cfd,Massage m)//登陆
 {
-    cout<<"++++++++++++++"<<endl;
     string id=m.Deserialization("ID");//用户输入的id
     User u(id,Library);
-    string Pass2=u.Inquire("Pass");
+    string Pass2;
+    if(user_cfd.count(id)==1){
+        Pass2="-7654321";
+    }else{
+        Pass2=u.Inquire("Pass");
+    }
+    
     cout<<Pass2<<endl;
     Err::sendMsg(cfd,Pass2.c_str(),Pass2.size());
 }
