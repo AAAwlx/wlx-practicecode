@@ -54,7 +54,6 @@
 #include <unistd.h>
 
 using namespace std;
-extern std::atomic<bool>stopFlag;
 extern std::condition_variable queueCondVar;
 extern std::mutex qmutex;
 extern std::queue<string> masqueue;

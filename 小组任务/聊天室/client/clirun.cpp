@@ -1,6 +1,5 @@
 #include "public.hpp"
 #include "clit.hpp"
-std::atomic<bool>stopFlag(true);
 std::mutex qmutex;
 std::queue<string> masqueue;
 std::condition_variable queueCondVar;

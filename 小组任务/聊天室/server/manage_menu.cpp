@@ -75,12 +75,10 @@ void Server::man_addgroup(int cfd)
         {
             User k(key, Library);
             Group g(groupid, Library);
-            cout<<"333333333"<<endl;
+            cout<<key<<endl;
             k.add_group(groupid); // 将被加人加入申请人的列表
             cout<<"444444444"<<endl;
-            //g.add_member(key);    // 将申请人加入被加人的列表
-            g.member_List[key]=0;
-            g.save_group();
+            g.add_member(key);    // 将申请人加入被加人的列表
             result1 = "g_accapt";
         }
         else

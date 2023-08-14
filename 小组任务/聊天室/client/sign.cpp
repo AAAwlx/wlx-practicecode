@@ -299,8 +299,7 @@ void Clenit::sign_menu()
             Clenit::Exit();
             Err::Close(cfd);
             exit(0);
-        }
-        else
+        }else
         {
             std::cout << "您输入的选项不存在,请重新输入" << endl;
             continue;

@@ -21,12 +21,16 @@ void Server::directsend(int cfd, Massage m, string massage)
             try
             {
                 
-                int cfd2 = user_cfd.at(to_id); // 当被添加人在线，立即向被添加人发送好友申请通知
+                int cfd2 = user_cfd.at(to_id);
                 Err::sendMsg(cfd2, massage.c_str(), massage.length());
                 r = "Succeed";
             }
             catch (const std::out_of_range &e)
             {
+                to_id += "c";
+                string s = from_id + ":" + m.Deserialization("massage");
+                redisReply *reply2 = static_cast<redisReply *>(redisCommand(Library, "LPUSH %s %s", to_id.c_str(), s.c_str())); // 存储离线用户的消息通知
+                freeReplyObject(reply2);
                 r = "NotOnline";
                 cout << "succeed" << endl;
             }
@@ -106,6 +110,8 @@ void Server::pchatspace(int cfd, Massage m)
                 else
                 { // 如果不在线存入未处理消息列表
                     friendID += "c";
+
+                    
                     redisReply *reply2 = static_cast<redisReply *>(redisCommand(Library, "LPUSH %s %s", friendID.c_str(), r)); // 存储离线用户的消息通知
                     freeReplyObject(reply2);
 

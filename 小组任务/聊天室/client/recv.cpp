@@ -3,10 +3,7 @@
 //实时接收好友申请提示，私聊与群聊消息，群中权限变更提醒
 void thread_recv(const std::string& ID, int cfd, const std::string& chatobject )
 {
-    if(stopFlag==false){
-        cout<<stopFlag<<endl;
-    }
-    while (stopFlag){
+    while (1){
         string r;
         r=Err::recvMsg(cfd); 
         if(r.length()> 0){
@@ -115,6 +112,9 @@ void thread_recv(const std::string& ID, int cfd, const std::string& chatobject )
                 string s = "id为" + groupid + "群聊已被群主解散";
                 g_flag=false;
                 Clenit::PrientfT(s);
+            }else if(o=="Exit"){
+                cout<<"实时接收线程结束"<<endl;
+                break;
             }
             else{//非实时消息
                 qmutex.lock();

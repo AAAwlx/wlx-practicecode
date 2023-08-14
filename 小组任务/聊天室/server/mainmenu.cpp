@@ -75,7 +75,11 @@ void Server::main_menu(int cfd, string ID)
                 {
                     std::cout << "id为 " << ID << " 的用户已退出" << std::endl;
                 }
-                break;
+                    Value j;
+                    Massage m("Exit",j,"0","0");
+                    string s=m.Serialization();
+                    Err::sendMsg(cfd, s.c_str(), s.length());
+                    break;
             }
         }
     }
