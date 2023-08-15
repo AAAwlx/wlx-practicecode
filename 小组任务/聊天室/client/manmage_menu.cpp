@@ -38,31 +38,21 @@ void Clenit::man_addgroup(string ID, string man_groupid)
             std::cout << "id为: " << key << "请求添加入群聊" << std::endl;
         }
         Value info;
+        int i=0;
         while (1)
         {
-            string in, o;
+            string in;
             std::cout << "请你输入你要处理的成员(输入-1结束)" << endl;
             std::cin >> in;
             if (in == "-1")
             {
                 break;
             }
-            std::cout << "请你输入你要处理的选项(accapt或refuse)" << endl;
-            while (1)
-            {
-                std::cin >> o;
-                if (o != "accapt" && o != "refuse")
-                {
-                    std::cout << "您输入的选项不符合规范，请再试一次" << endl;
-                }
-                else
-                {
-                    break;
-                }
-            }
-            info[in] = o;
+            string str=to_string(i);
+            info[str] = in;
+            i++;
         }
-        Massage m2(MAS_FRIEND, info, "0", "0");
+        Massage m2(MAN_ADDGROUP, info, "0", "0");
         string s1 = m2.Serialization();
         if (!g_flag||!m_flag)
         {

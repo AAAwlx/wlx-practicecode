@@ -19,9 +19,9 @@ void Server::man_addgroup(int cfd)
         return;
     }
     string groupid = m.Deserialization("groupid");
-    groupid += "g";
+    string g= groupid+ "gr";
     Value info;
-    redisReply *reply = (redisReply *)redisCommand(Library, "LRANGE %s 0 -1", groupid.c_str());
+    redisReply *reply = (redisReply *)redisCommand(Library, "LRANGE %s 0 -1", g.c_str());
     if (reply->type == REDIS_REPLY_ARRAY)
     {
         for (size_t i = 0; i < reply->elements; ++i)
@@ -38,7 +38,6 @@ void Server::man_addgroup(int cfd)
     Err::sendMsg(cfd, s1.c_str(), s1.length()); // 将待处理的请求发送到客户端
     if(info.empty()){
         cout<<"好友申请为空"<<endl;
-        freeReplyObject(reply);
         return;
     }
     
@@ -61,35 +60,21 @@ void Server::man_addgroup(int cfd)
     }
     std::variant<Json::Value, std::string> result1 = m2.takeMassage("content");
     Value rlist = std::get<Json::Value>(result1);
-    for (Json::ValueIterator it = rlist.begin(); it != rlist.end(); ++it)
+    Json::Value::Members members = rlist.getMemberNames();
+    for (const auto &key : members)
     {
-        std::string key = it.name(); 
-        cout<<key<<endl;                                                                          // key为申请人id
-        std::string value = (*it).asString();
-        cout<<value<<endl;   
-        cout<<"11111111111"<<endl;                                                                  // 值为处理结果
-        redisReply *reply = (redisReply *)redisCommand(Library, "LREM %s 0 %s", groupid.c_str(), key.c_str()); // 将已经处理过的好友请求删除
         Value j;
-        string result1;
-        if (value == "accapt")
-        {
-            User k(key, Library);
-            Group g(groupid, Library);
-            cout<<key<<endl;
-            k.add_group(groupid); // 将被加人加入申请人的列表
-            cout<<"444444444"<<endl;
-            g.add_member(key);    // 将申请人加入被加人的列表
-            result1 = "g_accapt";
-        }
-        else
-        {
-            result1 = "g_reject";
-        }
+        string mid=rlist[key].asString();
+        User k(mid, Library);
+        Group g(groupid, Library);
+        cout<<mid<<endl;
+        k.add_group(groupid); 
+        g.add_member(mid);  
         try
         {
             int cfd2 = user_cfd.at(key);
-            j["groupid"] = key;
-            Massage m3(result1, j, "0", "0");
+            j["groupid"] = groupid;
+            Massage m3("g_accapt", j, "0", "0");
             Err::sendMsg(cfd2, m3.Serialization().c_str(), m3.Serialization().length()); // 如果在线，通知申请人申请已经通过
             std::cout << m3.Serialization() << endl;
         }

@@ -215,7 +215,7 @@ void Clenit::friendrequests(string ID)
         while (1)
         {
             std::cin >> o;
-            if (o != "accapt" && o != "refuse")
+            if (o != "accapt" && o != "refuse" && o != "-1")
             {
                 std::cout << "您输入的选项不符合规范，请再试一次" << endl;
             }
@@ -234,12 +234,7 @@ void Clenit::friendrequests(string ID)
 
 void Clenit::friends_menu(string ID)
 {
-    string in, s;
-    Value friends;
-
-    FastWriter w;
-
-    friends["sender"] = ID;
+    string in;
     while (1)
     {
         std::cout << "+------------------+" << endl;

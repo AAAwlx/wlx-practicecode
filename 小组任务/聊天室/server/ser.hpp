@@ -12,8 +12,8 @@
 #define FRIENDS_MENU "3"  //好友管理
 #define FILE_MANAGE "4"   //文件管理 
 //文件管理
-#define SEND_FILE "_sf"   //发文件
-#define RECV_FILE "_rf"   //收文件
+#define SEND_FILE "sf"   //发文件
+#define RECV_FILE "rf"   //收文件
 //好友界面
 #define ADD_FRIEND "1"   //加好友
 #define DEL_FRIEND "2"   //删好友
@@ -108,7 +108,8 @@ public:
     static void chat_forwarding(int cfd);
     static void manage_menu(int cfd);
     static void manage_menu0(int cfd);
-    static void history_group(int cfd);
+    static void history_group(int cfd);//查看群历史消息
+    static void historicalnewsg(int cfd,string ID);//进入群菜单提醒
     //管理群
     static void man_addgroup(int cfd);          //入群请求
     static void man_view(int cfd);                //查看群成员
@@ -120,6 +121,10 @@ public:
     static void grouprecover(int cfd);//解除屏蔽
     static void transfer_group(int cfd);//转让群主
     static void man_addmember(int cfd);//添加成员
+    //文件
+    static void file_menu(int cfd);
+    static void file_send(int cfd,Massage m);
+    static void file_recv(int cfd,Massage m);
 };
 
 #endif

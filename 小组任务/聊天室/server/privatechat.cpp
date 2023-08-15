@@ -16,7 +16,7 @@ void Server::directsend(int cfd, Massage m, string massage)
         if (j[to_id].asInt() == 1)
         {
             string listname = from_id + to_id;
-            redisReply *reply = static_cast<redisReply *>(redisCommand(Library, "LPUSH %s %s", listname.c_str(), massage)); // 长期存储历史聊天记录
+            redisReply *reply = static_cast<redisReply *>(redisCommand(Library, "LPUSH %s %s", listname.c_str(), massage.c_str())); // 长期存储历史聊天记录
             freeReplyObject(reply);
             try
             {
@@ -110,9 +110,8 @@ void Server::pchatspace(int cfd, Massage m)
                 else
                 { // 如果不在线存入未处理消息列表
                     friendID += "c";
-
-                    
-                    redisReply *reply2 = static_cast<redisReply *>(redisCommand(Library, "LPUSH %s %s", friendID.c_str(), r)); // 存储离线用户的消息通知
+                    string s = myID + ":" + m.Deserialization("massage");
+                    redisReply *reply2 = static_cast<redisReply *>(redisCommand(Library, "LPUSH %s %s", friendID.c_str(), s.c_str())); // 存储离线用户的消息通知
                     freeReplyObject(reply2);
 
                 }

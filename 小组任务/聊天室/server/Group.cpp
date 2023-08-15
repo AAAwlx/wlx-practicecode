@@ -72,6 +72,7 @@ string Group::Inquire(string s)
 void Group::add_member(string member_id)
 {
     member_List[member_id] = 0;
+    cout<<member_id<<endl;
     this->save_group();
 }
 void Group::delete_member(string member_id)

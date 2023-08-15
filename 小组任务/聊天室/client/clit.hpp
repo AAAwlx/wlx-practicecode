@@ -12,8 +12,8 @@
 #define FRIENDS_MENU "3"  //好友管理
 #define FILE_MANAGE "4"   //文件管理 
 //文件管理
-#define SEND_FILE "_sf"   //发文件
-#define RECV_FILE "_rf"   //收文件
+#define SEND_FILE "sf"   //发文件
+#define RECV_FILE "rf"   //收文件
 //好友界面
 #define ADD_FRIEND "1"   //加好友
 #define DEL_FRIEND "2"   //删好友
@@ -88,7 +88,7 @@ public:
     void delfriend(string ID);//删除好友
     void viewfriend(string ID);//查看好友在线状态
     void friendrequests(string ID);//处理好友申请
-    void file_menu(string ID);
+   
     void friendrecover(string ID);
     //实时接收
     static void PrientfT(string s);
@@ -102,25 +102,29 @@ public:
     //群管理
     void group_menu(string ID);
     void create_group( string ID); //创建群聊
-    void add_group(string ID);               //申请入群
-    void quit_group(string ID);              //退出群
-    void view_group(string ID);              //查看群
-    void publicChat(string ID);
-    void history_group(string ID);
+    void add_group(string ID);//申请入群               
+    void quit_group(string ID);//退出群              
+    void view_group(string ID); //查看群             
+    void publicChat(string ID);//群聊
+    void history_group(string ID);//群聊历史
+    void historicalnewsg(string ID);//上线群聊消息提醒
     void manage_menu(string ID); //管理群
-    void manage_menu0(string ID,string man_groupid);
-    void manage_menu1(string ID,string man_groupid);
-    void manage_menu2(string ID,string man_groupid);
-    void man_addgroup(string ID,string man_groupid);          //入群请求
-    void man_view(string ID,string man_groupid);                //查看群成员
+    void manage_menu0(string ID,string man_groupid);//普通成员
+    void manage_menu1(string ID,string man_groupid);//群管理
+    void manage_menu2(string ID,string man_groupid);//群主
+    void man_addgroup(string ID,string man_groupid);//入群请求
+    void man_view(string ID,string man_groupid); //查看群成员
     void man_addmanager(string ID,string man_groupid);  //添加管理员
     void man_delmanager(string ID,string man_groupid);         //取消管理员
     void man_delmember(string ID,string man_groupid);        //踢出成员
     bool man_delgroup(string ID,string man_groupid);          //解散群
-    void ignoregroup(string ID,string man_groupid);
-    void grouprecover(string ID,string man_groupid);
-    void transfer_group(string ID,string man_groupid);
-    void man_addmember(string ID,string man_groupid);
-
+    void ignoregroup(string ID,string man_groupid);//屏蔽群
+    void grouprecover(string ID,string man_groupid);//接收群消息
+    void transfer_group(string ID,string man_groupid);//转让群主
+    void man_addmember(string ID,string man_groupid);//添加成员
+    //文件收发
+    void file_menu(string ID);
+    void file_recv(string ID);
+    void file_send(string ID);
 };
 #endif

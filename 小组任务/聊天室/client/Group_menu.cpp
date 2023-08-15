@@ -145,7 +145,20 @@ void Clenit::manage_menu(string ID)
     masqueue.pop();
     qmutex.unlock();
     Massage m1(s1);
-    string r = m1.Deserialization("return");
+    std::variant<Json::Value, std::string> result = m1.takeMassage("content");
+    Value j1 = std::get<Json::Value>(result);
+    Value massage=j1["massage"];
+    string r=m1.Deserialization("return");
+    if(r == "1" || r == "2"){
+        if(massage.empty()){
+                cout<<"无入群申请"<<endl;
+        }else{
+            Json::Value::Members  members= massage.getMemberNames();
+            for (const auto& key : members) {
+                std::cout << "id为" << massage[key].asString()<<"请求加入群聊"<< std::endl;
+            }
+        }
+    }
     if (r == "0")
     { // 普通群成员
         std::cout << "你是" << in << "的普通成员，下面即将进入管理界面" << endl;

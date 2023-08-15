@@ -33,6 +33,7 @@ void Server::historicalnews(int cfd, string ID)
             }
         }
     }
+    redisReply *reply3 = (redisReply *)redisCommand(Library, "DEL %s ", s2.c_str());
     j["request"]=j1;
     j["chat"]=j2;
     Massage m1(Historical_news, j, "0", "0");
@@ -41,6 +42,34 @@ void Server::historicalnews(int cfd, string ID)
     cout<<"历史消息已发送"<<s4<<endl;
     freeReplyObject(reply);
     freeReplyObject(reply2);
+    freeReplyObject(reply3);
+    return;
+}
+void Server::historicalnewsg(int cfd, string ID)
+{
+    Value j;
+    string s = ID + "g";                                                                   // 私聊消息
+    redisReply *reply2 = (redisReply *)redisCommand(Library, "LRANGE %s 0 -1", s.c_str()); // 获取存有聊天记录的列表
+    if (reply2 != nullptr)
+    {
+        for (size_t i = 0; i < reply2->elements; i++)
+        {
+            redisReply *element = reply2->element[i];
+            if (element->type == REDIS_REPLY_STRING)
+            {
+                std::string massage(element->str, element->len);
+                std::string str = std::to_string(i);
+                j[str] = massage;
+            }
+        }
+    }
+    redisReply *reply3 = (redisReply *)redisCommand(Library, "DEL %s ", s.c_str());
+    Massage m1(Historical_news, j, "0", "0");
+    string s4 = m1.Serialization();
+    Err::sendMsg(cfd, s4.c_str(), s4.length());
+    cout<<"群历史已发送"<<s4<<endl;
+    freeReplyObject(reply2);
+    freeReplyObject(reply3);
     return;
 }
 void Server::main_menu(int cfd, string ID)
@@ -60,6 +89,7 @@ void Server::main_menu(int cfd, string ID)
             {
                 Server::privateChat(cfd);
             }else if(o==GROUP){
+                Server::historicalnewsg(cfd,ID);
                 Server::group_menu(cfd);
             }
             else if (o == FRIENDS_MENU)
