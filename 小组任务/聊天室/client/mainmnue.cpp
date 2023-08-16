@@ -107,11 +107,9 @@ void Clenit::main_mnue(string ID)
         else if (in == FRIENDS_MENU)
         {
             Clenit::friends_menu(ID);
-        } /*else if(in==FILE_MANAGE){
-             string s = FILE_MANAGE;
-             Err::Write(cfd, s.c_str(), s.length());
-             Clenit::file_menu(ID);
-         }*/
+        } else if(in==FILE_MANAGE){
+            Clenit::file_menu(ID);
+        }
         else if (in == EXIT)
         {
             t.join();

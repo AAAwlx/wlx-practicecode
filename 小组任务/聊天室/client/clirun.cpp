@@ -6,6 +6,8 @@ std::condition_variable queueCondVar;
 bool f_flag;
 bool g_flag;
 bool m_flag;
+std::condition_variable recVar;
+std::mutex rmutex;
 Clenit::Clenit(int port, string ip)
     : server_port(port), server_ip(ip)
 {

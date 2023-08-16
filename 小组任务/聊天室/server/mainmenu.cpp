@@ -76,6 +76,7 @@ void Server::main_menu(int cfd, string ID)
 {
     while (1)
     {
+
         string r;
         r=Err::recvMsg(cfd);
         if (r.length() > 0)
@@ -95,9 +96,9 @@ void Server::main_menu(int cfd, string ID)
             else if (o == FRIENDS_MENU)
             {
                 Server::friends_menu(cfd);
-            } /*else if(s==FILE_MANAGE){
+            } else if(o ==FILE_MANAGE){
 
-             }*/
+            }
             else if (o == EXIT)
             {
                 size_t numDeleted = user_cfd.erase(ID); // 删除标记在线的键值对

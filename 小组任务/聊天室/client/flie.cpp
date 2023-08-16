@@ -2,18 +2,20 @@
 #include "clit.hpp"
 void Clenit::file_send(string ID)
 {
-    string path,file_flag;
+    string path, file_flag;
     struct stat statbuf;
     cout << "请输入你要传输的文件的路径" << endl;
     cin >> path;
     cout << "是否为重传文件(输入0为否，1为是)" << endl;
-    while(1){
-        cin>>file_flag;
-        if(file_flag == "0" || file_flag == 0){
+    while (1)
+    {
+        cin >> file_flag;
+        if (file_flag == "0" || file_flag == 0)
+        {
             break;
         }
         cout << "您输入的选项不符合规范" << endl;
-    }    
+    }
     while (1)
     {
         if (stat(path.c_str(), &statbuf) == -1)
@@ -41,7 +43,7 @@ void Clenit::file_send(string ID)
     j["ID"] = ID;
     j["to_id"] = to_id;
     j["filesize"] = to_string(filesize);
-    j["file_flag "]=file_flag;
+    j["file_flag"] = to_string(file_flag);
     Massage m(SEND_FILE, j, "0", "0");
     Err::sendMsg(cfd, m.Serialization().c_str(), m.Serialization().length());
     std::unique_lock<std::mutex> lock(qmutex);
@@ -52,52 +54,58 @@ void Clenit::file_send(string ID)
     qmutex.unlock();
     std::cout << s << endl;
     Massage m1(s);
-    string r = m1.Deserialization("return") ;
+    string r = m1.Deserialization("return");
     int sss;
     if (r == "NULL")
     {
         cout << "你还未与发送对象建立连系" << endl;
         return;
-    }else if(r == "not"){
+    }
+    else if (r == "not")
+    {
         cout << "未完整传输列表没有你想要重传的文件" << endl;
 
         return;
-    }else if (r == "Succeed")
+    }
+    else if (r == "Succeed")
     {
-        if(file_flag == "1"){
-            sss=stoi(m1.Deserialization("lssk"));//若为重传文件则从需要重新读的地方开始读
-        }else{
-            sss=0;
+        if (file_flag == "1")
+        {
+            sss = stoi(m1.Deserialization("lssk")); // 若为重传文件则从需要重新读的地方开始读
+        }
+        else
+        {
+            sss = 0;
         }
     }
     off_t offset = sss;
-    else
+    cout << "文件传输开始，请耐心等待" << endl;
+    ssize_t sent;
+    while (true)
     {
-        cout << "文件传输开始，请耐心等待" << endl;
-           
-        ssize_t sent;
-        while (true)
+        sent = sendfile(cfd, fp, &offset, filesize);
+        if (sent == -1)
         {
-            sent = sendfile(cfd, fp, &offset, filesize);
-            if (sent == -1)
-            {
-                perror("Error sending data");
-                break;
-            }
-            offset += sent;
-            if (offset> filesize)
-            {
-                break;
-            }
+            perror("Error sending data");
+            break;
         }
-        Err::Close(fp);
-        cout << "传输完成" << endl;
+        offset += sent;
+        if (offset > filesize)
+        {
+            break;
+        }
     }
-
+    Err::Close(fp);
+    cout << "传输完成" << endl;
 }
 void Clenit::file_recv(string ID)
 {
-    cout<<"进入文件接收界面"<<endl;
+
+    cout << "进入文件接收界面" << endl;
+    Value j;
+    j["id"] = ID;
+    Massage m(RECV_FILE, j, "0", "0");
+    Err::sendMsg(cfd, m.Serialization().c_str(), m.Serialization().length());
     std::unique_lock<std::mutex> lock(qmutex);
     queueCondVar.wait(lock, []
                       { return !masqueue.empty(); });
@@ -106,16 +114,83 @@ void Clenit::file_recv(string ID)
     qmutex.unlock();
     std::cout << s << endl;
     Massage m1(s);
-    //得到所有文件接收历史
-    while (1)
+    std::variant<Json::Value, std::string> result = m1.takeMassage("content");
+    Value flist = std::get<Json::Value>(result);
+    Json::Value::Members members = flist.getMemberNames();
+    for (const auto &key : flist.getMemberNames())
     {
-        cout<<"请选择你要接收的文件"<<endl;
-        string name;
-        cin>>name;
-        cout<<"请输入你要保存的路径"<<endl;
-        string path;
-        cout<<"请选择是否更改接收文件的文件名"<<endl;
+        std::cout << "文件" << key << "来自" << flist.[key].asString() << std::endl;
+    }
+    Value j1;
+    (())
+            cout
+        << "请选择你要接收的文件" << endl;
+    string name;
+    cin >> name;
+    j1["filename"] = name;
 
+    Massage m2(RECV_FILE, j, "0", "0");
+    Err::sendMsg(cfd, m2.Serialization().c_str(), m2.Serialization().length());
+    std::unique_lock<std::mutex> lock(qmutex);
+    queueCondVar.wait(lock, []
+                      { return !masqueue.empty(); });
+    string s1 = masqueue.front();
+    masqueue.pop();
+    qmutex.unlock();
+    std::cout << s1 << endl;
+    if (s1 == "NULL")
+    {
+        cout << "文件列表中没有你要接收的文件" << endl;
+        return;
+    }else
+    {
+        cout << "请输入你要保存文件的路径" << endl;
+        string path;
+        cin >> path;
+        while (1)
+        {
+            if (stat(path.c_str(), &statbuf) == -1)
+            {
+                cout << "无效的路径" << endl;
+                cin >> path;
+            }
+            else
+            {
+                break;
+            }
+        }
+        long ret, ret2;
+        long sum = 0;
+        long sum2 = 0;
+        qmutex.lock();
+        char sendbuf[BUFFERSIZE];
+        while (true)
+        {
+
+            if ((ret = read(cfd, rf, sizeof(rf))) > 0)
+            {
+                if (ret > 0)
+                {
+                    sum += ret;
+                }
+                ret2 = write(fd, rf, ret);
+                if (ret2 > 0)
+                {
+                    sum2 += ret2;
+                }
+
+                cout << sum2 << endl;
+                if (sum2 >= fw.size)
+                {
+                    cout << "BREAK" << endl;
+                    break;
+                }
+                bzero(rf, sizeof(rf));
+            }
+        }
+        masqueue.push("Received");
+        qmutex.unlock();
+        queueCondVar.notify_one();
     }
     
 }
@@ -128,8 +203,8 @@ void Clenit::file_menu(string ID)
         cout << "|     ChatRoom     |" << endl;
         cout << "+------------------+" << endl;
         cout << "|                  |" << endl;
-        cout << "|    sf:文件接收   |" << endl;
-        cout << "|    rf.文件发送   |" << endl;
+        cout << "|    rf:文件接收   |" << endl;
+        cout << "|    sf.文件发送   |" << endl;
         cout << "|    0:退出界面    |" << endl;
         cout << "|                  |" << endl;
         cout << "+------------------+" << endl;
