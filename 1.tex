@@ -1,0 +1,43 @@
+\documentclass[UTF8]{ctexart}
+\usepackage{amsmath} % 导入数学公式支持包
+\DeclareFontShape{OMX}{cmex}{m}{n}{
+      <-7.5> cmex7
+   <7.5-8.5> cmex8
+   <8.5-9.5> cmex9
+   <9.5-> cmex10
+}{}
+\title{我的第一个 LaTeX 文档}
+\author{你的名字}
+\date{\today} % 使用当前日期
+
+\begin{document}
+\maketitle
+
+\section{引言}
+这是我的第一个 LaTeX 文档。我将在这里展示一些基本的元素。
+
+\section{文本和列表}
+LaTeX 可以处理各种文本格式，包括\emph{强调}、\textbf{加粗}、\textit{斜体}等。同时，它还能创建不同类型的列表：
+
+\begin{itemize}
+    \item 第一项
+    \item 第二项
+    \item 第三项
+\end{itemize}
+
+\begin{enumerate}
+    \item 第一项
+    \item 第二项
+    \item 第三项
+\end{enumerate}
+
+\section{数学公式}
+LaTeX 是数学公式排版的绝佳工具。例如，这是一个简单的数学公式：
+
+\begin{equation}
+    E = mc^2
+\end{equation}
+
+这里的 $E$ 代表能量，$m$ 代表质量，$c$ 代表光速。
+
+\end{document}
