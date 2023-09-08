@@ -75,7 +75,7 @@
         "typeinfo": "cpp",
         "variant": "cpp",
         "unistd.h": "c"
-    },  
+    }/*,  
     
     "latex-workshop.docker.enabled": false,
     "latex-workshop.view.pdf.viewer": "tab",
@@ -97,5 +97,5 @@
                 "latexmk"
             ]
         }
-    ]
+    ]*/
 }
