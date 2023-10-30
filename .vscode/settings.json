@@ -75,27 +75,6 @@
         "typeinfo": "cpp",
         "variant": "cpp",
         "unistd.h": "c"
-    }/*,  
-    
-    "latex-workshop.docker.enabled": false,
-    "latex-workshop.view.pdf.viewer": "tab",
-    "latex-workshop.view.pdf.zoom": "page-width",
-    "latex-workshop.recipe.default": "latexmk",
-    "latex-workshop.recipes": [
-        {
-            "name": "pdflatex ➞ bibtex ➞ pdflatex ➞ pdflatex",
-            "tools": [
-                "pdflatex",
-                "bibtex",
-                "pdflatex",
-                "pdflatex"
-            ]
-        },
-        {
-            "name": "latexmk",
-            "tools": [
-                "latexmk"
-            ]
-        }
-    ]*/
+        
+    }    
 }

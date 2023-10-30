@@ -7,6 +7,32 @@
     "type": "shell",
     "command": "g++",
     "args": ["-g", "${file}", "-std=c++11", "-o", "${fileBasenameNoExtension}.out"]
+    },
+    {
+      "label": "cargo build",
+      "type": "shell",
+      "command": "cargo build",
+      "args": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "cargo run",
+      "type": "shell",
+      "command": "cargo",
+      "args": [
+        "run"
+        // "--release",
+        // "--",
+        // "arg1"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
     }
     ]
+    
 }
