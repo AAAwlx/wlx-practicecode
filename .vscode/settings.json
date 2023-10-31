@@ -74,7 +74,11 @@
         "thread": "cpp",
         "typeinfo": "cpp",
         "variant": "cpp",
-        "unistd.h": "c"
-        
+        "unistd.h": "c",
+        "charconv": "cpp",
+        "unordered_set": "cpp",
+        "format": "cpp",
+        "span": "cpp",
+        "cinttypes": "cpp"
     }    
 }
