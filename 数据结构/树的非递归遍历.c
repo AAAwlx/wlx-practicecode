@@ -98,12 +98,12 @@ void Preorder(SearchTree *r)
     struct stack *head=initstack();
     while(node||Empty(head)==1){
         if(node){
-            //printf("%d ",node->data);若在此位置访问节点值即为先序
+            printf("%d ",node->data);
             push(node,head);
             node=node->left;
         }else{
             node=pop(head)->data;
-            printf("%d ",node->data);//在此位置访问节点值为中序
+            //printf("%d ",node->data);//在此位置访问节点值为中序
             node=node->right;
         }
     }

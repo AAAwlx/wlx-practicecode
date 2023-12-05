@@ -1,6 +1,6 @@
-#include<stdio.h>
 #include<stdlib.h>
-
+#include <iostream>
+#include <unordered_map>
 typedef struct  TreeNode//存放每个树节点的信息
 {
     int weight;
@@ -13,6 +13,10 @@ typedef struct HFtree
     int length;
     TreeNode *data;
 }HFtree;
+typedef struct HuffmanCode {
+    char character;
+    std::string code;
+} HuffmanCode;
 
 HFtree* init(int *weight,int length)
 {
@@ -79,14 +83,36 @@ HFtree * creatTree(HFtree* T)
         T->length++;
     }
 }
-
+// Function to generate Huffman Codes for characters
+void generateHuffmanCodes(TreeNode *huffmanTree, HuffmanCode *codes, std::string code, int index) {
+    if (index < 0) return;
+    if (huffmanTree[index].lchild == -1 && huffmanTree[index].rchild == -1) {
+        codes[index].code = code;
+        codes[index].character = static_cast<char>(index);  // Assuming character codes are used as indices
+    }
+    generateHuffmanCodes(huffmanTree, codes, code + "0", huffmanTree[index].lchild);
+    generateHuffmanCodes(huffmanTree, codes, code + "1", huffmanTree[index].rchild);
+}
 int main()
 {
     int n;
     scanf("%d",&n);
-    int a[n];
-    for(int i=0;i<n;i++){
-        scanf("%d",&a[i]);
+    int a[52];
+    FILE *fd = fopen("./text.txt","rw");//以读写的方式打开
+    if (fd == NULL) {
+        perror("无法打开文件");
+        return 1;
+    } 
+    std::unordered_map<char, int> hashMap;//创建哈希表用来存储出现的次数
+    char character;
+    // 逐个字符读取文件内容，直到文件结束
+    while ((character = getc(fd)) != EOF) {
+        hashMap[character]++;
+    }
+    int i = 0;
+    for (auto& pair : hashMap) {//将哈希表中的值放入数组构建树
+        a[i++] = pair.second;
+        i++;
     }
     HFtree *root=init(a,n);
     creatTree(root);

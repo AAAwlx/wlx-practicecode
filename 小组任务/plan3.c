@@ -216,7 +216,7 @@ void list(char *pathname)
 		}
 		stat(ptr->d_name, &(f->STA));
 		strcpy(f->filename,ptr->d_name);
-		f++;
+		f++;  
 		j++;
 	}
 	f = temp;  //指向开始
