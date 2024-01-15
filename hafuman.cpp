@@ -178,6 +178,5 @@ int main() {
     writecodehuffman(code, tree);
     std::cout << "DecodeFile.txt  已生成!!!" << std::endl;
     transcodehuffman(code, tree);
-
     return 0;
 }

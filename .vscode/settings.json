@@ -79,6 +79,9 @@
         "unordered_set": "cpp",
         "format": "cpp",
         "span": "cpp",
-        "cinttypes": "cpp"
+        "cinttypes": "cpp",
+        "codecvt": "cpp",
+        "source_location": "cpp",
+        "stdfloat": "cpp"
     }    
 }
