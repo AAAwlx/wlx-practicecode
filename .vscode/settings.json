@@ -83,5 +83,6 @@
         "codecvt": "cpp",
         "source_location": "cpp",
         "stdfloat": "cpp"
-    }    
+    },
+    "cmake.configureOnOpen": false
 }
