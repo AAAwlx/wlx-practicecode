@@ -82,7 +82,10 @@
         "cinttypes": "cpp",
         "codecvt": "cpp",
         "source_location": "cpp",
-        "stdfloat": "cpp"
+        "stdfloat": "cpp",
+        "string.h": "c",
+        "errno.h": "c",
+        "module.h": "c"
     },
     "cmake.configureOnOpen": false
 }
