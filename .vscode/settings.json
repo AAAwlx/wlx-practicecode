@@ -82,7 +82,10 @@
         "cinttypes": "cpp",
         "codecvt": "cpp",
         "source_location": "cpp",
-        "stdfloat": "cpp"
+        "stdfloat": "cpp",
+        "bpf.h": "c",
+        "fcntl.h": "c",
+        "features.h": "c"
     },
     "cmake.configureOnOpen": false
 }
