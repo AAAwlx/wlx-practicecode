@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mickey Mouse Style Effect</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+
+        .mickey {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            background-color: black;
+            border-radius: 50%;
+        }
+
+        .ear {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background-color: black;
+            border-radius: 50%;
+        }
+
+        /* Left ear */
+        .left-ear {
+            top: -50px;
+            left: -50px;
+        }
+
+        /* Right ear */
+        .right-ear {
+            top: -50px;
+            right: -50px;
+        }
+
+        /* Animation effect */
+        .mickey, .ear {
+            animation: bounce 2s infinite ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="mickey">
+        <div class="ear left-ear"></div>
+        <div class="ear right-ear"></div>
+    </div>
+
+</body>
+</html>

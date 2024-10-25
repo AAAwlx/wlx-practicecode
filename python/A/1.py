@@ -3,9 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
  
-# 设置中文字体路径（请根据实际情况修改路径）
-#font_path = 'C:/Windows/Fonts/simhei.ttf'  # 请替换为实际的字体路径
-#font = FontProperties(fname=font_path)
+
  
 # 更新无人机信息
 D_max_A = 27  # 最大飞行距离 (km)
@@ -151,22 +149,22 @@ def visualize_flight_paths():
  
     # 绘制公交站点
     ax.scatter(stations_data['Longitude'], stations_data['Latitude'], c='blue', label='公交站点')
- 
+    for i, station in enumerate(stations_data.itertuples(), start=1):
+        ax.text(station.Longitude, station.Latitude, str(i), fontsize=9, ha='right', color='blue')
     # 绘制需求点
     ax.scatter(demands_data['Longitude'], demands_data['Latitude'], c='red', label='需求点')
+    for i, demand in enumerate(demands_data.itertuples(), start=1):
+        ax.text(demand.Longitude, demand.Latitude, str(i), fontsize=9, ha='right', color='red')
  
     # 绘制飞行路径
     for task in flight_schedule:  # 显示所有路径
         demand = demands_data.loc[demands_data['Demand_ID'] == task['Demand_ID']].iloc[0]
         station = stations_data.loc[stations_data['Station_ID'] == task['Station_ID']].iloc[0]
-        ax.plot([station['Longitude'], demand['Longitude']], [station['Latitude'], demand['Latitude']], c='green')
+        ax.plot([station['Longitude'], demand['Longitude']], [station['Latitude'], demand['Latitude']], c='black',linestyle='--')
  
-    ax.set_xlabel('Longitude')
-    ax.set_ylabel('Latitude')
-    ax.set_title('Flight Paths Visualization')
-    plt.rcParams['font.sans-serif'] = ['simhei']  # 指定默认字体
-    plt.rcParams['axes.unicode_minus'] = False    # 解决保存图像时负号 '-' 显示为方块的问题
-
+    ax.set_xlabel('longitude')
+    ax.set_ylabel('latitude')
+    ax.set_title('flight path' )
     plt.savefig('plot.png')
  
 visualize_flight_paths()
@@ -180,3 +178,5 @@ for flight in flight_schedule:  # 打印所有路径
         print(f"需求点 {flight['Demand_ID']} 从站点 {flight['Station_ID']} 起飞，起飞时间: {flight['Flight_Start_Time']:.2f} 小时，返回时间: {flight['Flight_End_Time']:.2f} 小时，费用: {flight['Cost']:.2f} 元")
         print("-----")
         visited_demands.add(flight['Demand_ID'])
+
+
