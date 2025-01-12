@@ -85,7 +85,11 @@
         "stdfloat": "cpp",
         "bpf.h": "c",
         "fcntl.h": "c",
-        "features.h": "c"
+        "features.h": "c",
+        "coroutine": "cpp",
+        "__tree": "cpp",
+        "locale": "cpp",
+        "text_encoding": "cpp"
     },
     "cmake.configureOnOpen": false
 }

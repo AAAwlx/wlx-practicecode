@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package example;
+
+// 定义一个消息类型，包含嵌套消息
+message User {
+    int32 id = 1;              // 用户ID
+    string name = 2;           // 用户名
+    string email = 3;          // 邮箱
+
+    // 嵌套消息类型，用于存储地址信息
+    message Address {
+        string street = 1;     // 街道
+        string city = 2;       // 城市
+        string state = 3;      // 州
+        string zipcode = 4;    // 邮编
+    }
+
+    // 用户可以有多个地址
+    repeated Address addresses = 4;
+}
+
+// 用于请求用户信息的消息
+message GetUserRequest {
+    int32 user_id = 1;         // 用户ID
+}
+
+// 返回用户信息的消息
+message GetUserResponse {
+    User user = 1;             // 用户信息
+}
+
+// 用于创建用户的请求消息
+message CreateUserRequest {
+    string name = 1;           // 用户名
+    string email = 2;          // 邮箱
+    repeated User.Address addresses = 3;  // 地址信息
+}
+
+// 创建用户的响应消息
+message CreateUserResponse {
+    int32 user_id = 1;         // 新创建的用户ID
+}
+
+// 定义服务和RPC方法
+service UserService {
+    // 获取用户信息
+    rpc GetUser(GetUserRequest) returns (GetUserResponse);
+
+    // 创建新用户
+    rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+}

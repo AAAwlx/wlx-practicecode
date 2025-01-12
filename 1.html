@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas 绘制树</title>
+    <style>
+        #floor {
+            background: #d0f0c0; /* 背景设置为浅绿色 */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body>
+    <canvas id="floor" width="500" height="500"></canvas>
+
+    <script>
+        var myCanvas = document.getElementById('floor');
+        var cxt = myCanvas.getContext('2d');
+
+        // 绘制树干
+        cxt.fillStyle = "#8B4513"; // 树干颜色
+        cxt.fillRect(220, 300, 60, 120); // 参数为 (x,y,width,height)
+
+        // 绘制树叶（由五个圆形组成）
+        cxt.fillStyle = "#228B22"; // 叶子的颜色
+
+        // 底部的大圆形
+        cxt.beginPath();
+        cxt.arc(200, 270, 80, 0, Math.PI * 2, false); // 第一个大圆
+        cxt.closePath();
+        cxt.fill();
+
+        // 第二个圆形
+        cxt.beginPath();
+        cxt.arc(250, 230, 70, 0, Math.PI * 2, false); // 第二个圆形
+        cxt.closePath();
+        cxt.fill();
+
+        // 第三个圆形
+        cxt.beginPath();
+        cxt.arc(300, 270, 75, 0, Math.PI * 2, false); // 第三个圆形
+        cxt.closePath();
+        cxt.fill();
+
+        // 第四个圆形
+        cxt.beginPath();
+        cxt.arc(230, 190, 60, 0, Math.PI * 2, false); // 第四个圆形
+        cxt.closePath();
+        cxt.fill();
+
+        // 第五个圆形
+        cxt.beginPath();
+        cxt.arc(270, 190, 55, 0, Math.PI * 2, false); // 第五个圆形
+        cxt.closePath();
+        cxt.fill();
+
+        // 绘制果实
+        cxt.fillStyle = "#FF4500"; // 果实颜色
+        cxt.beginPath();
+        cxt.arc(230, 230, 12, 0, Math.PI * 2, false); // 画果实
+        cxt.closePath();
+        cxt.fill();
+
+        cxt.beginPath();
+        cxt.arc(270, 220, 11, 0, Math.PI * 2, false); // 画另一个果实
+        cxt.closePath();
+        cxt.fill();
+
+        cxt.beginPath();
+        cxt.arc(200, 260, 8, 0, Math.PI * 2, false); // 画另一个果实
+        cxt.closePath();
+        cxt.fill();
+
+        cxt.beginPath();
+        cxt.arc(300, 270, 14, 0, Math.PI * 2, false); // 画另一个果实
+        cxt.closePath();
+        cxt.fill();
+
+        cxt.beginPath();
+        cxt.arc(240, 280, 10, 0, Math.PI * 2, false); // 画另一个果实
+        cxt.closePath();
+        cxt.fill();
+    </script>
+</body>
+</html>
